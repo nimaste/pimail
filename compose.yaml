@@ -12,7 +12,7 @@
 # Everything is bind-mounted under /mnt/cache/appdata/pimail/ instead of
 # named Docker volumes, so every piece of state is a real, visible path on
 # the NAS rather than something buried in Docker's own volume store.
-x-app-image: &app-image ghcr.io/karatektus/pl_mail:latest
+x-app-image: &app-image ghcr.io/nimaste/pimail:latest
 
 services:
   secrets-init:
@@ -40,9 +40,9 @@ services:
       - /mnt/cache/appdata/pimail/raw:/app/var/raw
       - /mnt/cache/appdata/pimail/uploads:/app/var/uploads
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "8025:80"
+      - "8443:443"
+      - "8443:443/udp"
     depends_on:
       secrets-init:
         condition: service_completed_successfully
