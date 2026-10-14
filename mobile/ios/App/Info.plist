@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Without this the app advertises English only, the system resolves the
+	     process language to English no matter what the device is set to, and
+	     every bundle in it — including the package's — follows. The
+	     translations exist and simply never get consulted. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>de</string>
+	</array>
+	<!--
+	  plMail runs on machines people own, and a lot of them are only reachable
+	  over plain HTTP on a home network: a NAS at nas.local, a box at
+	  192.168.1.5, a container on localhost.
+
+	  NSAllowsLocalNetworking permits exactly those — unqualified hostnames,
+	  *.local, loopback and link-local addresses — and nothing else. Every
+	  route to the public internet still goes through full App Transport
+	  Security. The usual shortcut, NSAllowsArbitraryLoads, would instead turn
+	  validation off for every connection the app ever makes, which is not a
+	  trade worth making for the convenience of a first run.
+
+	  The app additionally requires the user to type http:// explicitly; a
+	  bare hostname is always resolved as https.
+	-->
+	<key>NSContactsUsageDescription</key>
+	<string>Suggest people to write to as you type a recipient. Your contacts are read on the device and never leave it.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Attach photos and videos to messages you write.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>plMail uses the camera to scan the pairing code shown by your server, so you don't have to type a 71-character app password.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<!-- Lets a plmail://pair link enrol the device when the code is on
+			     the same device the app is on — tapping it is the whole flow,
+			     with no camera involved. -->
+			<key>CFBundleURLName</key>
+			<string>de.plmail.pairing</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>plmail</string>
+			</array>
+		</dict>
+		<dict>
+			<!-- So an address tapped anywhere on the device can open this
+			     composer. Registering the scheme is what makes plMail
+			     *offerable*; it is not what makes it the default. Being the
+			     system's default mail app additionally needs the managed
+			     com.apple.developer.mail-app entitlement, which Apple grants
+			     by request and a free personal team cannot hold — see
+			     docs/parity/02-compose-send.md. Without it a mailto: still
+			     reaches this app when something opens the URL directly, which
+			     is every "open in" sheet and every other app that asks.
+
+			     Viewer rather than Editor: the app is opened *with* the link,
+			     it does not claim ownership of the scheme. Two clients both
+			     claiming a scheme as Editor is undefined behaviour on iOS. -->
+			<key>CFBundleURLName</key>
+			<string>de.plmail.mailto</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mailto</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+
+	<!-- Bonjour, so a server advertised on the LAN can be reached by name. -->
+	<!--
+	  Periodic background refresh, matching the server's own fifteen-minute
+	  poll. Not push: without APNs there is no true background delivery, and
+	  the UI says "last checked" rather than implying otherwise.
+	-->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>de.plmail.refresh</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<!-- Silent pushes only. The payload never carries mail, so there is
+		     nothing to decrypt on arrival and no notification-service
+		     extension: the push says "something changed" and the app does an
+		     ordinary delta pull. -->
+		<string>remote-notification</string>
+	</array>
+
+	<!--
+	  Communication notifications. A new-mail banner is donated as an
+	  INSendMessageIntent so it carries the sender's name and contact photo,
+	  can be allowed through a Focus per person, and is read aloud as a
+	  message rather than as an app alert. Without this declaration
+	  `UNNotificationContent.updating(from:)` refuses the intent and every
+	  banner falls back to the plain form — silently, which is the failure
+	  worth guarding against here.
+	-->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INSendMessageIntent</string>
+		<!-- Handoff for "reading this conversation". Undeclared, the system
+		     drops the activity silently: Handoff simply never appears on the
+		     other device and nothing is logged. The payload is two ids, so the
+		     mail itself is fetched by the receiving device from the server it
+		     already has a credential for and never passes through iCloud. -->
+		<string>de.plmail.reading-thread</string>
+	</array>
+
+	<!--
+	  The drag payload one plMail pane hands another, declared so the system
+	  knows the identifier belongs to this app. Drags *inside* the app work
+	  without this — which is every drag the app itself makes — but a
+	  conversation dragged out lands as the plain-text fallback, so another
+	  copy of plMail on the same iPad could not recognise its own type.
+
+	  Conforms to public.data and public.content: it is an opaque payload, not
+	  text, and a target that accepts plain text must not light up for it.
+	-->
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>de.plmail.threads</string>
+			<key>UTTypeDescription</key>
+			<string>plMail conversations</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.content</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
+		</dict>
+	</array>
+
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>plMail needs to reach your mail server, which may be on your local network.</string>
+</dict>
+</plist>

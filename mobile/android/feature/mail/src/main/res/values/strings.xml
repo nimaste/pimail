@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inbox_title">Inbox</string>
+    <string name="search">Search</string>
+
+    <string name="inbox_empty">Nothing here yet.</string>
+    <string name="inbox_loading">Fetching your mail…</string>
+
+    <!--
+      Names the account, because the whole point of degrading per account is
+      that the user can tell which server is the problem.
+    -->
+    <string name="account_unreachable">Could not reach %1$s. The other accounts are still up to date.</string>
+    <string name="retry">Try again</string>
+
+    <string name="reader_placeholder">Select a conversation.</string>
+    <string name="show_remote_images">Show pictures</string>
+    <string name="show_original">Show original</string>
+    <string name="show_adapted">Show adapted</string>
+    <string name="body_not_downloaded">This message has not been downloaded yet.</string>
+    <string name="body_is_empty">This message has no text.</string>
+    <string name="action_archive">Archive</string>
+    <string name="action_trash">Trash</string>
+    <string name="action_star">Star</string>
+    <string name="action_read">Mark read</string>
+    <!--
+      The reader offers the opposite verb: it marks every message it shows as read, so "mark read"
+      there is a control that can never do anything.
+    -->
+    <string name="action_unread">Mark unread</string>
+    <string name="action_spam">Mark as spam</string>
+    <string name="undo">Undo</string>
+    <string name="reader_back">Back to the list</string>
+    <!-- Conversations, not messages: conversations are what the user acted on. -->
+    <plurals name="archived">
+        <item quantity="one">1 conversation archived</item>
+        <item quantity="other">%1$d conversations archived</item>
+    </plurals>
+    <plurals name="trashed">
+        <item quantity="one">1 conversation moved to Trash</item>
+        <item quantity="other">%1$d conversations moved to Trash</item>
+    </plurals>
+    <plurals name="moved_to_inbox">
+        <item quantity="one">1 conversation moved to Inbox</item>
+        <item quantity="other">%1$d conversations moved to Inbox</item>
+    </plurals>
+    <plurals name="marked_spam">
+        <item quantity="one">1 conversation marked as spam</item>
+        <item quantity="other">%1$d conversations marked as spam</item>
+    </plurals>
+    <string name="changed">Changed</string>
+    <!-- The row already moved, so a rejection has to be said out loud. -->
+    <string name="action_rejected">%1$s Your change may not have reached the server.</string>
+    <plurals name="selected_count">
+        <item quantity="one">1 selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
+    <string name="clear_selection">Clear selection</string>
+    <string name="compose_new">Write a message</string>
+    <string name="reader_reply">Reply</string>
+    <string name="reader_reply_all">Reply all</string>
+    <string name="reader_forward">Forward</string>
+    <!-- Names the overflow beside the reply buttons. Distinct from "More"
+         in the toolbar, which acts on the whole conversation: two controls
+         a screen apart both announced as "More" are indistinguishable to
+         anyone navigating by label. -->
+    <string name="reader_reply_more">More reply options</string>
+    <string name="inbox_empty_body">New mail will appear here as it arrives.</string>
+    <!--
+      A claim about the list, not about the server. "You're up to date" would be
+      a claim about the server, which the app cannot make between syncs.
+    -->
+    <string name="inbox_end">That\'s everything on this device</string>
+    <string name="drawer_title">plMail</string>
+    <string name="open_labels">Labels</string>
+    <string name="labels_loading">Loading your labels…</string>
+    <string name="label_new">New label</string>
+    <!--
+      The drawer's three groups. "Important" is a shortlist the user owns rather
+      than a judgement the app makes: it starts as Starred, Trash, Spam, Sent and
+      Archive and everything in it can be moved out, which is why the word is not
+      "System" — nothing about the group is fixed.
+    -->
+    <string name="sidebar_important">Important</string>
+    <string name="sidebar_labels">Labels</string>
+    <string name="sidebar_customize">Edit</string>
+    <string name="sidebar_customize_done">Done</string>
+    <string name="sidebar_customize_a11y">Choose which labels are important</string>
+    <string name="sidebar_pin_a11y">Move to Important</string>
+    <string name="sidebar_unpin_a11y">Move to Labels</string>
+    <!-- Shown under the heading while editing, when nothing has been pinned. -->
+    <string name="sidebar_important_empty">Tap a star to keep a label up here.</string>
+    <!--
+      The calendar sits below the labels, beside the other places that are not
+      one. Only drawn where the server publishes a calendar at all.
+    -->
+    <string name="calendar">Calendar</string>
+    <string name="push">Push</string>
+    <!--
+      "Notifications", not "Notification settings": the drawer's other entries
+      are nouns for the screens they open, and this one opens the screen that
+      decides which mail is allowed to interrupt.
+    -->
+    <string name="notifications">Notifications</string>
+    <string name="diagnostics">Diagnostics</string>
+    <string name="accounts">Accounts</string>
+    <string name="label_new_title">New label</string>
+    <string name="label_edit">Edit label</string>
+    <string name="label_edit_title">Edit label</string>
+    <string name="label_name">Name</string>
+    <!-- Said before the round trip: the server refuses a slash, because Gmail encodes nesting in it. -->
+    <string name="label_name_hint">Use the parent label for nesting, not a slash.</string>
+    <string name="label_save">Save</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="label_delete">Delete label</string>
+    <string name="label_delete_title">Delete “%1$s”?</string>
+    <!-- Names what is kept. "Delete label" over a list of mail reads as "delete the mail". -->
+    <string name="label_delete_body">The label goes; the mail in it stays where it is.</string>
+    <string name="label_delete_confirm">Delete</string>
+    <string name="more">More</string>
+    <string name="labels_apply">Label as</string>
+    <string name="labels_none">You have no labels of your own yet.</string>
+    <string name="snooze">Snooze</string>
+    <string name="snooze_later_today">Later today</string>
+    <string name="snooze_tomorrow">Tomorrow morning</string>
+    <string name="snooze_this_weekend">This weekend</string>
+    <string name="snooze_next_week">Next week</string>
+    <string name="snooze_pick">Pick a date and time</string>
+    <string name="unsnooze">Unsnooze</string>
+    <plurals name="snoozed">
+        <item quantity="one">1 conversation snoozed</item>
+        <item quantity="other">%1$d conversations snoozed</item>
+    </plurals>
+    <plurals name="unsnoozed">
+        <item quantity="one">1 conversation brought back</item>
+        <item quantity="other">%1$d conversations brought back</item>
+    </plurals>
+    <!--
+      For an undo whose conversations went back to different places: several snooze times
+      restored at once. Deliberately vague about what each one became, because it differed.
+    -->
+    <plurals name="put_back">
+        <item quantity="one">1 conversation put back</item>
+        <item quantity="other">%1$d conversations put back</item>
+    </plurals>
+    <string name="action_unstar">Remove star</string>
+    <string name="reader_label_open">Show this label\'s mail</string>
+    <string name="reader_label_remove">Remove label</string>
+    <string name="reader_snooze_change">Change the time</string>
+    <string name="reader_snoozed_until">Snoozed until %1$s</string>
+    <plurals name="reader_message_count">
+        <item quantity="one">1 message</item>
+        <item quantity="other">%1$d messages</item>
+    </plurals>
+    <string name="move_filter">Filter labels</string>
+    <string name="move_no_match">No label matches.</string>
+    <string name="swipe_confirm_archive">Archive this conversation?</string>
+    <string name="swipe_confirm_trash">Move this conversation to the trash?</string>
+    <string name="swipe_confirm_read">Mark this conversation as read?</string>
+    <string name="swipe_confirm_unread">Mark this conversation as unread?</string>
+    <string name="swipe_confirm_snooze">Snooze this conversation?</string>
+    <string name="swipe_confirm_move">Move this conversation?</string>
+    <string name="swipe_confirm_cancel">Cancel</string>
+    <string name="gestures">Swipe actions</string>
+    <plurals name="label_new_applies">
+        <item quantity="one">The new label is added to this conversation.</item>
+        <item quantity="other">The new label is added to the %1$d selected conversations.</item>
+    </plurals>
+    <!-- Over the inbox tabs in "Move to", so a tab and a label with one name stay apart. -->
+    <string name="move_to_tab">Inbox tab</string>
+    <string name="move_to">Move to</string>
+    <plurals name="moved_to">
+        <item quantity="one">1 conversation moved to %2$s</item>
+        <item quantity="other">%1$d conversations moved to %2$s</item>
+    </plurals>
+    <plurals name="labelled">
+        <item quantity="one">Label added to 1 conversation</item>
+        <item quantity="other">Label added to %1$d conversations</item>
+    </plurals>
+    <plurals name="unlabelled">
+        <item quantity="one">Label removed from 1 conversation</item>
+        <item quantity="other">Label removed from %1$d conversations</item>
+    </plurals>
+
+    <string name="message_more">More for this message</string>
+    <!-- Parts with no filename are common; "attachment" is what the picker suggests too. -->
+    <string name="attachment_unnamed">Attachment</string>
+    <!-- Names the file, because a screen reader reaches four identical "Save" buttons otherwise. -->
+    <string name="attachment_save_named">Save %1$s</string>
+    <string name="attachment_open_with">Open with</string>
+    <!--
+      Followed by the server's own words where it gave any. This audience runs
+      the server; "Connection refused" is the diagnosis, not noise.
+    -->
+    <string name="attachment_download_failed">Could not download that attachment.</string>
+    <string name="attachment_save_failed">Could not save that attachment.</string>
+
+    <!-- "Source" rather than "original": the reader already has a "show original" for rendering. -->
+    <string name="source_show">View source</string>
+    <string name="source_close">Close</string>
+    <string name="source_share">Share</string>
+    <string name="source_failed">Could not download the message source.</string>
+    <!--
+      plMail stores parsed headers and decoded bodies rather than raw bytes, so
+      a message synced before raw storage existed reconstructs to nothing.
+    -->
+    <string name="source_empty">The server has no source stored for this message.</string>
+    <string name="appearance">Appearance</string>
+
+    <!--
+      System label names, ours rather than the wire's.
+
+      The server sends these in English out of LabelRole; plMail's web client
+      renders sidebar.nav.* and translates them. Drawing the wire name showed a
+      German user an English sidebar against a German web UI, which is the two
+      surfaces disagreeing about the product. Chosen by role, never by name.
+    -->
+    <string name="role_inbox">Inbox</string>
+    <string name="role_drafts">Drafts</string>
+    <string name="role_sent">Sent</string>
+    <string name="role_trash">Trash</string>
+    <string name="role_junk">Spam</string>
+    <string name="role_archive">Archive</string>
+    <string name="role_snoozed">Snoozed</string>
+    <string name="role_flagged">Starred</string>
+
+    <!--
+      The inbox categories, which are Gmail's tabs. Translated here for the same
+      reason the roles above are: the server sends wire tokens, not display
+      names, and plMail's web client renders them through its own catalogue.
+    -->
+    <string name="category_primary">Primary</string>
+    <string name="category_social">Social</string>
+    <string name="category_promotions">Promotions</string>
+    <string name="category_updates">Updates</string>
+    <string name="category_forums">Forums</string>
+
+    <!--
+      The new-mail bundle above Primary. "3 new" rather than "3 unread": the
+      claim is that this arrived since you last looked at that tab, which is a
+      narrower and more useful thing than the unread count the sidebar would
+      have shown.
+    -->
+    <plurals name="category_new_count">
+        <item quantity="one">%1$d new</item>
+        <item quantity="other">%1$d new</item>
+    </plurals>
+
+    <!--
+      "Rail Europe, Duolingo and 2 more". A plural rather than a string even
+      though English inflects nothing here: the count is grammatical in
+      languages this app is not yet translated into, and a translator reaching
+      for the other form should find it rather than have to ask for it.
+    -->
+    <plurals name="category_senders_and_more">
+        <item quantity="one">%1$s and %2$d more</item>
+        <item quantity="other">%1$s and %2$d more</item>
+    </plurals>
+
+    <!--
+      What TalkBack says for the dot on a sidebar category. The dot has no
+      number behind it, so neither does this.
+    -->
+    <string name="category_has_new_a11y">New mail</string>
+
+    <!--
+      The pinned one-line digest, for when the bundles have scrolled away. Two
+      substitutions rather than one sentence, because the names and the count
+      are assembled from plurals the bar already has to resolve, and building
+      the sentence here would mean a translator could not reorder them.
+    -->
+    <string name="category_digest_bar_a11y">%1$s, %2$s. Show the senders.</string>
+
+    <string name="label_color">Colour</string>
+    <string name="label_color_none">No colour</string>
+
+    <!--
+      Offline, said as two different sentences because they have two different
+      fixes. No network at all is something the reader can change from the quick
+      settings; a server that is not answering is not, and sending somebody to
+      check their wifi while their NAS is off wastes the ten minutes they had.
+    -->
+    <string name="offline">You are offline. This is the mail already on your phone.</string>
+    <plurals name="offline_with_pending">
+        <item quantity="one">You are offline. %1$d change is waiting to reach your server.</item>
+        <item quantity="other">You are offline. %1$d changes are waiting to reach your server.</item>
+    </plurals>
+    <plurals name="pending_changes">
+        <item quantity="one">%1$d change is waiting to reach your server.</item>
+        <item quantity="other">%1$d changes are waiting to reach your server.</item>
+    </plurals>
+    <!-- The hostname, because "we could not reach your server" without it is unactionable. -->
+    <!--
+      The server itself, rather than one account on it. No reassurance about
+      other accounts, because none of them was reached either.
+    -->
+    <string name="server_unreachable">plMail could not reach %1$s. This is the mail already on your phone.</string>
+    <string name="account_unreachable_host">Could not reach %1$s at %2$s. The other accounts are still up to date.</string>
+
+    <string name="action_queued">%1$s here. Your server will be told when it answers.</string>
+    <string name="action_queued_host">%1$s here. %2$s will be told when it answers.</string>
+    <!-- A phone with no browser, or a tel: link on a tablet. Rare, and not a crash. -->
+    <string name="link_no_handler">Nothing on this device can open that link.</string>
+</resources>

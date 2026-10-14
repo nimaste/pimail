@@ -1,0 +1,202 @@
+/* Die Rollennamen der Postfächer — die meistgelesenen Wörter der App.
+   Bewusst an Apple Mail angelehnt, damit Vokabular nicht zwischen zwei
+   Mail-Apps auf demselben Gerät auseinanderläuft. */
+
+"Inbox" = "Posteingang";
+"Sent" = "Gesendet";
+"Drafts" = "Entwürfe";
+"Spam" = "Werbung";
+"Trash" = "Papierkorb";
+"Archive" = "Archiv";
+"Snoozed" = "Zurückgestellt";
+"Starred" = "Markiert";
+"Important" = "Wichtig";
+"All mail" = "Alle E-Mails";
+
+/* Fehlermeldungen. Sie erscheinen am schlechtesten Tag, den jemand mit dieser
+   App hat — also sagen sie, was passiert ist, und wo es bekannt ist, was zu
+   tun ist. Geduzt, wie im Rest der App. */
+
+"This account has no Drafts mailbox to send from." = "Dieses Konto hat kein Entwurfs-Postfach zum Senden.";
+"The server wouldn't accept this message." = "Der Server hat diese Nachricht abgelehnt.";
+"Sign in again to send this." = "Melde dich erneut an, um das zu senden.";
+"Waiting for the server." = "Warte auf den Server.";
+"Couldn't open this draft." = "Dieser Entwurf ließ sich nicht öffnen.";
+"Couldn't save this message. Don't close the composer yet." = "Diese Nachricht ließ sich nicht sichern. Schließe den Editor noch nicht.";
+"This message has no recipients." = "Diese Nachricht hat keine Empfänger.";
+"This account isn't allowed to send." = "Dieses Konto darf nicht senden.";
+"The server wouldn't send this message." = "Der Server hat den Versand abgelehnt.";
+"That isn't a plMail pairing code." = "Das ist kein plMail-Kopplungscode.";
+"That code points at an address this app can't reach." = "Dieser Code zeigt auf eine Adresse, die die App nicht erreicht.";
+"That code didn't work. They last two minutes and work once — show a new one." = "Dieser Code hat nicht funktioniert. Codes gelten zwei Minuten und nur einmal — zeig einen neuen an.";
+"Can't reach %@. Check you're on the same network as the server." = "%@ ist nicht erreichbar. Prüfe, ob du im selben Netzwerk wie der Server bist.";
+"The server wouldn't change that snooze." = "Der Server hat die Zurückstellung nicht geändert.";
+"Couldn't reach the server. Nothing was changed." = "Server nicht erreichbar. Es wurde nichts geändert.";
+"This account has no Spam mailbox." = "Dieses Konto hat kein Werbung-Postfach.";
+"A message has to stay in at least one label, and that was the last one." = "Eine Nachricht muss in mindestens einem Label bleiben, und das war das letzte.";
+"Your app password was revoked or is no longer valid." = "Dein App-Passwort wurde widerrufen oder ist nicht mehr gültig.";
+"Can't reach %@." = "%@ ist nicht erreichbar.";
+"The server couldn't complete that request." = "Der Server konnte die Anfrage nicht abschließen.";
+"Something went wrong talking to %@." = "Bei der Verbindung mit %@ ist etwas schiefgelaufen.";
+"Sign-in is no longer valid." = "Die Anmeldung ist nicht mehr gültig.";
+"This account didn't sync." = "Dieses Konto wurde nicht synchronisiert.";
+"That pairing code couldn't be read." = "Dieser Kopplungscode ließ sich nicht lesen.";
+"Couldn't save to the keychain: %@" = "Sichern im Schlüsselbund fehlgeschlagen: %@";
+"That pairing code didn't work." = "Dieser Kopplungscode hat nicht funktioniert.";
+"Something went wrong: %@" = "Etwas ist schiefgelaufen: %@";
+"Enter your server's address." = "Gib die Adresse deines Servers ein.";
+"That address is missing a hostname." = "Dieser Adresse fehlt ein Hostname.";
+"That address couldn't be read." = "Diese Adresse ließ sich nicht lesen.";
+
+/* Absenderadressen */
+"Couldn't reach the server. Showing the addresses last synced." = "Server nicht erreichbar. Angezeigt werden die zuletzt synchronisierten Adressen.";
+"The server wouldn't save that name." = "Der Server hat diesen Namen nicht gespeichert.";
+"Couldn't reach the server. The name wasn't saved." = "Server nicht erreichbar. Der Name wurde nicht gespeichert.";
+"This address isn't set up as an alias on the server, so its name comes from the account and can't be changed here." = "Diese Adresse ist auf dem Server nicht als Alias angelegt; ihr Name stammt vom Konto und lässt sich hier nicht ändern.";
+"This account is read-only." = "Dieses Konto ist schreibgeschützt.";
+/* Die voreingestellten Zeiten, gemeinsam genutzt von „Zurückstellen“ und
+   „Später senden“. */
+
+"Later today" = "Später heute";
+"Tomorrow" = "Morgen";
+"Tomorrow evening" = "Morgen Abend";
+"This weekend" = "Am Wochenende";
+"Next week" = "Nächste Woche";
+
+/* Suchoperatoren, je eine Zeile Erklärung in der Vorschlagsliste. Sie sind der
+   ganze Grund für die Vorschläge: „has:attachment“ errät niemand. Die
+   Operatoren selbst bleiben englisch — sie sind Syntax, die der Server so und
+   nicht anders liest. */
+
+"Mail from a person" = "Mail von einer Person";
+"Mail sent to a person" = "Mail an eine Person";
+"Words in the subject line" = "Wörter im Betreff";
+"Only mail with a file attached" = "Nur Mail mit Dateianhang";
+"Only mail you haven't read" = "Nur ungelesene Mail";
+"Only mail you starred" = "Nur Mail mit Stern";
+"One mailbox, such as in:inbox" = "Ein Postfach, etwa in:inbox";
+"Mail since a date, like 2024-01-31" = "Mail ab einem Datum, etwa 2024-01-31";
+"Mail up to a date, like 2024-01-31" = "Mail bis zu einem Datum, etwa 2024-01-31";
+
+/* Die Filter-Chips über den Suchergebnissen. Jeder schreibt seinen Operator in
+   die Suchanfrage, benennt also dasselbe wie das Token darunter. */
+
+"Unread" = "Ungelesen";
+"Has attachment" = "Mit Anhang";
+"Past week" = "Letzte Woche";
+"Past month" = "Letzter Monat";
+"Past year" = "Letztes Jahr";
+
+/* Label anlegen, umbenennen und löschen. Jede Ablehnung benennt die Regel des
+   Servers, statt nur zu melden, dass es nicht geklappt hat: „So heißt hier
+   schon eins“ sagt, was als Nächstes zu tippen ist — „nicht akzeptiert“ nicht. */
+
+"A label needs a name." = "Ein Label braucht einen Namen.";
+"A label name can't contain a slash. Use a parent label to nest it." = "Ein Labelname darf keinen Schrägstrich enthalten. Zum Verschachteln ein übergeordnetes Label verwenden.";
+"There's already a label with that name here." = "Hier gibt es bereits ein Label mit diesem Namen.";
+"Delete the labels nested inside this one first." = "Zuerst die darin verschachtelten Labels löschen.";
+"Built-in labels like Inbox and Sent can't be changed." = "Vorgegebene Labels wie Posteingang und Gesendet lassen sich nicht ändern.";
+"That label no longer exists." = "Dieses Label gibt es nicht mehr.";
+"Your labels changed elsewhere. Try again." = "Deine Labels haben sich anderswo geändert. Bitte erneut versuchen.";
+"The server didn't make that change." = "Der Server hat diese Änderung nicht ausgeführt.";
+"The server didn't accept that change." = "Der Server hat diese Änderung nicht akzeptiert.";
+/* Suchen in einer geöffneten Konversation. Die Zählung ist der eigentliche
+   Zweck der Leiste, deshalb „von“ statt eines nackten Bruchs. */
+
+"No matches" = "Keine Treffer";
+"%lld of %lld" = "%lld von %lld";
+"Mail copied to a person" = "Mail in Kopie an eine Person";
+"One label, by its exact name" = "Ein Label, mit genauem Namen";
+
+/* Onboarding: the typed address carried user:password@, which would be baked
+   into every request and into the Keychain metadata. */
+"Leave the username and password out of the address — the app password goes in the field below." = "Lass Benutzernamen und Passwort aus der Adresse heraus — das App-Passwort gehört in das Feld darunter.";
+
+/* Labels: lokal abgelehnt statt vom Server, weil die Antwort ein blankes
+   invalidProperties wäre, das die Regel nicht benennt. */
+"A label can't be nested inside itself." = "Ein Label kann sich nicht selbst untergeordnet werden.";
+
+/* Benachrichtigungen. Werden vorgelesen und auf dem Sperrbildschirm angezeigt —
+   die eine Stelle in der App, an der die Sprache nicht durch Nachsehen an
+   anderer Stelle korrigiert werden kann. */
+"Unknown sender" = "Unbekannter Absender";
+"(no subject)" = "(kein Betreff)";
+"Mark as read" = "Als gelesen markieren";
+"Reply" = "Antworten";
+"Send" = "Senden";
+"Reply to this message" = "Auf diese Nachricht antworten";
+"Your reply hasn't been sent" = "Deine Antwort wurde noch nicht gesendet";
+"It's queued and will go out when the server answers." = "Sie ist in der Warteschlange und geht raus, sobald der Server antwortet.";
+"Try again" = "Erneut versuchen";
+"%lld new messages" = "%lld neue Nachrichten";
+
+/* Entwürfe. Ein Editor, der still sichert, und einer, der es still nicht tut,
+   sehen gleich aus — deshalb sagt jede dieser Zeilen, wo der Text gerade ist. */
+"Couldn't reach the server. Showing the draft last synced." = "Server nicht erreichbar. Angezeigt wird der zuletzt synchronisierte Entwurf.";
+"The server wouldn't save this draft." = "Der Server hat diesen Entwurf nicht gesichert.";
+"This draft changed somewhere else. Reopen it to see the newest copy." = "Dieser Entwurf wurde anderswo geändert. Öffne ihn neu, um die neueste Fassung zu sehen.";
+"Sign in again to save this." = "Melde dich erneut an, um das zu sichern.";
+"Couldn't reach the server. This is still on your phone." = "Server nicht erreichbar. Das hier liegt weiterhin auf deinem Gerät.";
+
+/* Anhänge, abgelehnt beim Auswählen und beim Namen genannt. Eine Nachricht mit
+   den ersten 25 MB eines Videos sieht für den Absender aus, als hätte es
+   geklappt. */
+"%@ is %@. This server accepts attachments up to %@." = "%1$@ ist %2$@ groß. Dieser Server nimmt Anhänge bis %3$@.";
+"%@ is stored on %@ and can't move to another account. Remove it, or send from %@." = "%@ liegt auf %@ und kann nicht in ein anderes Konto wechseln. Entferne die Datei, oder sende von %@.";
+"Adding %@ would take this message to %@. The limit is %@." = "Mit %1$@ käme diese Nachricht auf %2$@. Die Grenze liegt bei %3$@.";
+
+/* Das Zitat und der Weiterleitungskopf. Hartkodiertes Englisch über einem
+   deutschen Verlauf ist der Fehler, den das hier ersetzt. */
+"On %@, %@ wrote:" = "Am %1$@ schrieb %2$@:";
+"---------- Forwarded message ----------" = "---------- Weitergeleitete Nachricht ----------";
+"From:" = "Von:";
+"Date:" = "Datum:";
+"Subject:" = "Betreff:";
+"To:" = "An:";
+"Cc:" = "Kopie:";
+
+/* Die Warteschlange für Aktionen ohne Server. Drei bewusst verschiedene Sätze:
+   der Server weiß es, der Server weiß es noch nicht, oder der Server hat
+   abgelehnt. Fasst man die Mitte mit dem Rest zusammen, behauptet die App im
+   Zug, die Mail sei verschoben — was sie nicht ist. */
+"waiting for the server" = "warte auf den Server";
+"Put back" = "Zurückgelegt";
+"That server's certificate no longer matches." = "Das Zertifikat dieses Servers passt nicht mehr.";
+"You're offline." = "Du bist offline.";
+"Nothing on %@ answered." = "Auf %@ hat nichts geantwortet.";
+"Your server won't hold mail this far ahead. This phone will send it." = "Dein Server hält Post nicht so weit im Voraus zurück. Dieses Telefon sendet sie.";
+
+/* Postfach-Kategorien. Wortgleich mit der Tableiste der Weboberfläche
+   (translations/messages.de.yaml, `tabs:`) — „Allgemein" statt „Primär", weil
+   die Registerkarte ein Ausschnitt des Posteingangs ist und kein Konto. */
+
+"Primary" = "Allgemein";
+"Social" = "Soziales";
+"Promotions" = "Werbung";
+"Updates" = "Updates";
+"Forums" = "Foren";
+
+/* Die Widgets für Home- und Sperrbildschirm. In diesem Katalog und nicht in
+   dem von PLMailUI, weil die Widget-Erweiterung nur PLMailCore einbindet —
+   PLMailUI greift auf UIApplication.shared zu, was einer App-Erweiterung
+   verwehrt ist — und eine unerreichbare Zeichenkette bleibt englisch. */
+
+"Needs a paid developer account" = "Erfordert einen kostenpflichtigen Entwickleraccount";
+"Open plMail to sign in" = "plMail öffnen und anmelden";
+"unread message" = "ungelesene Nachricht";
+"unread messages" = "ungelesene Nachrichten";
+"No unread mail" = "Keine ungelesene Post";
+"%lld unread" = "%lld ungelesen";
+"Unread mail" = "Ungelesene Post";
+"How much unread mail is waiting." = "Wie viel ungelesene Post wartet.";
+"Today's events" = "Heutige Termine";
+"What is left on your calendar today." = "Was heute noch im Kalender steht.";
+"Nothing left today" = "Heute nichts mehr";
+"No calendar loaded" = "Kein Kalender geladen";
+"This server has no calendar" = "Dieser Server hat keinen Kalender";
+
+/* Entwurfskonflikte. `ifInState` wird gegen den E-Mail-Status des Kontos
+   geprüft, deshalb erscheint das erst, wenn das Änderungsprotokoll bestätigt
+   hat, dass dieser Entwurf selbst bewegt wurde — und nicht bloß Post kam. */
+
+"This draft changed on another device. Nothing here has been lost." = "Dieser Entwurf wurde auf einem anderen Gerät geändert. Hier ging nichts verloren.";

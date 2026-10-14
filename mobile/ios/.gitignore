@@ -1,0 +1,25 @@
+.DS_Store
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+DerivedData/
+build/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# SwiftPM
+.build/
+.swiftpm/
+Package.resolved
+
+# Local signing identity — see App/Config/Signing.xcconfig.dist
+App/Config/Signing.xcconfig
+
+# Transient agent worktrees. They are checkouts of this same repo — committing
+# them as gitlinks makes a clone try to fetch a submodule that never existed.
+.claude/worktrees/

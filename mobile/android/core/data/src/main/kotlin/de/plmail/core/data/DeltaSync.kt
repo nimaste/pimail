@@ -1,0 +1,431 @@
+package de.plmail.core.data
+
+import de.plmail.core.database.PlMailDatabase
+import de.plmail.core.database.StoreKey
+import de.plmail.core.datastore.NotificationPrefsStore
+import de.plmail.core.datastore.NotifiedMessageStore
+import de.plmail.jmap.client.JmapClient
+import de.plmail.jmap.methods.EmailChanges
+import de.plmail.jmap.methods.EmailGet
+import de.plmail.jmap.methods.ThreadGet
+import de.plmail.jmap.protocol.AccountId
+import de.plmail.jmap.protocol.EmailId
+import de.plmail.jmap.protocol.JmapError
+import de.plmail.jmap.protocol.RequestBuilder
+import de.plmail.jmap.protocol.StateToken
+import javax.inject.Inject
+import javax.inject.Singleton
+
+/** What one account's sync did, so the diagnostics screen has something true to show. */
+sealed interface SyncResult {
+    data class Updated(val fetched: Int, val destroyed: Int) : SyncResult
+
+    /** Nothing had changed. The common case, and it must cost one request. */
+    data object UpToDate : SyncResult
+
+    /**
+     * The server can no longer answer from the stored cursor, so the list has to be re-paged.
+     *
+     * Not a failure: `cannotCalculateChanges` is what a server says when the change log no longer
+     * reaches back far enough, which is the ordinary consequence of an app not being opened for a
+     * while.
+     */
+    data object NeedsRepage : SyncResult
+
+    data class Failed(val error: Throwable) : SyncResult
+}
+
+/**
+ * Brings one account up to date from its stored state token.
+ *
+ * `Email/changes` tells us *which* messages moved, never what they now contain, so every sync is a
+ * changes loop followed by hydration. Both halves are deliberately bounded:
+ *
+ * - **256 changes per call**, the server's own maximum, looping while `hasMoreChanges`.
+ * - **100 ids per `Email/get`**, well under the permitted 500. The server hydrates full Doctrine
+ *   entities to answer, and this is frequently a Raspberry Pi — asking for 500 at once is how a
+ *   sync becomes the reason someone's server is unresponsive.
+ * - **A loop ceiling.** Past it, catching up change-by-change is slower than throwing the cursor
+ *   away and re-paging, which is what a client returning after a long absence should do anyway.
+ *
+ * A first sync is *not* this. `Email/changes` from state `"0"` reports nothing about existing mail
+ * — it only keeps an already-populated client current — so an account with no cursor is sent
+ * straight to re-paging rather than being told, wrongly, that it is up to date.
+ */
+@Singleton
+class DeltaSync
+@Inject
+constructor(
+    private val database: PlMailDatabase,
+    private val clients: AccountClients,
+    private val mail: MailRepository,
+    private val accounts: AccountsRepository,
+    /**
+     * What makes a synced conversation *visible*.
+     *
+     * Held here rather than folded into `storeEmails`, deliberately: that method is also the
+     * pager's `onPage`, where [FeedMediator] is already writing the correct rows for the list being
+     * paged, so projecting there would double the write cost of every page on the hot scrolling
+     * path and produce nothing that was not already there. The sync is the only writer that has no
+     * mediator behind it.
+     */
+    private val projection: FeedProjection,
+    private val repages: RepageSignal,
+    /**
+     * Told when an account answers, so a stale "could not reach" banner can come down.
+     *
+     * A one-method seam onto `FeedRepository` rather than the repository itself — see
+     * [ReachableAccounts].
+     */
+    private val reachable: ReachableAccounts,
+    /**
+     * What keeps the scheduled-send list agreeing with the server's.
+     *
+     * Here because `EmailSubmission` is a pushed type and this is the one place the app reacts to a
+     * push. It used to be unreachable news — a held submission had no server-side row to change —
+     * and now it is the mechanism by which two devices agree about when a message leaves.
+     */
+    private val schedules: ScheduledSendReconciler,
+    /**
+     * Which labels and categories the user allows to interrupt.
+     *
+     * Read here for the same reason [AccountsRepository.isNotifying] is: a listener added later
+     * cannot forget a check it never had to make, and one decision about what may interrupt is one
+     * place to look when the phone is quiet.
+     */
+    private val notifyPrefs: NotificationPrefsStore,
+    /**
+     * What has already been announced.
+     *
+     * The last line of defence against a duplicate — see [NotifiedMessageStore]. It is asked at the
+     * very end, after the account gate and the scope filter, so nothing is recorded as announced
+     * that was never going to be.
+     */
+    private val notified: NotifiedMessageStore,
+    /**
+     * Told about mail that has just arrived.
+     *
+     * A set rather than a single listener, and multibound rather than required, so that a module
+     * which does not exist in a given build — or in a test — leaves this empty and nothing here has
+     * to know. Announcing is the last thing a sync does, not part of it.
+     */
+    private val announce: Set<@JvmSuppressWildcards NewMailListener> = emptySet(),
+) {
+
+    /**
+     * Every account, in turn.
+     *
+     * The catch-up the app owes its user whenever it comes back into view or is pulled down on, and
+     * the reason it is one call: three places were about to write the same loop, and the one that
+     * got it slightly wrong would have been the one running while nobody was watching.
+     *
+     * Sequential rather than concurrent. The accounts behind one credential share a server, and
+     * that server advertises how many requests it will take at once — spending the whole budget on
+     * catching up leaves nothing for the list the user is actually looking at.
+     */
+    suspend fun syncAll(): List<SyncResult> = accounts.all().map { sync(it.uid) }
+
+    suspend fun sync(accountKey: String): SyncResult {
+        val account = database.accounts().byUid(accountKey) ?: return SyncResult.UpToDate
+        val client = clients.forAccount(accountKey) ?: return SyncResult.UpToDate
+
+        // No cursor means this client has never paged the account. Asking
+        // Email/changes from "0" would answer "nothing changed", which is true
+        // and useless: it reports changes since the beginning of time, not the
+        // mail that already exists.
+        val since = account.emailState ?: return SyncResult.NeedsRepage
+
+        return try {
+            val outcome = run(client, AccountId(account.accountId), accountKey, StateToken(since))
+
+            // The schedule lives on the server now, and `EmailSubmission` is one
+            // of the four types push announces -- so this is the path a hold
+            // created on a laptop, or cancelled there, actually arrives on. One
+            // `EmailSubmission/changes` when there is nothing waiting, and its
+            // own failures are swallowed inside: a theme is not worth failing a
+            // sync over and neither is a scheduled-send row.
+            runCatching { schedules.reconcile(accountKey) }
+
+            mail.recordSyncSucceeded(accountKey, at = System.currentTimeMillis())
+
+            // The account has just answered, so any banner saying it cannot be
+            // reached is describing an outage that is over. Said here rather
+            // than left to the next page load, which is what it used to wait
+            // for: nothing re-pages until somebody scrolls.
+            reachable.answered(accountKey)
+
+            outcome
+        } catch (resync: JmapError) {
+            if (resync.requiresResync) {
+                // The one condition that justifies discarding a cursor.
+                database.accounts().setEmailState(accountKey, null)
+
+                // Signalled as well as stored. The null cursor is what a list
+                // built *after* this reads; a list already on screen was built
+                // before it and would go on drawing rows nothing can bring up to
+                // date.
+                repages.repage(accountKey)
+
+                SyncResult.NeedsRepage
+            } else {
+                mail.recordSyncFailed(accountKey, resync.message)
+                SyncResult.Failed(resync)
+            }
+        } catch (failed: Exception) {
+            mail.recordSyncFailed(accountKey, failed.message)
+            SyncResult.Failed(failed)
+        }
+    }
+
+    private suspend fun run(
+        client: JmapClient,
+        accountId: AccountId,
+        accountKey: String,
+        since: StateToken,
+    ): SyncResult {
+        var cursor = since
+        var fetched = 0
+        var destroyed = 0
+        var rounds = 0
+
+        while (true) {
+            val request = RequestBuilder()
+            val changes = request.add(EmailChanges(accountId, cursor))
+            val result = client.send(request).result(changes)
+
+            if (result.destroyed.isNotEmpty()) {
+                database
+                    .emails()
+                    .delete(result.destroyed.map { StoreKey.objectKey(accountKey, it.value) })
+
+                destroyed += result.destroyed.size
+            }
+
+            fetched += hydrate(client, accountId, accountKey, result.changed)
+
+            cursor = StateToken(result.newState)
+
+            // Written every round rather than at the end: a sync interrupted
+            // by the process dying should resume from where it got to, not
+            // replay every change it had already applied.
+            database.accounts().setEmailState(accountKey, cursor.value)
+
+            if (!result.hasMoreChanges) break
+
+            if (++rounds >= MAX_ROUNDS) {
+                // Further than this and a full re-page is cheaper than
+                // continuing to walk the log.
+                database.accounts().setEmailState(accountKey, null)
+                repages.repage(accountKey)
+
+                return SyncResult.NeedsRepage
+            }
+        }
+
+        return if (fetched == 0 && destroyed == 0) SyncResult.UpToDate
+        else SyncResult.Updated(fetched, destroyed)
+    }
+
+    /**
+     * Re-fetches changed messages in chunks.
+     *
+     * List-row properties only. A change notification says a message moved, not that anyone is
+     * about to read it, and pulling bodies here would turn a background sync into a multi-megabyte
+     * download for mail nobody has opened.
+     */
+    private suspend fun hydrate(
+        client: JmapClient,
+        accountId: AccountId,
+        accountKey: String,
+        ids: List<EmailId>,
+    ): Int {
+        var count = 0
+
+        // Resolved once for the whole hydration rather than per chunk. Null when
+        // the account has never synced its mailboxes, in which case nothing is
+        // announced: a message this client cannot place in the inbox is one it
+        // cannot honestly call new mail.
+        val inbox = database.mailboxes().byRole(accountKey, INBOX_ROLE)?.mailboxId
+        val account = database.accounts().byUid(accountKey)
+
+        // Read here rather than checked by each listener, so muting an account
+        // silences it everywhere at once and a listener added later cannot
+        // forget. Read once per hydration rather than per chunk: a preference
+        // changed mid-sync should not split one delivery in half.
+        val mayInterrupt = accounts.isNotifying(accountKey)
+
+        // The same argument, and the same once-per-hydration read: a label
+        // switched on while a sync is running takes effect on the next one
+        // rather than halfway down this one.
+        val scopes = notifyPrefs.current()
+
+        // One query for the whole hydration. Resolving a message's mailbox
+        // bindings to label keys per chunk would re-read the mailbox table up to
+        // twenty times for one catch-up, and the table cannot change under a
+        // sync that is not writing to it.
+        val bindingKeys =
+            database.mailboxes().bindingKeyRows(accountKey).associate {
+                it.mailboxId to it.labelKey
+            }
+
+        // Whether this server classifies mail at all, which is what tells an
+        // unclassified conversation apart from one on a server that classifies
+        // nothing -- see notifyScopeKeys. Read once per hydration like the
+        // others; it is a fact about the server, so it cannot change halfway
+        // down one catch-up.
+        val classifies = database.threads().hasCategories()
+
+        // And the reader's tabs, so a notification is raised under the tab the
+        // web shows the conversation in -- their own "Shipping", or Primary for a
+        // category they switched off -- rather than under its built-in category.
+        // Read once per hydration for the same reason; both are null and true on
+        // a server without the extension, which is the old behaviour exactly.
+        val enabledTabs = database.enabledTabKeys(accountKey)
+        val wantsTabs = database.wantsInboxTabs(accountKey)
+
+        ids.chunked(HYDRATION_CHUNK).forEach { chunk ->
+            val request = RequestBuilder()
+            val get = request.add(EmailGet(accountId, ids = chunk))
+
+            // In the same request, for the same reason the pager does it: snooze
+            // lives on the conversation, so a sync that only re-fetched messages
+            // would rebuild the row without it. That matters more here than
+            // anywhere — this is the path a *server-side* change arrives on, so
+            // it is where mail snoozed from the web, or woken by the server's own
+            // scheduled job, becomes true on the device.
+            val threads =
+                request.add(ThreadGet.forEmailsOf(accountId, get.reference("/list/*/threadId")))
+
+            val results = client.send(request)
+            val emails = results.result(get).list
+            val conversations = results.result(threads).list
+
+            // Asked *before* the write, because the write is what makes them
+            // known. This is the whole definition of "new": mail this device has
+            // never held, rather than mail the server chose to call created.
+            // The two differ on a re-indexed message, on a server that reports
+            // every touched row as created, and after a cursor is discarded and
+            // rebuilt -- and each of those would announce mail from March at
+            // three in the morning.
+            val arrived =
+                if (announce.isEmpty() || account == null || !mayInterrupt) emptyList()
+                else {
+                    val known =
+                        database
+                            .emails()
+                            .known(emails.map { StoreKey.objectKey(accountKey, it.id.value) })
+                            .toSet()
+
+                    newArrivals(
+                        emails = emails,
+                        accountKey = accountKey,
+                        accountName = account.name,
+                        // Nullable now, and not merely tolerated: an account
+                        // whose mailboxes have never synced has no inbox
+                        // binding *and* no label bindings, so it matches no
+                        // scope and says nothing -- which is the same outcome
+                        // the old hard guard produced, reached without also
+                        // ruling out the label scopes that do not need an inbox.
+                        inboxMailboxId = inbox,
+                        known = known,
+                        prefs = scopes,
+                        bindingKeys = bindingKeys,
+                        // Straight off the Thread/get that was already in this
+                        // request for snooze. The conversation's category rather
+                        // than the message's is what the tabs are drawn from,
+                        // and a notification that disagreed with the tab the
+                        // mail lands in would be the harder bug to believe.
+                        threadCategories = conversations.associate { it.id.value to it.category },
+                        serverClassifies = classifies,
+                        // Off the same Thread/get: the request this path already
+                        // makes carries `inboxTab` beside `category`.
+                        threadInboxTabs = conversations.associate { it.id.value to it.inboxTab },
+                        enabledTabs = enabledTabs,
+                        inboxTabs = wantsTabs,
+                    )
+                }
+
+            mail.storeEmails(
+                accountKey,
+                emails,
+                conversations,
+                fetchedAt = System.currentTimeMillis(),
+            )
+
+            // Immediately after the write, because the write is what the
+            // projection reads: the thread rows it decides membership from are
+            // the ones storeEmails has just summarised, carrying the server's
+            // own labels and category. Without this the whole sync is invisible
+            // -- the lists read `feed_entries`, and nothing on this path had
+            // ever written it.
+            //
+            // The same union of thread ids storeEmails summarised: a page
+            // carrying one reply comes with its conversation, and a message
+            // whose Thread/get did not answer still moved a list it is in.
+            projection.reconcile(
+                accountKey,
+                (conversations.map { it.id.value } + emails.mapNotNull { it.threadId?.value })
+                    .toSet(),
+            )
+
+            count += emails.size
+
+            // After the write, so a notification the user taps opens a
+            // conversation the cache already holds. Tapping through to a reader
+            // that has to fetch the message first is the difference between
+            // instant and "loading" on the one screen where the mail is
+            // guaranteed to be a second old.
+            val announcing = claim(accountKey, arrived)
+
+            if (announcing.isNotEmpty()) announce.forEach { it.onNewMail(announcing) }
+        }
+
+        return count
+    }
+
+    /**
+     * Narrows an announcement to the messages nobody has been told about yet.
+     *
+     * The case this exists for is two syncs at once — a push arriving while the periodic worker is
+     * mid-hydration — where both coroutines read `known` before either writes and both correctly
+     * conclude the same message is new. [NotifiedMessageStore.claim] decides inside a single
+     * DataStore edit, which is serialised per file, so exactly one of them comes back with the id.
+     *
+     * **Fails open.** A ledger that cannot be read is a broken preferences file, and the choice is
+     * between one repeated notification and no notification at all; the cache's own `known` check
+     * is still in front of this and is what stops a re-sync repeating itself, so failing open costs
+     * at most a duplicate in the rare case that brought us here.
+     */
+    private suspend fun claim(accountKey: String, arrived: List<NewMessage>): List<NewMessage> {
+        if (arrived.isEmpty()) return emptyList()
+
+        val keyOf = { message: NewMessage -> StoreKey.objectKey(accountKey, message.emailId) }
+
+        val claimed =
+            runCatching { notified.claim(arrived.map(keyOf), System.currentTimeMillis()) }
+                .getOrNull()
+                ?.toSet() ?: return arrived
+
+        return arrived.filter { keyOf(it) in claimed }
+    }
+
+    private companion object {
+        /**
+         * 100, not the permitted 500.
+         *
+         * The server builds full entities to answer a get, and the audience runs it on hardware
+         * where the difference between 100 and 500 is the difference between a sync and an outage.
+         */
+        const val HYDRATION_CHUNK = 100
+
+        /**
+         * Rounds of 256 changes before giving up and re-paging.
+         *
+         * Twenty is roughly five thousand changes — past that the client has been away long enough
+         * that the pages it would rebuild are the ones the user is going to look at anyway.
+         */
+        const val MAX_ROUNDS = 20
+
+        const val INBOX_ROLE = "inbox"
+    }
+}

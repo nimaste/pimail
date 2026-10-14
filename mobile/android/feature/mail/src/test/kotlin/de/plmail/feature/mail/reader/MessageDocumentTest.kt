@@ -1,0 +1,794 @@
+package de.plmail.feature.mail.reader
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+/**
+ * The document that reaches the WebView.
+ *
+ * These are string assertions over a stylesheet, which is normally a poor kind of test — but the
+ * previous version of this class shows why they are worth writing carefully rather than not at all.
+ * It asserted that `max-width: 100% !important` was present and called the case "wide content
+ * cannot force a horizontal scroll". It passed for the whole time a receipt's amounts were being
+ * clipped off the right-hand edge of the pane, because `max-width` is not what fits a message: a
+ * table cell with a specified width raises its column's *minimum*, and no `max-width` can shrink a
+ * box below its minimum. So each case below names the failure it would catch rather than the
+ * declaration it happens to find.
+ *
+ * The second half of the class is the placeholder drawn where a remote picture was refused. Those
+ * cases are string assertions for a better reason than convenience: the placeholder is markup this
+ * code writes, a WebView is the one thing Robolectric cannot render, and the document is the only
+ * place the rule exists to be checked.
+ */
+class MessageDocumentTest {
+
+    private val body = "<p>Hello</p><img src=\"cid:logo\">"
+
+    /** A palette with values nothing else in the document could coincidentally contain. */
+    private val palette =
+        MessagePalette(
+            paper = "#101112",
+            ink = "#131415",
+            inkMuted = "#161718",
+            link = "#191A1B",
+            line = "#1C1D1E",
+            isDark = true,
+        )
+
+    /**
+     * The document as the reader actually first draws it — pictures blocked, because that is the
+     * state a message is opened in and the only one every case below has to hold in.
+     */
+    private fun wrap(style: MessageRenderStyle) =
+        MessageDocument.wrap(body, style, palette, RemoteImages.BLOCKED)
+
+    /** A blocked body, for the cases that are about the placeholder rather than about colour. */
+    private fun blocked(html: String) =
+        MessageDocument.wrap(html, MessageRenderStyle.ORIGINAL, palette, RemoteImages.BLOCKED)
+
+    /**
+     * The one rule that replaces a sender's horizontal padding — selector and declaration both.
+     *
+     * Found by its *declaration*, not by its selector: the selector is what the cases below are
+     * asserting about, and anchoring the lookup on it would make them agree with themselves. No
+     * rule here nests, so splitting on `}` is what separates them; `padding-inline:` appears in
+     * exactly one declaration, and the `[style*="padding-inline" i]` in the selector carries no
+     * colon, so it cannot be mistaken for one.
+     */
+    private fun paddingCap(): String =
+        wrap(MessageRenderStyle.ORIGINAL).split("}").first { it.contains("padding-inline:") }
+
+    /**
+     * The rule the reported bug turned on.
+     *
+     * A receipt whose columns are `<td width="380">` is pinned at 760px by the table algorithm and
+     * overflows a phone whatever else is in the stylesheet — labels render, the amounts beside them
+     * do not. Releasing the specified widths is the only thing that lets it reflow.
+     */
+    @Test
+    fun `table cells cannot pin a table wider than the pane`() {
+        assertTrue(
+            wrap(MessageRenderStyle.ORIGINAL).contains(":is(td, th, col, colgroup) { width: auto"),
+            "cell widths are not released, so a fixed-width table will clip its right-hand column",
+        )
+    }
+
+    /**
+     * The image cap has to be a length, not a percentage.
+     *
+     * A percentage `max-width` is ignored while an element's intrinsic contribution is computed, so
+     * a 2000px banner still sizes the table around it. `vw` resolves at that moment and a
+     * percentage does not, which is the entire reason this rule looks unusual.
+     */
+    @Test
+    fun `images are capped in viewport units`() {
+        assertTrue(
+            wrap(MessageRenderStyle.ORIGINAL).contains("max-width: min(100%, calc(100vw -"),
+            "a percentage-only cap does not constrain a wide image's intrinsic width",
+        )
+    }
+
+    /**
+     * A declared `min-width` outranks every cap, so it has to be cleared rather than out-argued.
+     *
+     * This is what made a marketing mail scroll sideways while every element in it looked
+     * contained: one outer `<table style="min-width:600px">`. `min-width` beats `max-width` in the
+     * cascade's final step, so the table stayed 600px wide in a 411px viewport and everything
+     * inside it laid out against that. Measured in headless Chrome, the fixture put 664px of
+     * content in a 500px container before this rule and exactly 500 after.
+     *
+     * Asserted against the universal rule rather than against a tag list, because that is where the
+     * release now lives — the same one sentence clears `min-width` and applies the cap, for tables
+     * and blocks alike. This test used to name `table` and `div, p,` and passed only because those
+     * strings happened to sit in the selector; it would have gone on passing had the rule stopped
+     * reaching either.
+     */
+    @Test
+    fun `a declared minimum width cannot pin the message wider than the pane`() {
+        val css = wrap(MessageRenderStyle.ORIGINAL)
+        val cap = css.substringAfter("*:not(:is(").substringBefore("}")
+
+        assertTrue(
+            cap.contains("min-width: 0 !important"),
+            "a declared minimum outranks the cap in the cascade and has to be released outright",
+        )
+        assertFalse(
+            cap.substringBefore("{").contains(Regex("""\b(table|div|p)\b""")),
+            "a table's and a block's release must come from the universal rule, not an exclusion",
+        )
+    }
+
+    /**
+     * Boxes are capped in viewport units alone; pictures keep the percentage. Both are deliberate.
+     *
+     * A percentage is indefinite during intrinsic sizing, so `min(100%, …)` on a block caps what is
+     * painted and lets the element go on contributing its declared width to an ancestor's
+     * min-content — a shrink-to-fit table grows, and the message scrolls with every child neatly
+     * capped. The pure viewport cap resolves during intrinsic sizing and stops that.
+     *
+     * On a picture the same form is worse than useless: one in a 120px column is capped at the
+     * viewport rather than at its column and bursts out of the cell. Measured, a 600px image in a
+     * 120px column renders 302px under `min(100%, …)` and 476px under the pure cap.
+     *
+     * Pinned because the two look like an inconsistency somebody would tidy up.
+     */
+    @Test
+    fun `boxes are capped against the viewport and pictures against their column`() {
+        val css = wrap(MessageRenderStyle.ORIGINAL)
+        val blocks = css.substringAfter("*:not(:is(").substringBefore("}")
+        val pictures = css.substringAfter(":is(img, picture, video, svg").substringBefore("}")
+
+        assertTrue(blocks.contains("max-width: calc(100vw"), "a block takes the pure viewport cap")
+        assertFalse(
+            blocks.contains("min(100%"),
+            "a percentage is indefinite during intrinsic sizing, so a block capped with one still " +
+                "pushes its ancestors wide",
+        )
+        assertTrue(
+            pictures.contains("max-width: min(100%"),
+            "a picture is capped against its column as well, or it bursts out of a narrow cell",
+        )
+    }
+
+    /**
+     * The cap names what it leaves out, because naming what it covers left things out.
+     *
+     * It was a tag list, and a tag list is a claim to have thought of every element mail is built
+     * from. `<center>` was missing — from a list that had `figure` and `fieldset` on it — and
+     * `<center>` is in a large share of all marketing mail. Measured in Chromium at 411px, a
+     * `<center style="width:780px">` laid out 804px wide: the message half off the screen with its
+     * text clipped mid-word. `<li>`, `<dt>`, `<dd>`, `<address>` and every form control were
+     * missing too; an `<input size="90">` was worth 757px by itself.
+     *
+     * Asserted as "these are the only exclusions" rather than by naming the elements that are now
+     * covered, because the point of the inversion is that the covered set is not enumerable. A
+     * tighter test would be one that has to be edited every time mail invents another tag, which is
+     * the failure this is fixing.
+     */
+    @Test
+    fun `the cap covers everything except cells and replaced elements`() {
+        val css = wrap(MessageRenderStyle.ORIGINAL)
+        val excluded = css.substringAfter("*:not(:is(").substringBefore("))")
+
+        listOf("td", "th", "col", "colgroup").forEach {
+            assertTrue(
+                excluded.contains(it),
+                "a cell capped at the viewport bursts out of a column narrower than one",
+            )
+        }
+
+        listOf("img", "picture", "video", "svg", "canvas", "iframe", "object", "embed").forEach {
+            assertTrue(excluded.contains(it), "a picture is capped against its column instead")
+        }
+
+        // The regression itself: anything not excluded is covered, so the
+        // elements that used to fall through must not appear in the exclusion.
+        listOf("center", "li", "dt", "dd", "address", "input", "select", "button").forEach {
+            assertFalse(
+                excluded.contains(Regex("\\b$it\\b")),
+                "$it is a box like any other and must be capped, not excluded",
+            )
+        }
+    }
+
+    /**
+     * The cap has to mean the whole box, or padding is added outside it.
+     *
+     * `max-width` sizes the content box by default, so a box capped at the pane and carrying its
+     * own padding ends up wider than the pane by exactly that padding. Measured in Chromium at a
+     * 411px viewport, `<a style="display:inline-block; width:780px; padding:14px">` scrolled the
+     * message 28px — its 14px twice — and `box-sizing: border-box` takes it to 0. Nothing to do
+     * with minimum widths, which is why it needed a rule of its own rather than a better cap.
+     */
+    @Test
+    fun `the cap covers a box's own padding rather than sitting inside it`() {
+        assertTrue(
+            wrap(MessageRenderStyle.ORIGINAL)
+                .contains("#plmail-message-root * { box-sizing: border-box !important; }"),
+            "a capped box still adds its padding outside the cap, and overflows by exactly that",
+        )
+    }
+
+    /**
+     * The rule the reported "some mails still render like this" turned on.
+     *
+     * A cell's horizontal padding is part of its table's minimum width, and — the same rule as a
+     * declared cell width — no `max-width` can shrink a table below its minimum. So a `<td
+     * style="padding: 0 180px">` pinned its table 360px wider than its text, and measured in
+     * Chromium at a 411px viewport it left 60px of that on the table: the message scrolled sideways
+     * with its text clipped at the right edge. Four nested `cellpadding="50"` tables were worth
+     * 112px the same way.
+     *
+     * Nothing that caps a *width* reaches this, so the padding is replaced outright. Asserted as
+     * "the padding is capped in the inline axis" rather than on the value, because the value is
+     * [MessageDocument]'s to tune and the axis is not: vertical padding cannot overflow sideways,
+     * and taking it with this rule would flatten every card in every newsletter for nothing.
+     */
+    @Test
+    fun `a cell's padding cannot pin its table wider than the pane`() {
+        val declaration = paddingCap().substringAfter("{")
+
+        assertTrue(
+            declaration.contains("padding-inline:"),
+            "horizontal padding is what overflows; taking the vertical with it costs and buys " +
+                "nothing",
+        )
+        assertFalse(
+            declaration.contains("padding-top") || declaration.contains("padding-block"),
+            "vertical padding cannot make a message scroll sideways: $declaration",
+        )
+    }
+
+    /**
+     * The cap reaches `cellpadding`, which is an attribute and not a style.
+     *
+     * Every `[style]` selector in the world goes past `<table cellpadding="50">`, and marketing
+     * mail still builds with it: measured, four nested tables declaring it were 112px over at a
+     * 411px viewport. The child combinators matter as much as the attribute — a descendant selector
+     * would reach into a nested table that declared no cellpadding of its own and give its cells an
+     * inset nobody asked for.
+     */
+    @Test
+    fun `the cap reaches padding declared as an attribute`() {
+        val selector = paddingCap().substringBefore("{")
+
+        assertTrue(selector.contains("table[cellpadding]"), "cellpadding is invisible to [style]")
+        assertTrue(
+            selector.contains("> * > tr >"),
+            "a descendant selector pads the cells of a nested table that never asked: $selector",
+        )
+    }
+
+    /**
+     * A box whose content is all inline is a label, and its padding is its whole design.
+     *
+     * This is the exclusion that makes the cap affordable. Without it the rule flattened the
+     * bulletproof button — `<td style="padding:14px 40px"><a>…</a></td>`, which is how most buttons
+     * in mail are built — from 141px wide with 40px of padding to 93px with 16px; a percentage form
+     * took it to 61px with 2px, which is not a button any more. A three-column receipt with 8px
+     * cells went the same way. With the exclusion both come through unchanged and only layout
+     * wrappers are capped.
+     *
+     * The inline elements are enumerated rather than the blocks, and that direction is the point:
+     * one missed here makes a label look like a wrapper and costs a tighter button, where one
+     * missed on a list of blocks would be a message that scrolls.
+     */
+    @Test
+    fun `a button keeps the padding that makes it a button`() {
+        val selector = paddingCap().substringBefore("{")
+
+        assertTrue(
+            selector.contains(":has(> :not(:is("),
+            "without this the cap flattens every button and receipt cell in every message",
+        )
+        listOf("a", "span", "strong", "br", "font").forEach {
+            assertTrue(
+                Regex("""\b$it\b""").containsMatchIn(selector.substringAfter(":has(")),
+                "$it is inline, and a box containing only inline content is a label not a wrapper",
+            )
+        }
+    }
+
+    /**
+     * `padding:0` is a reset, not a design.
+     *
+     * CSS has no `max-padding`, so this rule sets rather than caps — which means a box that asked
+     * for *less* is given more, and half of all mail asks for none at all. Measured: four nested
+     * wrapper cells declaring `padding:0` had the message's first word pushed from 20px in to 100px
+     * in before this exclusion, and back to 20px after. `cellpadding="0"` is on very nearly every
+     * wrapper table ever sent and is excluded the same way.
+     *
+     * The anchoring is the subtle part and is asserted here because it is invisible on reading: a
+     * plain `[style*="padding:0"]` would also match `padding:0 180px`, which is the exact
+     * declaration this whole rule exists for, and the fix would silently do nothing.
+     */
+    @Test
+    fun `a message that asked for no padding is not given any`() {
+        val selector = paddingCap().substringBefore("{")
+
+        assertTrue(selector.contains("""[cellpadding="0"]"""), "cellpadding=\"0\" is not excluded")
+        assertTrue(
+            selector.contains("""[style*="padding:0 " i]"""),
+            "the zero exclusion has to spare \"padding:0 180px\", or the rule excludes its own " +
+                "reason for existing: $selector",
+        )
+    }
+
+    /**
+     * A box's cap stays a pure length, and the padding cap must not tempt anyone to change that.
+     *
+     * The remaining gap is a box that declared a width wider than the pane sitting inside any
+     * horizontal inset: the cap is a length equal to the root's whole content width, so it cannot
+     * know about padding above it. The obvious repair is the percentage form — and measured in
+     * Chromium at a 411px viewport it is worse, not better. `<td style="padding:0 40px"><div
+     * style="width:600px">` is 36px over with the cap as written and **217px** over with `min(100%,
+     * …)`, because the percentage is indefinite while the table is being sized and the declared
+     * 600px goes back to setting the table's minimum.
+     *
+     * Pinned here rather than only in the docblock because the two rules now sit next to each other
+     * and look like the same kind of thing.
+     */
+    @Test
+    fun `padding is capped without the box cap becoming a percentage`() {
+        val blocks =
+            wrap(MessageRenderStyle.ORIGINAL).substringAfter("*:not(:is(").substringBefore("}")
+
+        assertTrue(blocks.contains("max-width: calc(100vw"))
+        assertFalse(
+            blocks.contains("min(100%"),
+            "a percentage cap fixes the list case and triples the padded-cell case: $blocks",
+        )
+    }
+
+    /**
+     * Capping a box does nothing about text inside it that refuses to wrap.
+     *
+     * This began as `[style*="nowrap"]`, which reaches an inline style and nothing else — a class
+     * in the sender's own `<style>` block went straight past it and was worth 48px of sideways
+     * scroll on its own. Hence the universal selector, which is the bluntest rule in the file and
+     * is meant to be.
+     *
+     * The exception matters more than it looks: a plain-text message *is* a `<pre>`, so a rule that
+     * took `pre` with it would collapse every indented plain-text mail in the app.
+     */
+    @Test
+    fun `text that refuses to wrap is made to wrap, except where wrapping is the content`() {
+        val css = wrap(MessageRenderStyle.ORIGINAL)
+
+        assertTrue(
+            css.contains("#plmail-message-root * { white-space: normal !important; }"),
+            "a paragraph that will not wrap scrolls the message however well its box is capped",
+        )
+        assertTrue(
+            css.contains(Regex(""":is\(pre, code[^{]*\{[^}]*white-space: pre-wrap !important""")),
+            "a plain-text message is a <pre>, and it has to keep its own line breaks",
+        )
+    }
+
+    /**
+     * Every rule is scoped under the root's id, and that is about the cascade rather than tidiness.
+     *
+     * `!important` does not settle a fight between two author stylesheets — specificity does. A
+     * bare `div { min-width: 0 !important }` is (0,0,1), so a newsletter's own `.card { min-width:
+     * 560px !important }` at (0,1,0) beats it outright, and mail carries `!important` in `<style>`
+     * blocks constantly. Measured in headless Chrome: such a fixture scrolled to 572px in a 411px
+     * viewport before the prefix and fits exactly after.
+     *
+     * Asserted as "no rule is left unscoped" rather than by listing them, so a rule added later
+     * without the prefix fails here rather than silently losing to the next newsletter.
+     */
+    @Test
+    fun `no fitting rule can be outranked by the sender's own stylesheet`() {
+        val fitting =
+            wrap(MessageRenderStyle.ORIGINAL)
+                .substringAfter("#plmail-message-root {")
+                .substringAfter("}")
+                .substringBefore("</style>")
+
+        val unscoped =
+            fitting
+                .split("}")
+                .map { it.substringBefore("{").trim() }
+                .filter { it.isNotBlank() && !it.startsWith("#plmail-message-root") }
+
+        assertTrue(
+            unscoped.isEmpty(),
+            "these rules sit at element specificity and a class-based !important beats them: " +
+                unscoped,
+        )
+    }
+
+    /**
+     * Capping a picture is not the same as resizing it, and the reset used to do both.
+     *
+     * `width: auto !important` sat beside the cap. `auto` does not mean "as wide as it may be" — it
+     * means *discard the width the sender declared and use the file's own*, so a newsletter sizing
+     * a row of icons `width="16"` off 48px assets had every one of them drawn at 48px. Marketing
+     * mail sizes images that way constantly, which is why this was reported as "images look too
+     * large, on many emails" rather than against one message.
+     *
+     * Asserted against the image rule rather than against the whole sheet, because tables and cells
+     * legitimately keep a `width: auto` of their own a few lines above.
+     */
+    @Test
+    fun `the reset caps an image without discarding the width the sender declared`() {
+        val css = wrap(MessageRenderStyle.ORIGINAL)
+        val rule = css.substringAfter("img, picture, video, svg").substringBefore("}")
+
+        assertTrue(rule.contains("max-width"), "the cap is what stops a wide image scrolling")
+        assertFalse(
+            rule.contains("width: auto"),
+            "a declared width has to survive, or every deliberately small image is drawn at its " +
+                "file's own size",
+        )
+    }
+
+    /**
+     * The wrapper's padding and the width an image may reach are one number twice.
+     *
+     * Drift between them is invisible in review and shows up as a sliver of the sender's background
+     * on the right of every message with a full-width image — read out of the CSS here rather than
+     * asserted as a literal, so the test fails on disagreement rather than on a value changing.
+     */
+    @Test
+    fun `the inset and the viewport cap agree`() {
+        val css = wrap(MessageRenderStyle.ORIGINAL)
+
+        val padding = Regex("padding: (\\d+)px").find(css)?.groupValues?.get(1)?.toInt()
+        val subtracted = Regex("calc\\(100vw - (\\d+)px\\)").find(css)?.groupValues?.get(1)?.toInt()
+
+        assertEquals(padding?.times(2), subtracted, "the wrapper inset and the vw cap have drifted")
+    }
+
+    /**
+     * The page must never scroll sideways; the message may.
+     *
+     * `overflow` on `body` propagates to the viewport, so putting the scroller there would drag the
+     * whole page — and with it the reader's vertical gesture — rather than the message.
+     */
+    @Test
+    fun `the message scrolls horizontally, not the page`() {
+        val css = wrap(MessageRenderStyle.ORIGINAL)
+
+        assertTrue(css.contains("<body><div id=\"plmail-message-root\">$body</div></body>"))
+        assertTrue(css.contains("#plmail-message-root {"))
+        assertTrue(css.substringAfter("#plmail-message-root {").contains("overflow-x: auto"))
+        assertFalse(
+            Regex("^\\s*(html|body)[^{]*\\{[^}]*overflow", RegexOption.MULTILINE)
+                .containsMatchIn(css),
+            "overflow on html or body propagates to the viewport: $css",
+        )
+    }
+
+    @Test
+    fun `inversion inverts imagery back`() {
+        val html = wrap(MessageRenderStyle.DARK_INVERTED)
+
+        assertTrue(html.contains("#plmail-message-root { filter: invert(1) hue-rotate(180deg)"))
+        assertTrue(
+            html.contains("img, picture, video, svg, [style*=\"background-image\"]"),
+            "imagery is not inverted back: $html",
+        )
+    }
+
+    /**
+     * Nothing in an adapted document may be a colour the theme does not have.
+     *
+     * The first version painted `#121212` and `#e6e6e6`, which are Material's near-black and
+     * near-white and belong to none of this app's six themes — so a message adapted under Nord sat
+     * on a grey rectangle inside a blue-grey app, and the strip of it showing through the
+     * document's padding read as a black band down the edge of the message.
+     */
+    @Test
+    fun `an adapted message uses the theme's own colours`() {
+        val restyled = wrap(MessageRenderStyle.DARK_RESTYLED)
+
+        assertFalse(restyled.contains("invert("), "restyling must not invert: $restyled")
+        assertTrue(restyled.contains(palette.ink))
+        assertTrue(restyled.contains(palette.link))
+        assertTrue(restyled.contains(palette.line))
+
+        // Every style that *adapts* anything. ORIGINAL is excluded deliberately
+        // and is the one place a literal colour is still right: it paints the
+        // white sheet the sender wrote against, which is not a theme decision.
+        listOf(
+                MessageRenderStyle.DARK_RESTYLED,
+                MessageRenderStyle.DARK_INVERTED,
+                MessageRenderStyle.DARK_NATIVE,
+            )
+            .forEach { style ->
+                assertFalse(
+                    Regex("#(121212|e6e6e6|9ecbff|3a3a3a|b8b8b8|ffffff)", RegexOption.IGNORE_CASE)
+                        .containsMatchIn(wrap(style)),
+                    "$style still carries a hardcoded colour",
+                )
+            }
+    }
+
+    /**
+     * The adapted styles paint no background at all, and that is the point.
+     *
+     * The reader draws the card and the WebView is transparent, so an unpainted document takes the
+     * card's colour by construction. Painting one here would be a second copy of the theme's paper
+     * that has to keep agreeing with the first, and the way that fails is a seam exactly where the
+     * sender's own background stops.
+     */
+    @Test
+    fun `an adapted message paints no paper of its own`() {
+        listOf(MessageRenderStyle.DARK_RESTYLED, MessageRenderStyle.DARK_INVERTED).forEach { style
+            ->
+            assertFalse(
+                // Anchored on the root's *own* rule. Every fitting rule is
+                // scoped under the same id now, so an unanchored search matches
+                // the blocked-image hatch and reports paper that is not there.
+                Regex("""#plmail-message-root\s*\{[^}]*background:""").containsMatchIn(wrap(style)),
+                "$style paints its own paper and will not match the card behind it",
+            )
+        }
+    }
+
+    @Test
+    fun `the original is left alone`() {
+        val html =
+            MessageDocument.wrap(
+                body,
+                MessageRenderStyle.ORIGINAL,
+                palette.copy(isDark = false),
+                RemoteImages.BLOCKED,
+            )
+
+        assertFalse(html.contains("invert("))
+        assertFalse(html.contains("color-scheme"))
+        assertFalse(html.contains(palette.ink), "the original must not be recoloured")
+        assertFalse(
+            Regex("""#plmail-message-root\s*\{[^}]*background:""").containsMatchIn(html),
+            "a light theme must not paint paper the sender did not ask for",
+        )
+    }
+
+    /**
+     * "Show original" has to show something.
+     *
+     * It is the escape hatch from adaptation, and in a dark theme it is the *only* way this style
+     * is reached — so a message that declares no background of its own would otherwise render the
+     * user agent's near-black default text straight onto the card, which under Nord is a dark
+     * blue-grey. The message would be there, be correct, and be unreadable.
+     */
+    @Test
+    fun `asking for the original in the dark puts it on paper`() {
+        assertTrue(
+            Regex("#plmail-message-root \\{ background: #ffffff")
+                .containsMatchIn(wrap(MessageRenderStyle.ORIGINAL)),
+            "the unadapted message has no paper and will be black on a dark card",
+        )
+    }
+
+    /**
+     * `color-scheme` only where the message asked for it.
+     *
+     * Setting it on a message with no dark mode recolours form controls and scrollbars against a
+     * body that stayed white.
+     */
+    @Test
+    fun `the colour scheme is declared only for a self-darkening message`() {
+        assertTrue(wrap(MessageRenderStyle.DARK_NATIVE).contains("color-scheme: dark"))
+        assertFalse(wrap(MessageRenderStyle.DARK_RESTYLED).contains("color-scheme"))
+    }
+
+    @Test
+    fun `the body is embedded rather than escaped`() {
+        // Escaping it would render the mail as source code. The server
+        // sanitises; the WebView sandbox is what makes that safe.
+        assertTrue(wrap(MessageRenderStyle.ORIGINAL).contains(body))
+    }
+
+    // -- blocked pictures ----------------------------------------------------
+    //
+    // Everything below is about the placeholder drawn where a remote picture was
+    // not loaded, and nearly every case is one of the ways its *size* can be
+    // wrong. Right look and wrong size is the worse of the two failures: the
+    // message reads correctly until the pictures are allowed, and then reflows
+    // out from under the reader's thumb.
+
+    /**
+     * The rule the whole feature turns on.
+     *
+     * A ratio rather than `height: 200px`, and this is the assertion worth keeping if every other
+     * one here were deleted. The stylesheet caps every picture at the pane's width, so on a phone
+     * this box is drawn narrower than the 600 it asked for — a fixed height would then be the wrong
+     * shape, and allowing pictures would still move everything below it.
+     */
+    @Test
+    fun `a picture that declared its size keeps exactly that size`() {
+        val html =
+            blocked("""<img src="https://cdn.example.com/hero.png" width="600" height="200">""")
+
+        assertTrue(html.contains("width:600px!important"), html)
+        assertTrue(html.contains("height:auto!important"), html)
+        assertTrue(html.contains("aspect-ratio:600/200"), html)
+    }
+
+    @Test
+    fun `an inline style outranks the width attribute, as it would in a browser`() {
+        val html =
+            blocked(
+                """<img src="https://cdn.example.com/a.png" width="600" """ +
+                    """style="width:320px;height:100px">"""
+            )
+
+        assertTrue(html.contains("aspect-ratio:320/100"), html)
+        assertFalse(html.contains("aspect-ratio:600"), html)
+    }
+
+    /**
+     * A percentage is not a size this can hold.
+     *
+     * `width="100%"` says how wide the picture will be and nothing whatsoever about how tall, so it
+     * is read as "declared nothing". A placeholder stretched across the pane at an invented height
+     * would jump the layout by more than the collapsed sliver it replaced.
+     */
+    @Test
+    fun `a percentage width is not a declared size`() {
+        val html = blocked("""<img src="https://cdn.example.com/a.png" width="100%">""")
+
+        assertTrue(html.contains("width:48px!important;height:48px!important"), html)
+    }
+
+    @Test
+    fun `a picture that declared nothing gets a box that is obviously a placeholder`() {
+        val html = blocked("""<img src="https://cdn.example.com/mystery.png">""")
+
+        assertTrue(html.contains("width:48px!important;height:48px!important"), html)
+    }
+
+    /**
+     * A tracking pixel stays a tracking pixel.
+     *
+     * 1×1 with no floor under it, which is the one place this departs from the web client — its
+     * rule floors every placeholder at 12px. Repainting an invisible tracker as a visible box makes
+     * it more prominent than its own sender intended, and scatters grey specks through every
+     * newsletter that carries one.
+     */
+    @Test
+    fun `a tracking pixel is not inflated into something visible`() {
+        val html =
+            blocked("""<img src="https://track.example.com/open.gif" width="1" height="1">""")
+
+        assertTrue(html.contains("width:1px!important"), html)
+        assertTrue(html.contains("aspect-ratio:1/1"), html)
+        assertFalse(html.contains("48px"), html)
+    }
+
+    /**
+     * The sender's URL does not travel into the document at all.
+     *
+     * Dropped rather than parked on a data attribute, which is where the web client differs — it
+     * needs the URL in place to un-block without a round trip, and this reader rebuilds the whole
+     * document from the original body instead. A URL that is not in the document cannot be fetched
+     * by anything that goes wrong downstream of here.
+     */
+    @Test
+    fun `a blocked picture carries no remote URL`() {
+        val html = blocked("""<img src="https://track.example.com/open.gif?id=abcdef">""")
+
+        assertFalse(html.contains("track.example.com/open.gif"), html)
+        assertTrue(html.contains("""src="data:image/gif;base64,"""), html)
+        assertTrue(html.contains("""${BlockedImages.MARKER}="1""""), html)
+    }
+
+    @Test
+    fun `srcset is parked, so the browser cannot prefer it over the placeholder`() {
+        val html =
+            blocked(
+                """<img src="https://cdn.example.com/a.png" """ +
+                    """srcset="https://cdn.example.com/a@2x.png 2x">"""
+            )
+
+        assertTrue(html.contains("""data-plmail-srcset="https://cdn.example.com/a@2x.png 2x""""))
+        assertFalse(html.contains(""" srcset="""), html)
+    }
+
+    /**
+     * The host becomes the alt text, and a real alt is left alone.
+     *
+     * Never painted, because the substituted pixel loads successfully — this is what a screen
+     * reader announces instead of "unlabelled image", and the host is the one thing about a picture
+     * somebody could judge before deciding to load it.
+     */
+    @Test
+    fun `a blocked picture is named for its host unless the sender named it better`() {
+        assertTrue(
+            blocked("""<img src="https://cdn.shop.example/x.png">""")
+                .contains("""alt="cdn.shop.example""""),
+            "a blocked picture with no alt announces as nothing at all",
+        )
+
+        assertTrue(
+            blocked("""<img src="https://cdn.shop.example/x.png" alt="Autumn sale">""")
+                .contains("""alt="Autumn sale""""),
+            "the sender said something better than a hostname",
+        )
+    }
+
+    /**
+     * Pictures that never reach the network are not blocked.
+     *
+     * A `cid:` part came down with the message and a `data:` URI carries its own bytes; neither
+     * tells a sender anything. Hatching them would hide an inline signature logo behind a privacy
+     * warning that does not apply to it.
+     */
+    @Test
+    fun `local pictures are left exactly as they arrived`() {
+        val local =
+            """<img src="cid:logo@example" width="80"><img src="data:image/png;base64,AAAA">"""
+
+        assertTrue(blocked(local).contains(local), blocked(local))
+    }
+
+    /**
+     * A `>` inside an attribute does not cut the tag in half.
+     *
+     * The reason the tag is scanned rather than matched with `[^>]*>`: a comparison in an alt text,
+     * or far more often one inside a tracking URL, would end the tag early and spill the rest of
+     * its attributes into the message as visible text.
+     */
+    @Test
+    fun `an angle bracket inside an attribute does not end the tag`() {
+        val html = blocked("""<img src="https://x.example/a.png" alt="1 > 0" width="10">""")
+
+        assertTrue(html.contains("""alt="1 > 0""""), html)
+        assertTrue(html.contains("width:10px!important"), html)
+    }
+
+    @Test
+    fun `text around a picture survives the rewrite`() {
+        // The rewriter walks the body copying everything it is not interested
+        // in, and "everything it is not interested in" is the whole message.
+        val html = blocked("""<p>Before</p><img src="https://x.example/a.png"><p>After</p>""")
+
+        assertTrue(html.contains("<p>Before</p>"), html)
+        assertTrue(html.contains("<p>After</p>"), html)
+    }
+
+    /**
+     * Allowing pictures rewrites nothing.
+     *
+     * The privacy control must not turn into an editor: once the user has said yes, what they see
+     * is what was sent. The placeholder's stylesheet goes with it too — left in, the rule would be
+     * inert, but it would also be the first thing to blame when a picture that *did* load turned up
+     * with an outline around it.
+     */
+    @Test
+    fun `allowing pictures rewrites nothing`() {
+        val sent = """<p>Hello</p><img src="https://cdn.example.com/hero.png" width="600">"""
+        val html =
+            MessageDocument.wrap(sent, MessageRenderStyle.ORIGINAL, palette, RemoteImages.ALLOWED)
+
+        assertTrue(html.contains(sent), html)
+        assertFalse(html.contains(BlockedImages.MARKER), html)
+        assertFalse(html.contains("repeating-linear-gradient"), html)
+    }
+
+    /**
+     * The placeholder is drawn with the web client's own rule.
+     *
+     * Byte for byte out of `templates/mail/_message_body.html.twig`. The whole request was that the
+     * two clients show an unloaded picture the same way, so if this ever has to change it has to
+     * change in both or the same message looks like two different messages.
+     */
+    @Test
+    fun `the placeholder matches the web client`() {
+        val html = blocked("""<img src="https://cdn.example.com/hero.png">""")
+
+        assertTrue(
+            html.contains(
+                "background: repeating-linear-gradient(135deg, #f4f4f5 0 6px, #e4e4e7 6px 12px);"
+            ),
+            html,
+        )
+        assertTrue(html.contains("outline: 1px dashed #a1a1aa;"), html)
+        assertTrue(html.contains("outline-offset: -1px;"), html)
+    }
+}

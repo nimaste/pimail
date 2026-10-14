@@ -1,0 +1,213 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+        # Documentation cannot change what the build produces, and this repo's
+        # docs are large enough that editing them would otherwise mean a
+        # fifteen-minute Android build to confirm that prose still compiles.
+        #
+        # The release workflow deliberately has no such list: path filters
+        # apply to tag pushes too, and one that skipped a release would be a
+        # far more expensive mistake than one that skipped a build.
+        paths-ignore:
+            - 'docs/**'
+            - 'README.md'
+            - '**/*.dist'
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# The opposite choice to the release workflow: a superseded commit's build is
+# of no interest to anyone, so the newer push wins.
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up JDK 21
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: '21'
+
+            - name: Set up Gradle
+              uses: gradle/actions/setup-gradle@v4
+
+            # Its own step, and first: a formatting failure is the cheapest
+            # thing that can be wrong and the most annoying to discover at the
+            # end of a long build. `spotlessApply` is the fix.
+            - name: Check formatting
+              run: ./gradlew spotlessCheck
+
+            # The command the README tells contributors to run, run the same
+            # way here. `build` is assemble plus check, and on an Android
+            # module check includes lint — which this project has configured
+            # with warningsAsErrors, so it is doing real work rather than
+            # printing a report nobody opens.
+            #
+            # No signing secrets are exposed to this job. The release variants
+            # still assemble; they come out unsigned, which is exactly what the
+            # guard in app/build.gradle.kts is for.
+            - name: Build, test and lint
+              run: ./gradlew build
+
+            # Only when something failed, and only the reports: a green build's
+            # reports are noise, and uploading a whole build directory would
+            # cost more than the failure it is meant to explain.
+            - name: Upload test and lint reports
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: reports
+                  path: |
+                      **/build/reports/
+                  retention-days: 7
+                  if-no-files-found: ignore
+
+    # The one thing `build` cannot tell you: whether the app starts.
+    #
+    # v0.0.10 passed every unit test, every lint check and both assemblies, and
+    # then crashed on launch for every user -- a ClassCastException inside
+    # Compose's measure pass, caused by R8 merging two classes it should not
+    # have after a dependency bump. R8 only runs for the release variant, so a
+    # debug build launched perfectly and nothing in the suite ran the minified
+    # code at all. The gap was not a missing assertion; it was that no gate had
+    # ever *executed* the artifact being shipped.
+    #
+    # So this installs the release APK on an emulator and starts it. No
+    # scripted journey, no screenshots: those need an account, a server and a
+    # credential, and each of them is a way for this to fail on something that
+    # is not the app. The question here is the narrow one that was missed --
+    # does the thing we are about to publish survive its own first frame.
+    #
+    # Runs after `build`, and is allowed to be the slow job: it costs a few
+    # minutes on a push and it is the only check standing between a green
+    # pipeline and a release nobody can open.
+    smoke:
+        name: Release build starts
+        runs-on: ubuntu-latest
+        needs: build
+        timeout-minutes: 30
+
+        # An ATD image at API 34, and both halves of that are deliberate.
+        #
+        # This job was first written as api-level 36 with `google_apis`, and it
+        # never once went green: the emulator started, printed its boot
+        # properties, and answered `adb: device offline` until the action gave
+        # up ten minutes later. A gate that has never passed is not protecting
+        # anything -- worse, it made `main` red, which is how a *real* failure
+        # goes unnoticed.
+        #
+        # `aosp_atd` is Google's own image for this: headless by construction,
+        # no launcher, no Play Services, a fraction of the size, and built to
+        # boot on a CI runner rather than to be used. `google_apis` was never
+        # needed anyway -- the flavour under test is the one with no Play
+        # Services in it.
+        #
+        # API 34 rather than the 36 the app targets, and that is a real
+        # trade-off rather than a shrug. What this job catches is a *minified*
+        # build failing to reach its first frame: R8 merging two classes the
+        # Compose runtime tells apart, a missing keep rule, a stripped
+        # reflective entry point. None of that is API-conditional -- it is
+        # decided at assembly time and would fail identically on any level
+        # above `minSdk`, which is 31. What an older image cannot catch is a
+        # platform behaviour change in 35 or 36, and nothing here was ever
+        # looking for one. Instrumented coverage of the newest platform is a
+        # different job from this one, and pretending this is it is what left
+        # the repository with neither.
+        env:
+            SMOKE_API: 34
+            SMOKE_TARGET: aosp_atd
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Set up JDK 21
+              uses: actions/setup-java@v5
+              with:
+                  distribution: temurin
+                  java-version: 21
+
+            - name: Set up Gradle
+              uses: gradle/actions/setup-gradle@v5
+
+            # The foss flavour, because it is the one with no Google Play
+            # Services to depend on -- if a minification fault reaches the
+            # Compose runtime it reaches both, and this one cannot fail for a
+            # reason that is really about Firebase.
+            - name: Assemble the release APK
+              run: ./gradlew :app:assembleFossRelease
+
+            # Unsigned out of CI without the signing secrets, which `adb
+            # install` refuses -- so it is signed with a throwaway debug key.
+            # What is being tested is the *dexed and minified* code, and that is
+            # identical either way; the signature is only how the installer is
+            # persuaded to accept it.
+            - name: Sign it with a throwaway key
+              run: |
+                  set -euo pipefail
+                  keytool -genkeypair -keystore smoke.jks -storepass android -keypass android \
+                      -alias smoke -keyalg RSA -keysize 2048 -validity 1 \
+                      -dname "CN=smoke" >/dev/null 2>&1
+                  tools="$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -type d | sort -V | tail -n 1)"
+                  "$tools/zipalign" -f -p 4 \
+                      app/build/outputs/apk/foss/release/app-foss-release-unsigned.apk aligned.apk
+                  "$tools/apksigner" sign --ks smoke.jks --ks-pass pass:android \
+                      --key-pass pass:android --ks-key-alias smoke --out smoke.apk aligned.apk
+
+            - name: Enable KVM
+              run: |
+                  echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+                      | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+                  sudo udevadm control --reload-rules
+                  sudo udevadm trigger --name-match=kvm
+
+            # A cached AVD, so the boot this job depends on is a restore
+            # rather than a first creation every time.
+            - name: Cache the AVD
+              uses: actions/cache@v4
+              id: avd-cache
+              with:
+                  path: |
+                      ~/.android/avd/*
+                      ~/.android/adb*
+                  key: avd-${{ env.SMOKE_API }}-${{ env.SMOKE_TARGET }}
+
+            - name: Create the AVD and snapshot it
+              if: steps.avd-cache.outputs.cache-hit != 'true'
+              uses: reactivecircus/android-emulator-runner@v2
+              with:
+                  api-level: ${{ env.SMOKE_API }}
+                  target: ${{ env.SMOKE_TARGET }}
+                  arch: x86_64
+                  force-avd-creation: false
+                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+                  disable-animations: false
+                  script: echo "created"
+
+            - name: Install and start it
+              uses: reactivecircus/android-emulator-runner@v2
+              with:
+                  api-level: ${{ env.SMOKE_API }}
+                  target: ${{ env.SMOKE_TARGET }}
+                  arch: x86_64
+                  force-avd-creation: false
+                  emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+                  disable-animations: true
+                  # One line, because the action runs the block it is given
+                  # one line at a time in separate shells. See the script's own
+                  # header -- inline, this job could not resolve a variable it
+                  # had assigned two lines earlier.
+                  script: ./.github/scripts/smoke.sh smoke.apk

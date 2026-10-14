@@ -1,0 +1,68 @@
+{
+  "methodResponses": [
+    [
+      "Email/get",
+      {
+        "accountId": "7",
+        "state": "312",
+        "list": [
+          {
+            "id": "1041",
+            "blobId": "m-1041",
+            "threadId": "88",
+            "mailboxIds": { "13": true, "14": true },
+            "keywords": { "$seen": true, "$flagged": true },
+            "size": 48213,
+            "receivedAt": "2026-07-15T10:00:00Z",
+            "sentAt": "2026-07-15T09:59:12Z",
+            "messageId": ["CADq0d8x@mail.acme.test"],
+            "inReplyTo": null,
+            "references": null,
+            "subject": "Invoice 42 attached",
+            "from": [{ "name": "Acme Billing", "email": "billing@acme.test" }],
+            "sender": null,
+            "to": [{ "name": "Ops", "email": "ops@example.test" }],
+            "cc": null,
+            "bcc": null,
+            "replyTo": null,
+            "hasAttachment": true,
+            "preview": "Please arrange a wire transfer.",
+            "textBody": [
+              { "partId": "text", "blobId": "m-1041", "size": 31, "type": "text/plain", "charset": "utf-8" }
+            ],
+            "htmlBody": [
+              { "partId": "html", "blobId": "m-1041", "size": 2048, "type": "text/html", "charset": "utf-8" }
+            ],
+            "attachments": [
+              {
+                "partId": "p-770",
+                "blobId": "p-770",
+                "size": 40213,
+                "type": "application/pdf",
+                "name": "receipt-42.pdf",
+                "disposition": "attachment",
+                "cid": null
+              },
+              {
+                "partId": "p-771",
+                "blobId": "p-771",
+                "size": 5120,
+                "type": "image/png",
+                "name": null,
+                "disposition": "inline",
+                "cid": "logo@acme.test"
+              }
+            ],
+            "bodyValues": {
+              "text": { "value": "Please arrange a wire transfer.", "isEncodingProblem": false, "isTruncated": false },
+              "html": { "value": "<p>Please arrange a wire transfer.</p>", "isEncodingProblem": false, "isTruncated": false }
+            }
+          }
+        ],
+        "notFound": []
+      },
+      "c1"
+    ]
+  ],
+  "sessionState": "41"
+}

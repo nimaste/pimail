@@ -1,0 +1,591 @@
+/* The development language, kept as a real file rather than relying on the
+   key falling through: it is the list a translator works from, and it is what
+   makes a missing German string obvious in a diff rather than at runtime. */
+
+"Accounts" = "Accounts";
+"Actions for this attachment" = "Actions for this attachment";
+"Address" = "Address";
+"App password" = "App password";
+"Apply" = "Apply";
+"Archive" = "Archive";
+"Attach" = "Attach";
+"Attachments" = "Attachments";
+"Can't reach your server" = "Can't reach your server";
+"Cancel" = "Cancel";
+"Cc / Bcc" = "Cc / Bcc";
+"Certificate pinned" = "Certificate pinned";
+"Check this is the right mailbox before continuing." = "Check this is the right mailbox before continuing.";
+"Choose a list from the sidebar." = "Choose a list from the sidebar.";
+"Collapses this message" = "Collapses this message";
+"Compare it against the server before trusting it. This app will refuse to connect if it ever changes." = "Compare it against the server before trusting it. This app will refuse to connect if it ever changes.";
+"Connect" = "Connect";
+"Connect to plMail" = "Connect to plMail";
+"Connected" = "Connected";
+"Couldn't attach that" = "Couldn't attach that";
+"Couldn't connect" = "Couldn't connect";
+"Couldn't load the source" = "Couldn't load the source";
+"Couldn't save this attachment." = "Couldn't save this attachment.";
+"Done" = "Done";
+"Downloads and opens this attachment" = "Downloads and opens this attachment";
+"Draft" = "Draft";
+"Enter an address first" = "Enter an address first";
+"Expands this message" = "Expands this message";
+"Filter labels" = "Filter labels";
+"Forward" = "Forward";
+"From" = "From";
+"Key fingerprint" = "Key fingerprint";
+"Label %lld selected" = "Label %lld selected";
+"Labels" = "Labels";
+"Labels you create in plMail's web UI appear here." = "Labels you create in plMail's web UI appear here.";
+"Load" = "Load";
+"Mark as unread" = "Mark as unread";
+"Message source" = "Message source";
+"More" = "More";
+"Move to Trash" = "Move to Trash";
+"New message" = "New message";
+"No conversation selected" = "No conversation selected";
+"No labels yet" = "No labels yet";
+"No mail here" = "No mail here";
+"OK" = "OK";
+"Only the first part is shown. Share to get the whole message." = "Only the first part is shown. Share to get the whole message.";
+"Open" = "Open";
+"Open plMail in a browser" = "Open plMail in a browser";
+"Pick a date and time…" = "Pick a date and time…";
+"Pick a mailbox" = "Pick a mailbox";
+"Pick a message to read it here." = "Pick a message to read it here.";
+"Remote images blocked" = "Remote images blocked";
+"Remove" = "Remove";
+"Removes the app password from this device and deletes cached mail." = "Removes the app password from this device and deletes cached mail.";
+"Reply" = "Reply";
+"Reply all" = "Reply all";
+"Search mail" = "Search mail";
+"Search your mail" = "Search your mail";
+"Send" = "Send";
+"Sending in %lld…" = "Sending in %lld…";
+"Server" = "Server";
+"Share" = "Share";
+"Sign in again" = "Sign in again";
+"Sign out" = "Sign out";
+"Signed in as" = "Signed in as";
+"Snooze" = "Snooze";
+"Snooze until" = "Snooze until";
+"Some accounts didn't sync" = "Some accounts didn't sync";
+"The address you use to open plMail in a browser. https is assumed unless you type otherwise." = "The address you use to open plMail in a browser. https is assumed unless you type otherwise.";
+"The server didn't return this message." = "The server didn't return this message.";
+"This list covers mail plMail has synced. Older mail arrives as the sync window widens." = "This list covers mail plMail has synced. Older mail arrives as the sync window widens.";
+"This mailbox is no longer connected" = "This mailbox is no longer connected";
+"This message has no content." = "This message has no content.";
+"This message has no stored source." = "This message has no stored source.";
+"Trash" = "Trash";
+"Trust this certificate" = "Trust this certificate";
+"Try again" = "Try again";
+"Type your server's address above, then try again." = "Type your server's address above, then try again.";
+"Undo" = "Undo";
+"Unencrypted connection" = "Unencrypted connection";
+"Unrecognised certificate" = "Unrecognised certificate";
+"Use this server" = "Use this server";
+"View source" = "View source";
+"Wake now" = "Wake now";
+"Wake up" = "Wake up";
+"Where do I get one?" = "Where do I get one?";
+"%@ · %@" = "%@ · %@";
+"%@ total" = "%@ total";
+"%@. Double tap Undo to reverse." = "%@. Double tap Undo to reverse.";
+"Report spam" = "Report spam";
+"Not spam" = "Not spam";
+"Scan a pairing code" = "Scan a pairing code";
+"In plMail: Settings → App passwords → Pair a device" = "In plMail: Settings → App passwords → Pair a device";
+"Or enter the address and an app password by hand." = "Or enter the address and an app password by hand.";
+"Scan pairing code" = "Scan pairing code";
+"Camera unavailable" = "Camera unavailable";
+"In plMail, open Settings → App passwords and choose Pair a device." = "In plMail, open Settings → App passwords and choose Pair a device.";
+"Outbox" = "Outbox";
+"Nothing waiting" = "Nothing waiting";
+"Everything you've written has been sent." = "Everything you've written has been sent.";
+"Try now" = "Try now";
+"Sending…" = "Sending…";
+"Discard" = "Discard";
+"(no subject)" = "(no subject)";
+"Bold" = "Bold";
+"Italic" = "Italic";
+"Underline" = "Underline";
+"Strikethrough" = "Strikethrough";
+"Add link" = "Add link";
+"Add" = "Add";
+"The selected text will link here." = "The selected text will link here.";
+"Quoted message included" = "Quoted message included";
+"Read" = "Read";
+"Unread" = "Unread";
+"Star" = "Star";
+"Unstar" = "Unstar";
+"Select all" = "Select all";
+"Deselect all" = "Deselect all";
+"Select" = "Select";
+"Deselect" = "Deselect";
+"Subject" = "Subject";
+"To" = "To";
+"Cc" = "Cc";
+"Bcc" = "Bcc";
+"That file couldn't be opened." = "That file couldn't be opened.";
+"%@ couldn't be read." = "%@ couldn't be read.";
+"%@ of %@" = "%@ of %@";
+"Couldn't download this attachment." = "Couldn't download this attachment.";
+"Show previews" = "Show previews";
+"Show quoted history" = "Show quoted history";
+"Hide quoted history" = "Hide quoted history";
+"%lld earlier messages" = "%lld earlier messages";
+"%lld messages" = "%lld messages";
+"Remove recipient" = "Remove recipient";
+"Photo or video" = "Photo or video";
+"File" = "File";
+"That photo couldn't be loaded." = "That photo couldn't be loaded.";
+"Actions for this message" = "Actions for this message";
+"Sending addresses" = "Sending addresses";
+"No sending addresses" = "No sending addresses";
+"The addresses you can send from appear here once your accounts have synced." = "The addresses you can send from appear here once your accounts have synced.";
+"Name" = "Name";
+"The name recipients see beside your address." = "The name recipients see beside your address.";
+"Signature" = "Signature";
+"Save" = "Save";
+"Not saved" = "Not saved";
+"Mark all as read" = "Mark all as read";
+"Show all labels" = "Show all labels";
+"Hide extra labels" = "Hide extra labels";
+"Send later" = "Send later";
+"Send at" = "Send at";
+"Schedule" = "Schedule";
+"Send now" = "Send now";
+"Waiting until %@" = "Waiting until %@";
+"Sent at the first check after this time. Your phone has to be awake for that, so it may be a little later." = "Sent at the first check after this time. Your phone has to be awake for that, so it may be a little later.";
+"Still catching up" = "Still catching up";
+"Fetching mail from %@. Conversations appear as they arrive." = "Fetching mail from %@. Conversations appear as they arrive.";
+"Nothing synced yet" = "Nothing synced yet";
+"This list shows what is already on this device, and your server hasn't been reached yet." = "This list shows what is already on this device, and your server hasn't been reached yet.";
+"Check now" = "Check now";
+"Swipe actions" = "Swipe actions";
+"Swipe left" = "Swipe left";
+"Swipe right" = "Swipe right";
+"Read or unread" = "Read or unread";
+"Star or unstar" = "Star or unstar";
+"Nothing" = "Nothing";
+"Everything a swipe does is also in the menu you get by holding a conversation, so an edge set to Nothing takes away the shortcut and not the action." = "Everything a swipe does is also in the menu you get by holding a conversation, so an edge set to Nothing takes away the shortcut and not the action.";
+
+/* Search. The help text was English-only until the suggestions landed; it is
+   the one place the operators are spelled out in full. The operators
+   themselves stay untranslated — they are syntax the server parses. */
+
+"Any time" = "Any time";
+"Use from:, to:, cc:, subject:, label:, has:attachment, is:unread, is:starred, in:inbox and before:/after: with a date. Anything else is searched as text, and quoted words are searched as a phrase." = "Use from:, to:, cc:, subject:, label:, has:attachment, is:unread, is:starred, in:inbox and before:/after: with a date. Anything else is searched as text, and quoted words are searched as a phrase.";
+"Settings" = "Settings";
+"Mail" = "Mail";
+"This device" = "This device";
+"Diagnostics" = "Diagnostics";
+"Last sync, sync cursors and your server's limits. Worth a look before filing a bug." = "Last sync, sync cursors and your server's limits. Worth a look before filing a bug.";
+"Sign out of %@?" = "Sign out of %@?";
+"Mail on this device is deleted. Nothing on your server changes, and you can pair again with a new app password." = "Mail on this device is deleted. Nothing on your server changes, and you can pair again with a new app password.";
+"Appearance" = "Appearance";
+"Match the system" = "Match the system";
+"Light" = "Light";
+"Dark" = "Dark";
+"Messages are always shown on white, whichever you pick. Mail is written for a light background, and forcing it dark gives you black text on black." = "Messages are always shown on white, whichever you pick. Mail is written for a light background, and forcing it dark gives you black text on black.";
+"Remote images" = "Remote images";
+"Block" = "Block";
+"Block all again" = "Block all again";
+"Block remote images from every sender?" = "Block remote images from every sender?";
+"No senders trusted" = "No senders trusted";
+"Images in mail from these addresses load without asking. Everything else stays blocked until you tap Load." = "Images in mail from these addresses load without asking. Everything else stays blocked until you tap Load.";
+"Remote images are blocked everywhere. Tap Load on a message to let one sender through, and it appears here." = "Remote images are blocked everywhere. Tap Load on a message to let one sender through, and it appears here.";
+"Mailboxes on this server" = "Mailboxes on this server";
+"One app password covers every mailbox above, so signing out signs out of all of them. To use a different server, sign out and pair again — this app holds one at a time." = "One app password covers every mailbox above, so signing out signs out of all of them. To use a different server, sign out and pair again — this app holds one at a time.";
+"Read-only" = "Read-only";
+"Synced %@" = "Synced %@";
+"Not synced yet" = "Not synced yet";
+"Connection" = "Connection";
+"Status" = "Status";
+"Checking…" = "Checking…";
+"App password rejected" = "App password rejected";
+"Last checked" = "Last checked";
+"Last sync" = "Last sync";
+"Never" = "Never";
+"Account id" = "Account id";
+"Messages" = "Messages";
+"Conversations" = "Conversations";
+"Server limits" = "Server limits";
+"Largest attachment" = "Largest attachment";
+"Largest request" = "Largest request";
+"Objects per read" = "Objects per read";
+"Objects per write" = "Objects per write";
+"Calls per request" = "Calls per request";
+"Requests at once" = "Requests at once";
+"Your server's own numbers, not the app's. A message with a bigger attachment than this is refused before it is sent, and bulk actions are split to fit." = "Your server's own numbers, not the app's. A message with a bigger attachment than this is refused before it is sent, and bulk actions are split to fit.";
+"Notifications" = "Notifications";
+"This server can send push notifications" = "This server can send push notifications";
+"Environment" = "Environment";
+"Topic" = "Topic";
+"No push from this server" = "No push from this server";
+"Sending push notifications to an iPhone needs an Apple developer key on the server. Without one, mail arrives when the app checks — on opening it, and in the background when iOS allows." = "Sending push notifications to an iPhone needs an Apple developer key on the server. Without one, mail arrives when the app checks — on opening it, and in the background when iOS allows.";
+"Copy diagnostics" = "Copy diagnostics";
+"Copied" = "Copied";
+"Everything on this screen as plain text, for pasting into a bug report. It contains your server's address and your mailbox names, and never your app password." = "Everything on this screen as plain text, for pasting into a bug report. It contains your server's address and your mailbox names, and never your app password.";
+
+/* Managing labels: the screen behind the sidebar's Edit labels row, and the
+   inline create both pickers now offer. */
+
+"Create a label" = "Create a label";
+"Edit labels" = "Edit labels";
+"New label" = "New label";
+"Rename label" = "Rename label";
+"Rename" = "Rename";
+"Label name" = "Label name";
+"Create" = "Create";
+"Built in" = "Built in";
+"Dismiss" = "Dismiss";
+"Delete this label?" = "Delete this label?";
+"“%@” will be removed from this account. No mail is deleted — the messages keep every other label they carry." = "“%@” will be removed from this account. No mail is deleted — the messages keep every other label they carry.";
+"There's already a label with that name here." = "There's already a label with that name here.";
+"Filter or add a label" = "Filter or add a label";
+"Create “%@” and apply it" = "Create “%@” and apply it";
+"Type a name above to make your first one." = "Type a name above to make your first one.";
+
+/* A label across a multi-selection is on all, some or none of it. "Some" is
+   the state the old Apply/Remove buttons could not express. */
+
+"%lld of %lld" = "%lld of %lld";
+"On all selected" = "On all selected";
+"On some selected" = "On some selected";
+"On none selected" = "On none selected";
+
+/* Keys the code was already asking for and neither catalogue defined, so a
+   German reader saw English and nothing reported it. Found by the coverage
+   test rather than by anyone noticing. */
+
+"Delete" = "Delete";
+"Mark as read" = "Mark as read";
+"Remove star" = "Remove star";
+"An app password starts with plmail_ and is 64 characters after that." = "An app password starts with plmail_ and is 64 characters after that.";
+
+/* Multi-select. "Select all" beside a paged list reads as the whole mailbox
+   and is not, and one write carries a limited number of objects — so a
+   mailbox with more unread than that takes two presses, and says so. */
+
+"Select all loaded" = "Select all loaded";
+"Not everything fitted" = "Not everything fitted";
+"Your server accepts a limited number of changes per request, so %lld messages are still unread. Press Mark all as read again to continue." = "Your server accepts a limited number of changes per request, so %lld messages are still unread. Press Mark all as read again to continue.";
+
+/* Find within an open conversation, and the header detail you open when you
+   suspect a message is not from who it says. "To:" carries its colon because
+   the names beside it are drawn separately, so that a search for "to" cannot
+   match the label and put every later hit one out. */
+
+"Find in conversation" = "Find in conversation";
+"Next match" = "Next match";
+"Previous match" = "Previous match";
+"To:" = "To:";
+"Show details" = "Show details";
+"Hide details" = "Hide details";
+"Date" = "Date";
+"Nothing can be both read and unread, so this finds nothing." = "Nothing can be both read and unread, so this finds nothing.";
+"Show unread only" = "Show unread only";
+"Not searched, having no matching mailbox: " = "Not searched, having no matching mailbox: ";
+
+/* Onboarding: shown under the address field as soon as it parses to http,
+   before the app password can be sent. */
+"This address is unencrypted. Your app password and your mail will travel in the clear, so only use it on a network you trust." = "This address is unencrypted. Your app password and your mail will travel in the clear, so only use it on a network you trust.";
+
+"Show or hide the sidebar" = "Show or hide the sidebar";
+"Go to mailbox %lld" = "Go to mailbox %lld";
+"Next conversation" = "Next conversation";
+"Previous conversation" = "Previous conversation";
+"Open conversation" = "Open conversation";
+"Clear selection" = "Clear selection";
+"Select conversation" = "Select conversation";
+/* Labels: the nine colours plMail stores as Tailwind tokens, plus the absence
+   of one. The names are here because a swatch with no name is a control that
+   cannot be used by anyone who cannot separate two greens — and because a
+   row of "button" nine times over is not a choice. "No colour" is a third state and
+   deliberately not "Grey", which is a colour the user can actually pick. */
+"Grey" = "Grey";
+"Red" = "Red";
+"Orange" = "Orange";
+"Amber" = "Amber";
+"Green" = "Green";
+"Teal" = "Teal";
+"Blue" = "Blue";
+"Violet" = "Violet";
+"Pink" = "Pink";
+"No colour" = "No colour";
+"Colour" = "Colour";
+"Without a colour, plMail picks one from the name." = "Without a colour, plMail picks one from the name.";
+
+/* Labels: nesting. The path is drawn with a spaced slash, but spoken as a
+   phrase — VoiceOver reads "Work / Q1" as "Work slash Q1", which is
+   unparseable by ear once a name contains a slash of its own. */
+"%@, in %@" = "%@, in %@";
+"%lld events" = "%lld events";
+"Nested under" = "Nested under";
+"None" = "None";
+"A label can be nested under another on the same account. Its own name never contains a slash." = "A label can be nested under another on the same account. Its own name never contains a slash.";
+"Edit" = "Edit";
+"Edit label" = "Edit label";
+
+/* Labels: the chips on a conversation row. The count stands for chips the row
+   had no width for, and is spelt out when read aloud because "+2" is not. */
+"Label: %@" = "Label: %@";
+"+%lld" = "+%lld";
+"%lld more labels" = "%lld more labels";
+"+%lld more" = "+%lld more";
+"Accent" = "Accent";
+"Agenda" = "Agenda";
+"All day" = "All day";
+"Calendar" = "Calendar";
+"Calendars are set up in plMail on the web." = "Calendars are set up in plMail on the web.";
+"Can't reach %@" = "Can't reach %@";
+"Cancelled" = "Cancelled";
+"Chosen on your server, so every device you read plMail on matches." = "Chosen on your server, so every device you read plMail on matches.";
+"Couldn't reach your server, so this is saved on this device only." = "Couldn't reach your server, so this is saved on this device only.";
+"Day" = "Day";
+"Delete Draft" = "Delete Draft";
+"Dusk" = "Dusk";
+"Event" = "Event";
+"Floating time" = "Floating time";
+"In %lld calendars" = "In %lld calendars";
+"in %lld calendars" = "in %lld calendars";
+"List" = "List";
+"Location" = "Location";
+"Month" = "Month";
+"Next" = "Next";
+"Nord" = "Nord";
+"Not an address: %@" = "Not an address: %@";
+"Notes" = "Notes";
+"Nothing in this period" = "Nothing in this period";
+"Nothing on this day" = "Nothing on this day";
+"Preview lines" = "Preview lines";
+"Previous" = "Previous";
+"Repeats" = "Repeats";
+"Save Draft" = "Save Draft";
+"Saved to Drafts" = "Saved to Drafts";
+"Saving…" = "Saving…";
+"Sender avatars" = "Sender avatars";
+"Set on your server" = "Set on your server";
+"Solar" = "Solar";
+"The server refused this request" = "The server refused this request";
+"Theme" = "Theme";
+"There may be more beyond this range" = "There may be more beyond this range";
+"This app can't draw that theme yet, so it uses the system appearance. Your choice is left alone — it won't be overwritten." = "This app can't draw that theme yet, so it uses the system appearance. Your choice is left alone — it won't be overwritten.";
+"This meeting reached plMail more than once." = "This meeting reached plMail more than once.";
+"This message hasn't been sent" = "This message hasn't been sent";
+"This range is outside what the server keeps" = "This range is outside what the server keeps";
+"This server does not have a calendar" = "This server does not have a calendar";
+"Time zone" = "Time zone";
+"Today" = "Today";
+"Unknown calendar" = "Unknown calendar";
+"Untitled" = "Untitled";
+"Use from:, to:, subject:, has:attachment, is:unread, is:starred, in:inbox and before:/after: with a date. Anything else is searched as text, and quoted words are searched as a phrase." = "Use from:, to:, subject:, has:attachment, is:unread, is:starred, in:inbox and before:/after: with a date. Anything else is searched as text, and quoted words are searched as a phrase.";
+"View" = "View";
+"Week" = "Week";
+"When" = "When";
+"Your appearance changed somewhere else. These are the new settings." = "Your appearance changed somewhere else. These are the new settings.";
+"Your server doesn't offer themes, so this is a choice for this device." = "Your server doesn't offer themes, so this is a choice for this device.";
+"Your server wouldn't accept that." = "Your server wouldn't accept that.";
+
+/* The offline banner. Three different sentences, because each sends the reader
+   somewhere different — the device, the server, or one account. The count is
+   the changes this device is still holding, said plainly because a row that
+   has already moved looks identical whether it was sent or is still waiting. */
+"Retry" = "Retry";
+"%lld changes waiting to send" = "%lld changes waiting to send";
+"Ask my server" = "Ask my server";
+"Cancel send" = "Cancel send";
+"Couldn't call that back" = "Couldn't call that back";
+"Couldn't change the sending address" = "Couldn't change the sending address";
+"Keep it on this device" = "Keep it on this device";
+
+/* The ⌘ menu bar (doc 05, P2) and P6's second window. Menu titles are exactly
+   the strings that ship untranslated — Android shipped that bug — so they go
+   through the package catalogue like everything else. */
+"Message" = "Message";
+"New window" = "New window";
+"Open in new window" = "Open in new window";
+"That had already gone out. It couldn't be called back." = "That had already gone out. It couldn't be called back.";
+"This phone sends this at %@" = "This phone sends this at %@";
+"Your server can rank suggestions by who you actually write to. That means sending what you type here to your server as you type it — it already holds these addresses, harvested from your own mail, but not what you type or when." = "Your server can rank suggestions by who you actually write to. That means sending what you type here to your server as you type it — it already holds these addresses, harvested from your own mail, but not what you type or when.";
+"Your server has no record of that send. It's back on this phone." = "Your server has no record of that send. It's back on this phone.";
+"Your server holds this and sends it on time. If it won't — too far ahead, or you're offline — this phone sends it at the first check after." = "Your server holds this and sends it on time. If it won't — too far ahead, or you're offline — this phone sends it at the first check after.";
+"Your server sends this at %@" = "Your server sends this at %@";
+
+/* Wave 4C: `mailto:` links from outside the app. The dialog exists because a
+   link must never silently replace a message somebody is part way through
+   writing — see ComposeView. */
+"Keep Writing" = "Keep Writing";
+"Open this link in a new message?" = "Open this link in a new message?";
+"Save Draft and Continue" = "Save Draft and Continue";
+"Some of that link was too long to use" = "Some of that link was too long to use";
+"That link writes to %@." = "That link writes to %@.";
+"The composer has as much of it as it could take." = "The composer has as much of it as it could take.";
+
+/* The event editor (doc 03 §2.5, §2.6). The two ordering sentences are
+   deliberately different: "after" means something different on each side of the
+   all-day toggle, and telling somebody an all-day event must end after it
+   starts describes a rule that does not exist. The delete wording says there is
+   no bin, because a calendar has none — a destroy here is a real delete, unlike
+   mail where it means Trash. Each disabled control folds its reason into the
+   accessibility label, which is why the "%@" variants exist. */
+"New event" = "New event";
+"Edit event" = "Edit event";
+"Title" = "Title";
+"Left blank, this is saved as Untitled" = "Left blank, this is saved as Untitled";
+"All-day" = "All-day";
+"Starts" = "Starts";
+"Ends" = "Ends";
+"Repeat" = "Repeat";
+"Every day" = "Every day";
+"Every week" = "Every week";
+"Every month" = "Every month";
+"Every year" = "Every year";
+"How often this repeats is left exactly as it is when you save." = "How often this repeats is left exactly as it is when you save.";
+"Edit, %@" = "Edit, %@";
+"Delete event" = "Delete event";
+"Delete event, %@" = "Delete event, %@";
+"New event, %@" = "New event, %@";
+"Save, %@" = "Save, %@";
+"Deleting an event removes it for everyone it is shared with." = "Deleting an event removes it for everyone it is shared with.";
+"This deletes this event on the server. There is no bin to get it back from." = "This deletes this event on the server. There is no bin to get it back from.";
+"This deletes every occurrence of this repeating event. There is no bin to get it back from." = "This deletes every occurrence of this repeating event. There is no bin to get it back from.";
+"An event must end after it starts." = "An event must end after it starts.";
+"The end date can't be before the start date." = "The end date can't be before the start date.";
+"Choose a calendar you can add events to." = "Choose a calendar you can add events to.";
+"You can't add events to any calendar here" = "You can't add events to any calendar here";
+"You can't change events in this calendar" = "You can't change events in this calendar";
+"You can't delete events in this calendar" = "You can't delete events in this calendar";
+"This calendar doesn't accept changes" = "This calendar doesn't accept changes";
+"This wasn't saved" = "This wasn't saved";
+"This wasn't deleted" = "This wasn't deleted";
+
+// Settings: signatures, notifications, accounts, diagnostics and the push log.
+"A mailbox added on your server later is announced without being switched on here." = "A mailbox added on your server later is announced without being switched on here.";
+"Added below what you write, in this app and in the web interface. Leaving it empty means this address signs with nothing, even when the account itself has a signature." = "Added below what you write, in this app and in the web interface. Leaving it empty means this address signs with nothing, even when the account itself has a signature.";
+"Announce mail from" = "Announce mail from";
+"Answered" = "Answered";
+"Check" = "Check";
+"Checked at" = "Checked at";
+"Clear" = "Clear";
+"Default" = "Default";
+"Furthest ahead a send can be scheduled" = "Furthest ahead a send can be scheduled";
+"Issue a new app password in the web interface, then sign out and pair again. Signing out is the only thing that deletes the mail already downloaded." = "Issue a new app password in the web interface, then sign out and pair again. Signing out is the only thing that deletes the mail already downloaded.";
+"Labels appear here once your mail has synced." = "Labels appear here once your mail has synced.";
+"Listed by their full path, so two labels with the same name are told apart. A label made later starts off, except your inbox." = "Listed by their full path, so two labels with the same name are told apart. A label made later starts off, except your inbox.";
+"Live updates" = "Live updates";
+"Needs attention" = "Needs attention";
+"No answer" = "No answer";
+"No push subscription" = "No push subscription";
+"Nothing has arrived yet." = "Nothing has arrived yet.";
+"Notifications are turned off for plMail" = "Notifications are turned off for plMail";
+"Notifications off" = "Notifications off";
+"Off" = "Off";
+"Off, by default" = "Off, by default";
+"On" = "On";
+"On, by default" = "On, by default";
+"Only which mailboxes changed, never what was in them. The newest is at the top and the oldest are dropped." = "Only which mailboxes changed, never what was in them. The newest is at the top and the oldest are dropped.";
+"Open iOS notification settings" = "Open iOS notification settings";
+"Push log" = "Push log";
+"Received" = "Received";
+"Registration" = "Registration";
+"Remove signature" = "Remove signature";
+"Replace" = "Replace";
+"Replace this signature?" = "Replace this signature?";
+"Replace with plain text" = "Replace with plain text";
+"Result" = "Result";
+"Round trip" = "Round trip";
+"Sends the smallest request there is and times the reply. It reads no mail and changes nothing, and nothing on this screen contacts your server until you press it." = "Sends the smallest request there is and times the reply. It reads no mail and changes nothing, and nothing on this screen contacts your server until you press it.";
+"Signed out" = "Signed out";
+"Sounds, banners and the lock screen are iOS's settings, not this app's. Everything below decides only which mail is worth telling you about." = "Sounds, banners and the lock screen are iOS's settings, not this app's. Everything below decides only which mail is worth telling you about.";
+"Still synced, never announced" = "Still synced, never announced";
+"The formatting, links and images in it are removed. What you write here replaces it everywhere, including in the web interface." = "The formatting, links and images in it are removed. What you write here replaces it everywhere, including in the web interface.";
+"These are the mailboxes plMail collects for you. Connecting or disconnecting one is done on the server, not here. The first one is where a new message and a new label start." = "These are the mailboxes plMail collects for you. Connecting or disconnecting one is done on the server, not here. The first one is where a new message and a new label start.";
+"This signature was written with formatting, so it can't be edited here without losing it. Change it in the web interface, or replace it with plain text." = "This signature was written with formatting, so it can't be edited here without losing it. Change it in the web interface, or replace it with plain text.";
+"Use the default" = "Use the default";
+"While app is open" = "While app is open";
+"Your app password was rejected. Mail on this device is untouched." = "Your app password was rejected. Mail on this device is untouched.";
+"Your server keeps its own record of what it sent. Comparing it with this list line by line is what tells you which half went missing." = "Your server keeps its own record of what it sent. Comparing it with this list line by line is what tells you which half went missing.";
+"%lld messages on this device" = "%lld messages on this device";
+"%lld messages on this device, back to %@" = "%lld messages on this device, back to %@";
+"%@ at %@" = "%@ at %@";
+
+/* Inbox categories and the New marker. The category names themselves live in
+   PLMailCore beside the mailbox roles — they are list titles as well as
+   captions, and one word translated in two catalogues drifts. */
+
+"Categories" = "Categories";
+"All mail" = "All mail";
+"New" = "New";
+
+// Calendar on iPad: the rail, the standing inspector, the year view and search.
+"Calendars" = "Calendars";
+"Choose an event to see it here." = "Choose an event to see it here.";
+"Copy title" = "Copy title";
+"Hidden" = "Hidden";
+"Hiding a calendar here changes nothing on the server." = "Hiding a calendar here changes nothing on the server.";
+"Next event" = "Next event";
+"No event selected" = "No event selected";
+"Nothing found in these dates" = "Nothing found in these dates";
+"Previous event" = "Previous event";
+"Search only covers the dates you have loaded." = "Search only covers the dates you have loaded.";
+"Search these dates" = "Search these dates";
+"Shown" = "Shown";
+"Year" = "Year";
+
+/* Arriving at the calendar from outside the app: a Spotlight result, a
+   Shortcut, a restored window. The index is written at one moment and tapped at
+   another, so a result can name a meeting that has since been cancelled — and
+   an indexed event that lands nowhere is worse than one that was never
+   indexed. */
+
+"That event isn't here any more" = "That event isn't here any more";
+"It may have been deleted since it was last synced." = "It may have been deleted since it was last synced.";
+
+// Recolouring a built-in label, and the draft-conflict question.
+"Built-in labels can't be renamed or moved, but their colour is yours to choose." = "Built-in labels can't be renamed or moved, but their colour is yours to choose.";
+"This draft changed somewhere else" = "This draft changed somewhere else";
+"Another device saved a newer version. Nothing you have typed has been touched — keep it and it replaces theirs, or close the composer to leave theirs alone." = "Another device saved a newer version. Nothing you have typed has been touched — keep it and it replaces theirs, or close the composer to leave theirs alone.";
+"Keep what I've written" = "Keep what I've written";
+"Close without saving" = "Close without saving";
+
+"Loading…" = "Loading…";
+
+"Downloading %lld messages for offline" = "Downloading %lld messages for offline";
+
+/* The header row inside the list card: how many conversations the feed holds. */
+"%lld conversations" = "%lld conversations";
+
+/* Spoken for the sidebar's unread capsule, which is drawn as a bare number. */
+"%lld unread" = "%lld unread";
+
+/* Spoken for the sidebar's outlined tally — Drafts, Outbox — where the count is
+   of items rather than of new mail. */
+"%lld in total" = "%lld in total";
+
+"Clear search" = "Clear search";
+
+"Dock the calendar" = "Dock the calendar";
+
+/* The calendar docked beside the mail. "Happening soon" heads the band above
+   the day, and it names events the app extracted from a message rather than
+   ones somebody typed in — so the word is about a thing arriving, not about a
+   meeting. "Open the full calendar" is the expand mark: the column shows one
+   day and cannot change range or mode, and this is the way to the screen that
+   can. */
+"Happening soon" = "Happening soon";
+"Open the full calendar" = "Open the full calendar";
+"Back to mail" = "Back to mail";
+"Close the calendar" = "Close the calendar";
+
+/* The header. The dot is what the web UI's header dot is: whether the change
+   stream is open, so an edit made in a browser lands here without anybody
+   pressing anything. "Not live" is not a warning — the app still syncs when it
+   checks — so the sentence says what still happens rather than what does not.
+   The sidebar button collapses the named column to its icon rail and back; it
+   never hides it, so both labels name a width rather than an on/off. */
+"Live — changes arrive as they happen" = "Live — changes arrive as they happen";
+"Not live — mail arrives when the app checks" = "Not live — mail arrives when the app checks";
+"Collapse the sidebar to icons" = "Collapse the sidebar to icons";
+"Show mailbox names" = "Show mailbox names";

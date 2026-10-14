@@ -1,0 +1,178 @@
+{
+  "capabilities": {
+    "urn:ietf:params:jmap:core": {
+      "maxSizeUpload": 50000000,
+      "maxConcurrentUpload": 4,
+      "maxSizeRequestObject": 10000000,
+      "maxConcurrentRequests": 4,
+      "maxCallsInRequest": 32,
+      "maxObjectsInGet": 500,
+      "maxObjectsInSet": 500,
+      "collationAlgorithms": [
+        "i;ascii-numeric",
+        "i;ascii-casemap",
+        "i;unicode-casemap"
+      ]
+    },
+    "urn:ietf:params:jmap:mail": {},
+    "urn:ietf:params:jmap:submission": {},
+    "urn:plmail:params:jmap:push": {
+      "vapidPublicKey": "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkXfA4-XMK7iOsvKA"
+    },
+    "urn:plmail:params:jmap:appearance": {
+      "appearance": {
+        "theme": "paper",
+        "layout": "flat",
+        "accent": "#7d6b4f",
+        "density": "comfortable"
+      },
+      "themes": [
+        "system",
+        "light",
+        "paper",
+        "dark",
+        "nord",
+        "dusk",
+        "solar",
+        "ocean"
+      ],
+      "logoStyles": [
+        "berry",
+        "ocean"
+      ],
+      "layouts": [
+        "flat",
+        "boxed"
+      ],
+      "densities": [
+        "comfortable",
+        "cosy",
+        "compact"
+      ],
+      "backgroundKinds": [
+        "theme",
+        "preset",
+        "custom",
+        "solid"
+      ],
+      "backgroundPresets": [
+        "dunes",
+        "mesh"
+      ],
+      "unreadEmphases": [
+        "subtle",
+        "standard",
+        "strong"
+      ],
+      "fontFamilies": [
+        "system",
+        "grotesk",
+        "serif",
+        "monospace"
+      ],
+      "layoutDefaults": {
+        "flat": {
+          "radius": 0.75,
+          "paneBlur": 0,
+          "paneAlpha": 1.0,
+          "density": "comfortable"
+        },
+        "boxed": {
+          "radius": 1.0,
+          "paneBlur": 24,
+          "paneAlpha": 0.7,
+          "density": "comfortable"
+        }
+      },
+      "ranges": {
+        "paneAlpha": {
+          "min": 0.15,
+          "max": 1.0
+        },
+        "paneBlur": {
+          "min": 0,
+          "max": 60
+        },
+        "radius": {
+          "min": 0.0,
+          "max": 2.0
+        },
+        "scrimAlpha": {
+          "min": 0.0,
+          "max": 0.7
+        },
+        "mainAlpha": {
+          "min": 0.15,
+          "max": 1.0
+        },
+        "previewLines": {
+          "min": 0,
+          "max": 2
+        },
+        "fontScale": {
+          "min": 0.875,
+          "max": 1.25
+        }
+      }
+    }
+  },
+  "accounts": {
+    "7": {
+      "name": "work@example.com",
+      "isPersonal": true,
+      "isReadOnly": false,
+      "accountCapabilities": {
+        "urn:ietf:params:jmap:mail": {
+          "maxMailboxesPerEmail": null,
+          "maxMailboxDepth": null,
+          "maxSizeMailboxName": 255,
+          "maxSizeAttachmentsPerEmail": 50000000,
+          "emailQuerySortOptions": [
+            "receivedAt",
+            "from",
+            "to",
+            "subject",
+            "size"
+          ],
+          "mayCreateTopLevelMailbox": true
+        },
+        "urn:ietf:params:jmap:submission": {
+          "maxDelayedSend": 0,
+          "submissionExtensions": {}
+        }
+      }
+    },
+    "9": {
+      "name": "personal@example.net",
+      "isPersonal": true,
+      "isReadOnly": false,
+      "accountCapabilities": {
+        "urn:ietf:params:jmap:mail": {
+          "maxSizeMailboxName": 255,
+          "maxSizeAttachmentsPerEmail": 50000000,
+          "emailQuerySortOptions": [
+            "receivedAt",
+            "from",
+            "to",
+            "subject",
+            "size"
+          ],
+          "mayCreateTopLevelMailbox": true
+        },
+        "urn:ietf:params:jmap:submission": {
+          "maxDelayedSend": 0,
+          "submissionExtensions": {}
+        }
+      }
+    }
+  },
+  "primaryAccounts": {
+    "urn:ietf:params:jmap:mail": "7"
+  },
+  "username": "me@example.com",
+  "apiUrl": "https://nas.local/plmail/jmap/api",
+  "downloadUrl": "https://nas.local/plmail/jmap/download/{accountId}/{blobId}/{name}?accept={type}",
+  "uploadUrl": "https://nas.local/plmail/jmap/upload/{accountId}",
+  "eventSourceUrl": "https://nas.local/plmail/jmap/eventsource?types={types}&closeafter={closeafter}&ping={ping}",
+  "state": "41"
+}

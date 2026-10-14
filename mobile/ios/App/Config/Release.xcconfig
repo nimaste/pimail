@@ -1,0 +1,11 @@
+#include "Shared.xcconfig"
+
+SWIFT_OPTIMIZATION_LEVEL = -O
+SWIFT_COMPILATION_MODE = wholemodule
+ENABLE_TESTABILITY = NO
+VALIDATE_PRODUCT = YES
+
+// Warnings are errors only here: a warning should be able to interrupt a
+// release without interrupting the edit-compile loop that produced it.
+SWIFT_TREAT_WARNINGS_AS_ERRORS = YES
+GCC_TREAT_WARNINGS_AS_ERRORS = YES

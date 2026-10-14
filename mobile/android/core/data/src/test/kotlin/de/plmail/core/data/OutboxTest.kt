@@ -1,0 +1,329 @@
+package de.plmail.core.data
+
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
+import de.plmail.core.datastore.OutboxStore
+import de.plmail.jmap.protocol.JmapError
+import java.io.IOException
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+
+/**
+ * The queue that exists because every action is applied locally first.
+ *
+ * The rule the whole thing turns on is that a **transport failure queues and a server rejection
+ * does not**, and it is the kind of distinction that is obvious while writing it and invisible six
+ * months later — at which point somebody simplifies the two catch arms into one and the app
+ * develops a queue that can never empty, retrying an `Email/set` the server has already refused,
+ * once every fifteen minutes, forever, with a banner on the mail list saying so.
+ *
+ * Ordering is the other one. Star-then-unstar and unstar-then-star are different end states, so a
+ * drain that reordered or grouped would settle on whichever it happened to send last.
+ */
+class OutboxTest {
+
+    private val targets = listOf(ActionTarget("https://nas.local/1", "t1"))
+
+    /** No labels, which is what makes the SetLabel case below drop rather than send. */
+    private fun outbox(
+        store: OutboxStore = OutboxStore(FakePreferences()),
+        labels: Map<String, Label> = emptyMap(),
+    ) = Outbox(store) { labels }
+
+    @Test
+    fun `an action that could not be sent is kept`() = runTest {
+        val outbox = outbox()
+
+        assertTrue(outbox.enqueue(MailAction.Archive, targets, at = 1_000))
+
+        assertEquals(1, outbox.state.first().pending)
+        assertEquals(1_000, outbox.state.first().oldestQueuedAt)
+    }
+
+    @Test
+    fun `draining sends what is waiting, in the order it was made`() = runTest {
+        val outbox = outbox()
+
+        outbox.enqueue(MailAction.Star(flagged = true), targets, at = 1)
+        outbox.enqueue(MailAction.Star(flagged = false), targets, at = 2)
+        outbox.enqueue(MailAction.Archive, targets, at = 3)
+
+        val sent = mutableListOf<MailAction>()
+        val result = outbox.drain { action, _ -> sent += action }
+
+        assertEquals(3, result.sent)
+        assertEquals(0, result.remaining)
+        assertEquals(
+            // Not a set, and not deduplicated: the two stars are opposite
+            // changes to the same conversation and the end state is whichever
+            // went last.
+            listOf(MailAction.Star(true), MailAction.Star(false), MailAction.Archive),
+            sent,
+        )
+        assertTrue(outbox.state.first().isEmpty)
+    }
+
+    /**
+     * The case that decides whether the queue is a queue or a shuffle.
+     *
+     * Two changes waiting, the first one fails to send. Everything from the failure onward has to
+     * stay, *including the one that failed* — it was never sent, and dropping it would lose a
+     * change the user can still see on their phone. And the second must not be attempted, because
+     * replaying a later change before an earlier one is the same ordering bug from the other end.
+     */
+    @Test
+    fun `a drain that hits the network again stops there and keeps the rest`() = runTest {
+        val outbox = outbox()
+
+        outbox.enqueue(MailAction.Archive, targets, at = 1)
+        outbox.enqueue(MailAction.Trash, targets, at = 2)
+
+        val attempted = mutableListOf<MailAction>()
+
+        val result = outbox.drain { action, _ ->
+            attempted += action
+            throw IOException("no route to host")
+        }
+
+        assertEquals(0, result.sent)
+        assertEquals(2, result.remaining)
+        assertEquals<List<MailAction>>(
+            listOf(MailAction.Archive),
+            attempted,
+            "the second must not be attempted",
+        )
+        assertEquals(2, outbox.state.first().pending)
+    }
+
+    @Test
+    fun `a JMAP-level unreachable stops the drain too`() = runTest {
+        val outbox = outbox()
+
+        outbox.enqueue(MailAction.Archive, targets, at = 1)
+
+        val result = outbox.drain { _, _ -> throw JmapError.Unreachable("nas.local", null) }
+
+        assertEquals(1, result.remaining)
+        assertEquals(1, outbox.state.first().pending)
+    }
+
+    /**
+     * A refusal is an answer, and an answer is not a reason to ask again.
+     *
+     * This is the single most important assertion in the file. Without it the obvious "just retry
+     * everything that failed" produces a queue that cannot empty, a banner on the mail list that
+     * never goes away, and a request to somebody's Raspberry Pi every fifteen minutes for a change
+     * it has already declined.
+     */
+    @Test
+    fun `a change the server refused is dropped rather than retried forever`() = runTest {
+        val outbox = outbox()
+
+        outbox.enqueue(MailAction.Archive, targets, at = 1)
+        outbox.enqueue(MailAction.Trash, targets, at = 2)
+
+        val attempted = mutableListOf<MailAction>()
+
+        val result = outbox.drain { action, _ ->
+            attempted += action
+            if (action == MailAction.Archive) error("notFound")
+        }
+
+        assertEquals(2, result.sent)
+        assertEquals(0, result.remaining)
+        // The one after it still went: a refusal is about that change, not
+        // about the connection, so there is no reason to stop.
+        assertEquals(listOf(MailAction.Archive, MailAction.Trash), attempted)
+        assertTrue(outbox.state.first().isEmpty)
+    }
+
+    /**
+     * A label that has gone since the change was made.
+     *
+     * The stored form carries the label *key* rather than the [Label] itself, because a Label's
+     * bindings are mailbox ids and mailbox ids are cache — re-synced, renumbered, or deleted
+     * between the tap and the send. Dropped rather than retried, for the same reason a refusal is:
+     * there is nothing to apply it to, and a queue that cannot empty is a banner that never goes
+     * away.
+     */
+    @Test
+    fun `a queued label whose label no longer exists is dropped`() = runTest {
+        val outbox = outbox()
+        val label =
+            Label(
+                key = "gone",
+                name = "Steuer",
+                path = "Steuer",
+                role = null,
+                color = null,
+                unreadThreads = 0,
+                totalThreads = 0,
+                mayRename = true,
+                mayDelete = true,
+                bindings = emptyList(),
+            )
+
+        outbox.enqueue(MailAction.SetLabel(label, applied = true), targets, at = 1)
+
+        val attempted = mutableListOf<MailAction>()
+        val result = outbox.drain { action, _ -> attempted += action }
+
+        assertEquals(1, result.sent)
+        assertTrue(attempted.isEmpty(), "nothing should have been sent")
+        assertTrue(outbox.state.first().isEmpty)
+    }
+
+    /**
+     * Offline, the reader's mark-read is the one queued change that is about a *message*.
+     *
+     * The queue's stored target is a flattened shape of its own, so a field it does not copy is not
+     * a compile error anywhere — it is a scope that silently widens between the tap and the drain.
+     * Read one message on a train, and what reaches the server when the phone finds signal would be
+     * "the whole conversation is read", including the two below it nobody has opened.
+     */
+    @Test
+    fun `a change about one message is still about that message when it drains`() = runTest {
+        val outbox = outbox()
+        val message = ActionTarget("https://nas.local/1", "t1", emailId = "m2")
+
+        outbox.enqueue(MailAction.MarkRead(seen = true), listOf(message), at = 1)
+
+        val drained = mutableListOf<ActionTarget>()
+        outbox.drain { _, targets -> drained += targets }
+
+        assertEquals(listOf(message), drained)
+    }
+
+    /** And the default survives the same round trip as the "all of them" it has always meant. */
+    @Test
+    fun `a change about a conversation drains without a message id`() = runTest {
+        val outbox = outbox()
+
+        outbox.enqueue(MailAction.MarkRead(seen = true), targets, at = 1)
+
+        val drained = mutableListOf<ActionTarget>()
+        outbox.drain { _, t -> drained += t }
+
+        assertEquals(targets, drained)
+        assertEquals(null, drained.single().emailId)
+    }
+
+    /**
+     * A move comes back out of the queue as the same move, both sides re-resolved by key.
+     *
+     * Null on either side is the Inbox and is stored as no key at all, which is what lets it
+     * survive: there is no inbox [Label] to go stale, only a role each account resolves for itself.
+     */
+    @Test
+    fun `a queued move is rebuilt with both of its sides`() = runTest {
+        val receipts = label("receipts")
+        val work = label("work")
+        val outbox = outbox(labels = mapOf("receipts" to receipts, "work" to work))
+
+        outbox.enqueue(MailAction.MoveTo(target = receipts, leaving = null), targets, at = 1)
+        outbox.enqueue(MailAction.MoveTo(target = work, leaving = receipts), targets, at = 2)
+
+        val attempted = mutableListOf<MailAction>()
+
+        outbox.drain { action, _ -> attempted += action }
+
+        assertEquals(
+            listOf<MailAction>(
+                MailAction.MoveTo(target = receipts, leaving = null),
+                MailAction.MoveTo(target = work, leaving = receipts),
+            ),
+            attempted,
+        )
+    }
+
+    /** A tab move is replayed by its keys: the tab is the reader's and outlives any cached row. */
+    @Test
+    fun `a queued tab move is rebuilt as the same move`() = runTest {
+        val outbox = outbox(labels = emptyMap())
+
+        outbox.enqueue(MailAction.MoveToTab(tab = "c12", from = "promotions"), targets, at = 1)
+
+        val attempted = mutableListOf<MailAction>()
+
+        outbox.drain { action, _ -> attempted += action }
+
+        assertEquals(listOf<MailAction>(MailAction.MoveToTab("c12", "promotions")), attempted)
+    }
+
+    /**
+     * A side that named a label which has gone is not read as the Inbox.
+     *
+     * The two are both "no label found", and confusing them would turn a move out of a deleted
+     * label into an archive of mail that was never in the inbox to begin with.
+     */
+    @Test
+    fun `a queued move out of a label that no longer exists is dropped`() = runTest {
+        val receipts = label("receipts")
+        val outbox = outbox(labels = mapOf("receipts" to receipts))
+
+        outbox.enqueue(
+            MailAction.MoveTo(target = receipts, leaving = label("gone")),
+            targets,
+            at = 1,
+        )
+
+        val attempted = mutableListOf<MailAction>()
+        val result = outbox.drain { action, _ -> attempted += action }
+
+        assertEquals(1, result.sent)
+        assertTrue(attempted.isEmpty(), "nothing should have been sent")
+    }
+
+    private fun label(key: String) =
+        Label(
+            key = key,
+            name = key,
+            path = key,
+            role = null,
+            color = null,
+            unreadThreads = 0,
+            totalThreads = 0,
+            mayRename = true,
+            mayDelete = true,
+            bindings = emptyList(),
+        )
+
+    @Test
+    fun `a queue written by a build that is no longer installed clears rather than crashes`() =
+        runTest {
+            val preferences = FakePreferences()
+            val store = OutboxStore(preferences)
+
+            store.update { "this is not json" }
+
+            assertEquals(0, outbox(store).state.first().pending)
+        }
+}
+
+/**
+ * A DataStore that keeps its preferences in memory.
+ *
+ * A `MutableStateFlow` here rather than the emit-on-every-write fake `:core:datastore` uses,
+ * because nothing in this file is about emission counts — what is being tested is what comes back
+ * out, and conflating equal values is exactly what makes that read cleanly.
+ */
+private class FakePreferences : DataStore<Preferences> {
+    private val current = MutableStateFlow(emptyPreferences())
+
+    override val data: Flow<Preferences>
+        get() = current
+
+    override suspend fun updateData(
+        transform: suspend (t: Preferences) -> Preferences
+    ): Preferences {
+        current.value = transform(current.value)
+
+        return current.value
+    }
+}

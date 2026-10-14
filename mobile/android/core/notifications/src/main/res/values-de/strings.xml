@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_group_accounts">Konten</string>
+    <string name="channel_description">Neue Nachrichten dieses Kontos aus den Labels, die Sie eingeschaltet haben.</string>
+
+    <string name="notification_you">Ich</string>
+    <string name="no_subject">(kein Betreff)</string>
+
+    <string name="action_archive">Archivieren</string>
+    <string name="action_mark_read">Als gelesen markieren</string>
+    <string name="action_reply">Antworten</string>
+    <string name="action_try_again">Erneut versuchen</string>
+
+    <string name="reply_hint">Ihre Antwort</string>
+    <string name="reply_sending">Wird gesendet …</string>
+
+    <string name="reply_not_sent">Antwort nicht gesendet</string>
+    <string name="reply_failed_offline">Es bestand keine Verbindung zu Ihrem Server. Ihre Antwort ist noch da.</string>
+    <string name="reply_failed_unanswerable">Auf diese Nachricht kann aus der Benachrichtigung heraus nicht geantwortet werden. Öffnen Sie plMail, um zu antworten.</string>
+    <string name="reply_failed_refused">Ihr Server hat die Antwort nicht angenommen. Öffnen Sie plMail, um sie zu senden.</string>
+
+    <plurals name="new_messages">
+        <item quantity="one">1 neue Nachricht</item>
+        <item quantity="other">%1$d neue Nachrichten</item>
+    </plurals>
+    <plurals name="and_more">
+        <item quantity="one">und 1 weitere</item>
+        <item quantity="other">und %1$d weitere</item>
+    </plurals>
+
+    <!--
+      One channel for every calendar reminder, separate from the per-account
+      mail channels: muting a mailbox is not asking to miss an appointment.
+    -->
+    <string name="channel_reminders">Erinnerungen</string>
+    <string name="channel_reminders_description">Kalendererinnerungen, zu der Zeit, die du am Termin eingestellt hast.</string>
+</resources>

@@ -1,0 +1,397 @@
+package de.plmail.core.data
+
+import androidx.room.withTransaction
+import de.plmail.core.database.AccountEntity
+import de.plmail.core.database.AttachmentEntity
+import de.plmail.core.database.EmailBodyEntity
+import de.plmail.core.database.EmailEntity
+import de.plmail.core.database.MailboxDao
+import de.plmail.core.database.MailboxEntity
+import de.plmail.core.database.PlMailDatabase
+import de.plmail.core.database.StoreKey
+import de.plmail.core.database.ThreadEntity
+import de.plmail.jmap.mail.Email
+import de.plmail.jmap.mail.Identity
+import de.plmail.jmap.mail.MailThread
+import de.plmail.jmap.mail.Mailbox
+import de.plmail.jmap.protocol.Session
+import de.plmail.jmap.protocol.ThreadId
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * The cache, written to and read from.
+ *
+ * Everything here is a projection of the server. Nothing invents a row, nothing merges a partial
+ * update onto an existing one, and nothing stores a value the server could not hand back — that
+ * rule is what licenses the database's destructive-migration policy, and it stays true only as long
+ * as this file keeps it.
+ */
+@Singleton
+class MailRepository @Inject constructor(private val database: PlMailDatabase) {
+
+    fun observeAccounts(): Flow<List<AccountEntity>> = database.accounts().observeAll()
+
+    fun observeMailboxes(): Flow<List<MailboxEntity>> = database.mailboxes().observeAll()
+
+    fun observeThread(uid: String): Flow<ThreadEntity?> = database.threads().observe(uid)
+
+    /**
+     * Brings the account list in line with a freshly fetched Session.
+     *
+     * Accounts the session no longer lists are deleted rather than left behind: a credential that
+     * has lost access to a mailbox should stop showing it, and a stale row would keep it in the
+     * sidebar forever with a sync that quietly fails.
+     *
+     * The existing sync cursors are deliberately *not* touched. They live on the same row, and
+     * rewriting them here would silently re-page every account on every launch.
+     *
+     * Returns the accounts whose "one list or tabs" answer just changed, because that changes what
+     * Primary holds and nothing about a single conversation says so — see
+     * [de.plmail.core.database.AccountEntity.wantsInboxTabs]. The caller re-pages them.
+     */
+    suspend fun replaceAccounts(server: String, session: Session): List<String> {
+        val accounts =
+            session.accountIds.mapIndexedNotNull { index, id ->
+                session
+                    .account(id)
+                    ?.toEntity(server, id.value, sortIndex = index)
+                    // A user-level answer, written onto every account so each path
+                    // that has an account in hand has it too.
+                    ?.copy(wantsInboxTabs = session.wantsInboxTabs)
+            }
+
+        return database.withTransaction {
+            val existing = database.accounts().all().associateBy { it.uid }
+
+            database
+                .accounts()
+                .upsert(
+                    accounts.map { fresh ->
+                        // Carried forward explicitly rather than by omission:
+                        // Room's upsert replaces the whole row, so a mapper that
+                        // does not know about cursors would reset them to null.
+                        existing[fresh.uid]?.let {
+                            fresh.copy(
+                                emailState = it.emailState,
+                                threadState = it.threadState,
+                                mailboxState = it.mailboxState,
+                                inboxTabState = it.inboxTabState,
+                                lastSyncedAt = it.lastSyncedAt,
+                                lastSyncError = it.lastSyncError,
+                            )
+                        } ?: fresh
+                    }
+                )
+
+            database.accounts().deleteMissing(accounts.map { it.uid })
+
+            accounts
+                .filter { fresh ->
+                    existing[fresh.uid]?.let { it.wantsInboxTabs != fresh.wantsInboxTabs } == true
+                }
+                .map { it.uid }
+        }
+    }
+
+    /**
+     * Replaces one account's mailboxes.
+     *
+     * A full replace rather than an upsert because a label deleted on the server has to disappear
+     * here; an upsert alone would leave it in the sidebar, and tapping it would query a binding
+     * that no longer exists.
+     */
+    suspend fun replaceMailboxes(accountKey: String, mailboxes: List<Mailbox>) {
+        val fresh = mailboxes.map { it.toEntity(accountKey) }
+
+        database.withTransaction {
+            val stale =
+                database.mailboxes().forAccount(accountKey).map { it.uid } -
+                    fresh.map { it.uid }.toSet()
+
+            database.mailboxes().upsert(fresh)
+            database.mailboxes().delete(stale)
+        }
+    }
+
+    /**
+     * Replaces one account's inbox tabs, and the state they were read at.
+     *
+     * A full replace for the reason [replaceMailboxes] is one: a tab the reader deleted on the web
+     * has to leave the strip. An empty list with a null state is what an account on a server
+     * without the extension is given, and it is what puts the app back on the five built-ins.
+     */
+    suspend fun replaceInboxTabs(
+        accountKey: String,
+        tabs: List<de.plmail.jmap.mail.InboxTab>,
+        state: String?,
+    ) {
+        val fresh = tabs.map { it.toEntity(accountKey) }
+
+        database.withTransaction {
+            val stale =
+                database.inboxTabs().forAccount(accountKey).map { it.uid } -
+                    fresh.map { it.uid }.toSet()
+
+            database.inboxTabs().upsert(fresh)
+            database.inboxTabs().delete(stale)
+            database.accounts().setInboxTabState(accountKey, state)
+        }
+    }
+
+    suspend fun replaceIdentities(accountKey: String, identities: List<Identity>) {
+        database.withTransaction {
+            database.identities().deleteForAccount(accountKey)
+            database
+                .identities()
+                .upsert(identities.mapIndexed { index, it -> it.toEntity(accountKey, index) })
+        }
+    }
+
+    /**
+     * Writes a page of messages and the threads they belong to.
+     *
+     * One transaction for both, because a thread row is derived from its messages: committing the
+     * summary without the messages it summarises would leave a list row describing mail that is not
+     * in the database, which a reader tapping it would open as empty.
+     *
+     * Threads are summarised from the messages **already stored plus the ones arriving**, not from
+     * the arriving page alone. A page carrying one reply to a long conversation would otherwise
+     * rewrite that conversation's row as a one-message thread from a single participant.
+     *
+     * Cached bodies that this page contradicts are dropped first — see [staleBodies]. Every path
+     * that writes a message row comes through here, which is what makes this the one place that can
+     * see a message change.
+     */
+    suspend fun storeEmails(
+        accountKey: String,
+        emails: List<Email>,
+        threads: List<MailThread> = emptyList(),
+        fetchedAt: Long,
+    ) {
+        if (emails.isEmpty() && threads.isEmpty()) return
+
+        database.withTransaction {
+            // Before the upsert, because the stored row is half the evidence,
+            // and before the body write below, so a page that carries a fresh
+            // body puts it straight back.
+            val stale = staleBodies(accountKey, emails)
+            if (stale.isNotEmpty()) database.emails().deleteBodies(stale)
+
+            database.emails().upsert(emails.map { it.toEntity(accountKey) })
+
+            emails.forEach { email ->
+                email.toBodyEntity(accountKey, fetchedAt)?.let { database.emails().upsertBody(it) }
+
+                val attachments = email.toAttachmentEntities(accountKey)
+                if (attachments.isNotEmpty()) database.emails().upsertAttachments(attachments)
+            }
+
+            // Every thread the page touched, whether or not a Thread/get came
+            // with it. A list page fetches messages alone -- one per
+            // conversation -- so requiring the Thread object here would leave
+            // the rows those messages belong to unsummarised, and the list
+            // reading from them empty.
+            val fetched = threads.associateBy { it.id.value }
+            val touched = (fetched.keys + emails.mapNotNull { it.threadId?.value }).toSet()
+
+            // Read once for the whole page. Every thread in it belongs to the
+            // same account and therefore resolves its labels through the same
+            // bindings, so doing this per thread would be one query per row on
+            // the exact path the denormalised table exists to keep cheap.
+            val bindings = database.mailboxes().bindingKeys(accountKey)
+
+            // Which collapse key *is* the inbox, so each summarised row can
+            // record whether it is in it. Read once beside the bindings and for
+            // the same reason.
+            val inboxKey = database.mailboxes().byRole(accountKey, INBOX_ROLE)?.labelKey()
+
+            // Read back rather than reusing `emails`: the summary has to cover
+            // every message the thread now has, not just the ones in this page.
+            database
+                .threads()
+                .upsert(
+                    touched.map { threadId ->
+                        val uid = StoreKey.objectKey(accountKey, threadId)
+                        val thread = fetched[threadId] ?: MailThread(id = ThreadId(threadId))
+
+                        val row =
+                            thread.toEntity(
+                                accountKey,
+                                database.emails().inThread(accountKey, threadId),
+                                bindings,
+                                inboxKey,
+                            )
+
+                        // Almost every field on that row is derived from the
+                        // messages — but the snooze time, the category and the
+                        // New marker are properties of the *conversation* and
+                        // exist nowhere in `Email/get`. So a caller that did not
+                        // fetch the Thread has not learned they are absent; it
+                        // has learned nothing about them, and writing the
+                        // defaults anyway destroys the only local copy. Callers
+                        // that *do* fetch it — the pagers and the delta sync —
+                        // carry the server's answer, including a null snooze
+                        // that genuinely means the mail is awake again.
+                        if (threadId in fetched) row
+                        else row.carryConversationFacts(database.threads().byUid(uid))
+                    }
+                )
+        }
+    }
+
+    /**
+     * The cached bodies this page proves wrong.
+     *
+     * The body table was written once and never invalidated, and for received mail that is right: a
+     * message that has arrived does not change. **A draft does.** The composer autosaves one on the
+     * server the moment a reply is opened, it lands in the same conversation as the mail it
+     * answers, and anything that downloads bodies — the reader opening that thread, the prefetcher
+     * on its fifteen-minute round — will happily cache whatever the half-written draft held at that
+     * moment. Sending it does not change the message *id*: the server clears `$draft`, moves it to
+     * Sent and leaves everything else where it was. So the finished mail inherited the cache entry
+     * of the unfinished one, for good.
+     *
+     * What that looked like was a message sent from the phone whose conversation row read correctly
+     * — `preview` is a list-row property and every sync refreshes it — and which opened to the text
+     * the draft held when it was cached. In the common case, an autosave that beat the user's first
+     * keystroke, that text was *nothing*: `markFetchedBodylessMessages` had recorded an empty body,
+     * and an empty body renders as an empty card rather than as an error. Collapsed, the message
+     * was right; expanded, it was blank.
+     *
+     * Three cases, and the third is a repair rather than a rule:
+     * 1. **It is a draft now.** Its body is mutable by definition, so nothing cached for it can be
+     *    trusted past this sync. Cheap: drafts are a handful of rows, and the reader re-fetches.
+     * 2. **The cache says draft and the server no longer does.** The transition this exists for.
+     *    The body cached from the draft is not the body that was sent.
+     * 3. **We cached "this has no body" for a message the server gives a preview for.** A preview
+     *    is derived from the body — RFC 8621 defines it that way and plMail computes it from the
+     *    stored text — so the two cannot both be true. This is what heals the installs that already
+     *    hold a poisoned marker: they need no migration, only the next sync that touches the row.
+     */
+    private suspend fun staleBodies(accountKey: String, emails: List<Email>): List<String> {
+        if (emails.isEmpty()) return emptyList()
+
+        val uids = emails.map { StoreKey.objectKey(accountKey, it.id.value) }
+        val wasDraft = database.emails().draftsAmong(uids).toSet()
+        val bodyless = database.emails().bodylessMarkersAmong(uids).toSet()
+
+        return emails
+            .map { email -> email to StoreKey.objectKey(accountKey, email.id.value) }
+            .filter { (email, uid) ->
+                email.isDraft || uid in wasDraft || (uid in bodyless && email.preview.isNotBlank())
+            }
+            .map { (_, uid) -> uid }
+    }
+
+    /** One conversation's messages, oldest first, from the cache. */
+    suspend fun messagesInThread(accountKey: String, threadId: String): List<EmailEntity> =
+        database.emails().inThread(accountKey, threadId)
+
+    /**
+     * The conversation's own row, for the things that are not properties of any message.
+     *
+     * Snooze is the only one today, and it is the reason this exists: the reader has to offer
+     * "unsnooze" rather than "snooze" for something already put away, and no message carries that.
+     */
+    suspend fun thread(accountKey: String, threadId: String): ThreadEntity? =
+        database.threads().byUid(StoreKey.objectKey(accountKey, threadId))
+
+    suspend fun body(emailUid: String): EmailBodyEntity? = database.emails().body(emailUid)
+
+    /**
+     * The parts one message carries, as the reader lists them.
+     *
+     * Inline parts are dropped: a `cid:` image is *in* the message the user is reading, and listing
+     * it underneath as a file to download would put a row named `image001.png` under every mail
+     * anybody sent from Outlook. The signature logo is not an attachment, whatever the MIME
+     * structure says.
+     */
+    suspend fun attachments(emailUid: String): List<AttachmentEntity> =
+        database.emails().attachments(emailUid).filterNot { it.isInline }
+
+    /**
+     * Stores the Email state a page was read at.
+     *
+     * Only ever moves from *absent* to set here; delta sync owns it afterwards. That sentence was
+     * true of the documentation and false of the code, which wrote the column unconditionally — and
+     * this is called from every page load, so scrolling deep into a list jumped the cursor to "now"
+     * and every change since the last `Email/changes` was stepped over and could never be reported
+     * afterwards. The stale inbox nobody could explain.
+     *
+     * The rule is enforced in SQL rather than as a read-then-write here, because delta sync writes
+     * the same column on every round while pages are being loaded — see
+     * `AccountDao.setEmailStateIfAbsent`, which also explains why nothing compares the two tokens.
+     *
+     * A blank state is ignored rather than written, because a cursor of "" is not a starting point
+     * and would send `Email/changes` somewhere it cannot answer from.
+     */
+    suspend fun recordEmailState(accountKey: String, state: String) {
+        if (state.isBlank()) return
+
+        database.accounts().setEmailStateIfAbsent(accountKey, state)
+    }
+
+    /**
+     * Recomputes one conversation's labels from the messages the cache now holds.
+     *
+     * For the local half of applying a label. `MailActions` writes the binding onto the message
+     * rows so the sheet's tick is right immediately, and without this the *row* would keep its old
+     * chips until the next sync happened to touch the thread — so the label sheet and the list
+     * behind it would disagree about the label that had just been applied through them.
+     *
+     * Only this one field, deliberately. Re-deriving the whole summary here would need the Thread
+     * object for the snooze time, which the caller does not have and which a `null` would destroy.
+     */
+    suspend fun refreshLabelsOf(accountKey: String, threadId: String) {
+        val uid = StoreKey.objectKey(accountKey, threadId)
+        val existing = database.threads().byUid(uid) ?: return
+        val bindings = database.mailboxes().bindingKeys(accountKey)
+
+        val keys =
+            database
+                .emails()
+                .inThread(accountKey, threadId)
+                .flatMap { it.mailboxIds.splitIds() }
+                .mapNotNull { bindings[it] }
+                .distinct()
+                .sorted()
+                .joinToString(",")
+
+        if (keys != existing.labelKeys)
+            database.threads().upsert(listOf(existing.copy(labelKeys = keys)))
+    }
+
+    /** Records a sync that worked, so the diagnostics screen can say when. */
+    suspend fun recordSyncSucceeded(accountKey: String, at: Long) {
+        database.accounts().recordSyncSucceeded(accountKey, at)
+    }
+
+    /**
+     * Records a sync that did not, leaving the last successful time alone.
+     *
+     * Deliberately additive. What the user needs to see is "it last worked at 09:14, and since then
+     * this is what happens" — a failure that also cleared the timestamp would present a working
+     * server that had a bad morning as one that has never worked at all.
+     */
+    suspend fun recordSyncFailed(accountKey: String, error: String?) {
+        database.accounts().recordSyncFailed(accountKey, error)
+    }
+
+    /** The composite key for one account on one server. */
+    fun accountKey(server: String, accountId: String): String = StoreKey.account(server, accountId)
+
+    private companion object {
+        const val INBOX_ROLE = "inbox"
+    }
+}
+
+/**
+ * Binding id to label collapse key, as a map.
+ *
+ * Projected in SQL and assembled here rather than loading whole `MailboxEntity` rows: this runs on
+ * the write path of every synced page, and the only two columns it needs are the two it selects.
+ */
+private suspend fun MailboxDao.bindingKeys(accountKey: String): Map<String, String> =
+    bindingKeyRows(accountKey).associate { it.mailboxId to it.labelKey }

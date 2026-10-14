@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_placeholder">E-Mails durchsuchen</string>
+    <string name="search_clear">Löschen</string>
+    <string name="search_back">Zurück</string>
+    <string name="search_recent">Zuletzt gesucht</string>
+    <string name="search_forget">„%1$s“ entfernen</string>
+
+    <string name="search_empty_no_matches">Keine Nachrichten gefunden.</string>
+
+    <string name="search_contradiction">is:read und is:unread zusammen finden nichts.</string>
+
+    <string name="search_account_lacks_mailbox">Konto %1$s hat dieses Postfach nicht und wurde nicht durchsucht.</string>
+
+    <string name="chip_from">Von: %1$s</string>
+    <string name="chip_to">An: %1$s</string>
+    <string name="chip_subject">Betreff: %1$s</string>
+    <string name="chip_attachment">Mit Anhang</string>
+    <string name="chip_unread">Ungelesen</string>
+    <string name="chip_read">Gelesen</string>
+    <string name="chip_starred">Markiert</string>
+    <string name="chip_in">In: %1$s</string>
+    <string name="chip_after">Nach %1$s</string>
+    <string name="chip_before">Vor %1$s</string>
+</resources>

@@ -1,0 +1,585 @@
+/* German. Two conventions worth stating because they are easy to get wrong
+   and invisible once wrong:
+
+   - Duzen throughout, and mostly avoided: German UI reads better as a noun
+     phrase than as an instruction ("Postfach wählen", not "Wähle ein
+     Postfach"). Apple's own German follows the same rule.
+   - "E-Mail" keeps its hyphen and stays feminine. "Mail" alone is common in
+     speech but looks like an English leftover in an interface. */
+
+"Accounts" = "Konten";
+"Actions for this attachment" = "Aktionen für diesen Anhang";
+"Address" = "Adresse";
+"App password" = "App-Passwort";
+"Apply" = "Hinzufügen";
+"Archive" = "Archivieren";
+"Attach" = "Anhängen";
+"Attachments" = "Anhänge";
+"Can't reach your server" = "Server nicht erreichbar";
+"Cancel" = "Abbrechen";
+"Cc / Bcc" = "Cc / Bcc";
+"Certificate pinned" = "Zertifikat gespeichert";
+"Check this is the right mailbox before continuing." = "Prüfe vor dem Fortfahren, ob das das richtige Postfach ist.";
+"Choose a list from the sidebar." = "Wähle eine Liste in der Seitenleiste.";
+"Collapses this message" = "Klappt diese Nachricht zu";
+"Compare it against the server before trusting it. This app will refuse to connect if it ever changes." = "Vergleiche ihn mit dem Server, bevor du ihm vertraust. Diese App verweigert die Verbindung, falls er sich jemals ändert.";
+"Connect" = "Verbinden";
+"Connect to plMail" = "Mit plMail verbinden";
+"Connected" = "Verbunden";
+"Couldn't attach that" = "Anhang nicht möglich";
+"Couldn't connect" = "Verbindung fehlgeschlagen";
+"Couldn't load the source" = "Quelltext konnte nicht geladen werden";
+"Couldn't save this attachment." = "Dieser Anhang konnte nicht gesichert werden.";
+"Done" = "Fertig";
+"Downloads and opens this attachment" = "Lädt diesen Anhang und öffnet ihn";
+"Draft" = "Entwurf";
+"Enter an address first" = "Zuerst eine Adresse eingeben";
+"Expands this message" = "Klappt diese Nachricht auf";
+"Filter labels" = "Labels filtern";
+"Forward" = "Weiterleiten";
+"From" = "Von";
+"Key fingerprint" = "Schlüssel-Fingerabdruck";
+"Label %lld selected" = "%lld Ausgewählte beschriften";
+"Labels" = "Labels";
+"Labels you create in plMail's web UI appear here." = "Labels, die du in der plMail-Weboberfläche anlegst, erscheinen hier.";
+"Load" = "Laden";
+"Mark as unread" = "Als ungelesen markieren";
+"Message source" = "Nachrichtenquelltext";
+"More" = "Mehr";
+"Move to Trash" = "In den Papierkorb";
+"New message" = "Neue Nachricht";
+"No conversation selected" = "Keine Konversation ausgewählt";
+"No labels yet" = "Noch keine Labels";
+"No mail here" = "Keine E-Mails";
+"OK" = "OK";
+"Only the first part is shown. Share to get the whole message." = "Es wird nur der erste Teil angezeigt. Teile die Nachricht, um sie vollständig zu erhalten.";
+"Open" = "Öffnen";
+"Open plMail in a browser" = "plMail im Browser öffnen";
+"Pick a date and time…" = "Datum und Uhrzeit wählen…";
+"Pick a mailbox" = "Postfach wählen";
+"Pick a message to read it here." = "Wähle eine Nachricht, um sie hier zu lesen.";
+"Remote images blocked" = "Externe Bilder blockiert";
+"Remove" = "Entfernen";
+"Removes the app password from this device and deletes cached mail." = "Entfernt das App-Passwort von diesem Gerät und löscht die zwischengespeicherten E-Mails.";
+"Reply" = "Antworten";
+"Reply all" = "Allen antworten";
+"Search mail" = "E-Mails durchsuchen";
+"Search your mail" = "Durchsuche deine E-Mails";
+"Send" = "Senden";
+"Sending in %lld…" = "Senden in %lld…";
+"Server" = "Server";
+"Share" = "Teilen";
+"Sign in again" = "Erneut anmelden";
+"Sign out" = "Abmelden";
+"Signed in as" = "Angemeldet als";
+"Snooze" = "Zurückstellen";
+"Snooze until" = "Zurückstellen bis";
+"Some accounts didn't sync" = "Einige Konten wurden nicht synchronisiert";
+"The address you use to open plMail in a browser. https is assumed unless you type otherwise." = "Die Adresse, unter der du plMail im Browser öffnest. Ohne Angabe wird https angenommen.";
+"The server didn't return this message." = "Der Server hat diese Nachricht nicht geliefert.";
+"This list covers mail plMail has synced. Older mail arrives as the sync window widens." = "Diese Liste zeigt E-Mails, die plMail synchronisiert hat. Ältere kommen dazu, sobald sich der Synchronisierungszeitraum erweitert.";
+"This mailbox is no longer connected" = "Dieses Postfach ist nicht mehr verbunden";
+"This message has no content." = "Diese Nachricht hat keinen Inhalt.";
+"This message has no stored source." = "Für diese Nachricht ist kein Quelltext gespeichert.";
+"Trash" = "Papierkorb";
+"Trust this certificate" = "Diesem Zertifikat vertrauen";
+"Try again" = "Erneut versuchen";
+"Type your server's address above, then try again." = "Gib oben die Adresse deines Servers ein und versuche es erneut.";
+"Undo" = "Widerrufen";
+"Unencrypted connection" = "Unverschlüsselte Verbindung";
+"Unrecognised certificate" = "Unbekanntes Zertifikat";
+"Use this server" = "Diesen Server verwenden";
+"View source" = "Quelltext anzeigen";
+"Wake now" = "Jetzt zurückholen";
+"Wake up" = "Zurückholen am";
+"Where do I get one?" = "Wo bekomme ich eins?";
+"%@ · %@" = "%@ · %@";
+"%@ total" = "%@ gesamt";
+"%@. Double tap Undo to reverse." = "%@. Doppeltippen auf „Widerrufen“ macht es rückgängig.";
+"Report spam" = "Als Spam melden";
+"Not spam" = "Kein Spam";
+"Scan a pairing code" = "Kopplungscode scannen";
+"In plMail: Settings → App passwords → Pair a device" = "In plMail: Einstellungen → App-Passwörter → Gerät koppeln";
+"Or enter the address and an app password by hand." = "Oder Adresse und App-Passwort von Hand eingeben.";
+"Scan pairing code" = "Code scannen";
+"Camera unavailable" = "Kamera nicht verfügbar";
+"In plMail, open Settings → App passwords and choose Pair a device." = "Öffne in plMail Einstellungen → App-Passwörter und wähle „Gerät koppeln“.";
+"Outbox" = "Postausgang";
+"Nothing waiting" = "Nichts wartet";
+"Everything you've written has been sent." = "Alles Geschriebene wurde gesendet.";
+"Try now" = "Jetzt versuchen";
+"Sending…" = "Wird gesendet …";
+"Discard" = "Verwerfen";
+"(no subject)" = "(kein Betreff)";
+"Bold" = "Fett";
+"Italic" = "Kursiv";
+"Underline" = "Unterstrichen";
+"Strikethrough" = "Durchgestrichen";
+"Add link" = "Link hinzufügen";
+"Add" = "Hinzufügen";
+"The selected text will link here." = "Der markierte Text verlinkt hierhin.";
+"Quoted message included" = "Zitierte Nachricht enthalten";
+"Read" = "Gelesen";
+"Unread" = "Ungelesen";
+"Star" = "Markieren";
+"Unstar" = "Nicht markieren";
+"Select all" = "Alle auswählen";
+"Deselect all" = "Auswahl aufheben";
+"Select" = "Auswählen";
+"Deselect" = "Abwählen";
+"Subject" = "Betreff";
+"To" = "An";
+"Cc" = "Kopie";
+"Bcc" = "Blindkopie";
+"That file couldn't be opened." = "Diese Datei ließ sich nicht öffnen.";
+"%@ couldn't be read." = "%@ ließ sich nicht lesen.";
+"%@ of %@" = "%@ von %@";
+"Couldn't download this attachment." = "Dieser Anhang ließ sich nicht laden.";
+"Show previews" = "Vorschauen zeigen";
+"Show quoted history" = "Zitierten Verlauf einblenden";
+"Hide quoted history" = "Zitierten Verlauf ausblenden";
+"%lld earlier messages" = "%lld ältere Nachrichten";
+"%lld messages" = "%lld Nachrichten";
+"Remove recipient" = "Empfänger entfernen";
+"Photo or video" = "Foto oder Video";
+"File" = "Datei";
+"That photo couldn't be loaded." = "Dieses Foto ließ sich nicht laden.";
+"Actions for this message" = "Aktionen für diese Nachricht";
+"Sending addresses" = "Absenderadressen";
+"No sending addresses" = "Keine Absenderadressen";
+"The addresses you can send from appear here once your accounts have synced." = "Sobald deine Konten synchronisiert sind, erscheinen hier die Adressen, von denen du senden kannst.";
+"Name" = "Name";
+"The name recipients see beside your address." = "Der Name, den Empfänger neben deiner Adresse sehen.";
+"Signature" = "Signatur";
+"Save" = "Sichern";
+"Not saved" = "Nicht gesichert";
+"Mark all as read" = "Alle als gelesen markieren";
+"Show all labels" = "Alle Labels zeigen";
+"Hide extra labels" = "Zusätzliche Labels ausblenden";
+"Send later" = "Später senden";
+"Send at" = "Senden um";
+"Schedule" = "Planen";
+"Send now" = "Jetzt senden";
+"Waiting until %@" = "Wartet bis %@";
+"Sent at the first check after this time. Your phone has to be awake for that, so it may be a little later." = "Wird bei der ersten Prüfung nach diesem Zeitpunkt gesendet. Dein iPhone muss dafür wach sein, es kann also etwas später werden.";
+"Still catching up" = "Wird noch nachgeholt";
+"Fetching mail from %@. Conversations appear as they arrive." = "E-Mails werden von %@ geladen. Konversationen erscheinen, sobald sie eintreffen.";
+"Nothing synced yet" = "Noch nichts synchronisiert";
+"This list shows what is already on this device, and your server hasn't been reached yet." = "Diese Liste zeigt, was bereits auf diesem Gerät liegt; dein Server wurde noch nicht erreicht.";
+"Check now" = "Jetzt prüfen";
+"Swipe actions" = "Streichgesten";
+"Swipe left" = "Nach links streichen";
+"Swipe right" = "Nach rechts streichen";
+"Read or unread" = "Gelesen oder ungelesen";
+"Star or unstar" = "Markieren oder Markierung entfernen";
+"Nothing" = "Nichts";
+"Everything a swipe does is also in the menu you get by holding a conversation, so an edge set to Nothing takes away the shortcut and not the action." = "Alles, was eine Streichgeste tut, steht auch im Menü, das langes Tippen auf eine Konversation öffnet. „Nichts“ nimmt also nur die Abkürzung weg, nicht die Aktion.";
+
+/* Suche. Der Hilfetext war bis zu den Vorschlägen nur auf Englisch; er ist die
+   einzige Stelle, an der die Operatoren vollständig aufgezählt werden. Die
+   Operatoren selbst bleiben unübersetzt — sie sind Syntax, die der Server
+   liest. */
+
+"Any time" = "Beliebiger Zeitraum";
+"Use from:, to:, cc:, subject:, label:, has:attachment, is:unread, is:starred, in:inbox and before:/after: with a date. Anything else is searched as text, and quoted words are searched as a phrase." = "Verwende from:, to:, cc:, subject:, label:, has:attachment, is:unread, is:starred, in:inbox sowie before:/after: mit einem Datum. Alles andere wird als Text gesucht, Wörter in Anführungszeichen als Wortgruppe.";
+"Settings" = "Einstellungen";
+"Mail" = "E-Mail";
+"This device" = "Dieses Gerät";
+"Diagnostics" = "Diagnose";
+"Last sync, sync cursors and your server's limits. Worth a look before filing a bug." = "Letzte Synchronisierung, Sync-Zeiger und die Grenzwerte deines Servers. Vor einem Fehlerbericht einen Blick wert.";
+"Sign out of %@?" = "Von %@ abmelden?";
+"Mail on this device is deleted. Nothing on your server changes, and you can pair again with a new app password." = "E-Mails auf diesem Gerät werden gelöscht. Auf dem Server ändert sich nichts, und du kannst dich mit einem neuen App-Passwort erneut koppeln.";
+"Appearance" = "Erscheinungsbild";
+"Match the system" = "Wie das System";
+"Light" = "Hell";
+"Dark" = "Dunkel";
+"Messages are always shown on white, whichever you pick. Mail is written for a light background, and forcing it dark gives you black text on black." = "Nachrichten werden immer auf Weiß dargestellt, was du auch wählst. E-Mails sind für einen hellen Hintergrund geschrieben; dunkel erzwungen ergibt schwarze Schrift auf Schwarz.";
+"Remote images" = "Externe Bilder";
+"Block" = "Blockieren";
+"Block all again" = "Alle wieder blockieren";
+"Block remote images from every sender?" = "Externe Bilder von allen Absendern blockieren?";
+"No senders trusted" = "Keine Absender freigegeben";
+"Images in mail from these addresses load without asking. Everything else stays blocked until you tap Load." = "Bilder in E-Mails von diesen Adressen werden ohne Nachfrage geladen. Alles andere bleibt blockiert, bis du auf „Laden“ tippst.";
+"Remote images are blocked everywhere. Tap Load on a message to let one sender through, and it appears here." = "Externe Bilder sind überall blockiert. Tippe in einer Nachricht auf „Laden“, um einen Absender freizugeben; er erscheint dann hier.";
+"Mailboxes on this server" = "Postfächer auf diesem Server";
+"One app password covers every mailbox above, so signing out signs out of all of them. To use a different server, sign out and pair again — this app holds one at a time." = "Ein App-Passwort gilt für alle Postfächer oben; das Abmelden betrifft daher alle. Für einen anderen Server abmelden und neu koppeln — diese App hält immer nur einen.";
+"Read-only" = "Nur lesbar";
+"Synced %@" = "Synchronisiert %@";
+"Not synced yet" = "Noch nicht synchronisiert";
+"Connection" = "Verbindung";
+"Status" = "Status";
+"Checking…" = "Wird geprüft…";
+"App password rejected" = "App-Passwort abgelehnt";
+"Last checked" = "Zuletzt geprüft";
+"Last sync" = "Letzte Synchronisierung";
+"Never" = "Nie";
+"Account id" = "Konto-ID";
+"Messages" = "Nachrichten";
+"Conversations" = "Konversationen";
+"Server limits" = "Grenzwerte des Servers";
+"Largest attachment" = "Größter Anhang";
+"Largest request" = "Größte Anfrage";
+"Objects per read" = "Objekte pro Lesevorgang";
+"Objects per write" = "Objekte pro Schreibvorgang";
+"Calls per request" = "Aufrufe pro Anfrage";
+"Requests at once" = "Gleichzeitige Anfragen";
+"Your server's own numbers, not the app's. A message with a bigger attachment than this is refused before it is sent, and bulk actions are split to fit." = "Die Werte deines Servers, nicht die der App. Eine Nachricht mit einem größeren Anhang wird vor dem Senden abgelehnt, und Sammelaktionen werden passend aufgeteilt.";
+"Notifications" = "Mitteilungen";
+"This server can send push notifications" = "Dieser Server kann Push-Mitteilungen senden";
+"Environment" = "Umgebung";
+"Topic" = "Topic";
+"No push from this server" = "Kein Push von diesem Server";
+"Sending push notifications to an iPhone needs an Apple developer key on the server. Without one, mail arrives when the app checks — on opening it, and in the background when iOS allows." = "Für Push-Mitteilungen an ein iPhone braucht der Server einen Apple-Entwicklerschlüssel. Ohne ihn kommt E-Mail an, wenn die App nachsieht — beim Öffnen und im Hintergrund, wenn iOS es zulässt.";
+"Copy diagnostics" = "Diagnose kopieren";
+"Copied" = "Kopiert";
+"Everything on this screen as plain text, for pasting into a bug report. It contains your server's address and your mailbox names, and never your app password." = "Alles auf diesem Bildschirm als reiner Text, zum Einfügen in einen Fehlerbericht. Enthält die Adresse deines Servers und deine Postfachnamen, niemals dein App-Passwort.";
+
+/* Labels verwalten: der Screen hinter „Labels bearbeiten“ in der Seitenleiste
+   und das direkte Anlegen, das jetzt beide Auswahllisten anbieten. */
+
+"Create a label" = "Label anlegen";
+"Edit labels" = "Labels bearbeiten";
+"New label" = "Neues Label";
+"Rename label" = "Label umbenennen";
+"Rename" = "Umbenennen";
+"Label name" = "Labelname";
+"Create" = "Anlegen";
+"Built in" = "Vorgegeben";
+"Dismiss" = "Schließen";
+"Delete this label?" = "Dieses Label löschen?";
+"“%@” will be removed from this account. No mail is deleted — the messages keep every other label they carry." = "„%@“ wird aus diesem Konto entfernt. Es wird keine Mail gelöscht — die Nachrichten behalten alle anderen Labels.";
+"There's already a label with that name here." = "Hier gibt es bereits ein Label mit diesem Namen.";
+"Filter or add a label" = "Label filtern oder anlegen";
+"Create “%@” and apply it" = "„%@“ anlegen und zuweisen";
+"Type a name above to make your first one." = "Oben einen Namen eingeben, um das erste anzulegen.";
+
+/* Ein Label liegt über einer Mehrfachauswahl auf allen, einigen oder keinen.
+   „Einige“ ist der Zustand, den die alten Buttons nicht ausdrücken konnten. */
+
+"%lld of %lld" = "%lld von %lld";
+"On all selected" = "Bei allen ausgewählten";
+"On some selected" = "Bei einigen ausgewählten";
+"On none selected" = "Bei keinem ausgewählten";
+
+/* Schlüssel, die der Code längst angefragt hat und die in keinem Katalog
+   standen — deutsche Leser sahen Englisch, und nichts hat es gemeldet.
+   Gefunden vom Abdeckungstest, nicht von jemandem, dem es aufgefallen wäre. */
+
+"Delete" = "Löschen";
+"Mark as read" = "Als gelesen markieren";
+"Remove star" = "Stern entfernen";
+"An app password starts with plmail_ and is 64 characters after that." = "Ein App-Passwort beginnt mit plmail_ und hat danach 64 Zeichen.";
+
+/* Mehrfachauswahl. „Alle auswählen“ neben einer gestückelten Liste klingt nach
+   dem ganzen Postfach und ist es nicht; ein Schreibvorgang trägt nur begrenzt
+   viele Objekte — mehr ungelesene Mail braucht zwei Durchgänge, und das wird
+   auch gesagt. */
+
+"Select all loaded" = "Alle geladenen auswählen";
+"Not everything fitted" = "Es hat nicht alles gepasst";
+"Your server accepts a limited number of changes per request, so %lld messages are still unread. Press Mark all as read again to continue." = "Dein Server nimmt pro Anfrage nur begrenzt viele Änderungen an, deshalb sind %lld Nachrichten noch ungelesen. Erneut „Alles als gelesen markieren“ drücken, um fortzufahren.";
+
+/* Suchen in einer geöffneten Konversation, dazu die Kopfzeilen-Details, die man
+   öffnet, wenn eine Nachricht nicht von dem zu stammen scheint, was sie
+   behauptet. „An:“ trägt seinen Doppelpunkt selbst, weil die Namen daneben
+   getrennt gezeichnet werden — sonst könnte eine Suche nach „an“ die
+   Beschriftung treffen und jeden weiteren Treffer verschieben. */
+
+"Find in conversation" = "In Konversation suchen";
+"Next match" = "Nächster Treffer";
+"Previous match" = "Vorheriger Treffer";
+"To:" = "An:";
+"Show details" = "Details einblenden";
+"Hide details" = "Details ausblenden";
+"Date" = "Datum";
+"Nothing can be both read and unread, so this finds nothing." = "Nichts kann gleichzeitig gelesen und ungelesen sein – das findet nichts.";
+"Show unread only" = "Nur ungelesene zeigen";
+"Not searched, having no matching mailbox: " = "Nicht durchsucht, ohne passendes Postfach: ";
+
+/* Onboarding: shown under the address field as soon as it parses to http,
+   before the app password can be sent. */
+"This address is unencrypted. Your app password and your mail will travel in the clear, so only use it on a network you trust." = "Diese Adresse ist unverschlüsselt. Dein App-Passwort und deine E-Mails werden im Klartext übertragen — nutze sie nur in einem Netzwerk, dem du vertraust.";
+
+"Show or hide the sidebar" = "Seitenleiste ein- oder ausblenden";
+"Go to mailbox %lld" = "Zu Postfach %lld";
+"Next conversation" = "Nächste Konversation";
+"Previous conversation" = "Vorherige Konversation";
+"Open conversation" = "Konversation öffnen";
+"Clear selection" = "Auswahl aufheben";
+"Select conversation" = "Konversation auswählen";
+/* Labels: die neun Farben, die plMail als Tailwind-Token speichert, dazu das
+   Fehlen einer Farbe. Die Namen stehen hier, weil ein Farbfeld ohne Namen für
+   niemanden bedienbar ist, der zwei Grüntöne nicht unterscheiden kann — und
+   weil neunmal „Taste“ keine Auswahl ist. „Keine Farbe“ ist ein dritter
+   Zustand und bewusst nicht „Grau“, das man tatsächlich wählen kann. */
+"Grey" = "Grau";
+"Red" = "Rot";
+"Orange" = "Orange";
+"Amber" = "Bernstein";
+"Green" = "Grün";
+"Teal" = "Petrol";
+"Blue" = "Blau";
+"Violet" = "Violett";
+"Pink" = "Pink";
+"No colour" = "Keine Farbe";
+"Colour" = "Farbe";
+"Without a colour, plMail picks one from the name." = "Ohne Farbe wählt plMail eine aus dem Namen.";
+
+/* Labels: Verschachtelung. Der Pfad wird mit Schrägstrich gezeichnet, aber als
+   Satz vorgelesen — VoiceOver liest „Arbeit / Q1“ als „Arbeit Schrägstrich
+   Q1“, was spätestens dann unverständlich wird, wenn ein Name selbst einen
+   Schrägstrich enthält. */
+"%@, in %@" = "%@, in %@";
+"%lld events" = "%lld Termine";
+"Nested under" = "Untergeordnet unter";
+"None" = "Keins";
+"A label can be nested under another on the same account. Its own name never contains a slash." = "Ein Label kann einem anderen desselben Kontos untergeordnet werden. Sein eigener Name enthält nie einen Schrägstrich.";
+"Edit" = "Bearbeiten";
+"Edit label" = "Label bearbeiten";
+
+/* Labels: die Chips auf einer Konversationszeile. Die Zahl steht für Chips,
+   für die die Zeile keine Breite hatte, und wird beim Vorlesen ausgeschrieben,
+   weil „+2“ das nicht ist. */
+"Label: %@" = "Label: %@";
+"+%lld" = "+%lld";
+"%lld more labels" = "%lld weitere Labels";
+"+%lld more" = "+%lld weitere";
+"Accent" = "Akzentfarbe";
+"Agenda" = "Agenda";
+"All day" = "Ganztägig";
+"Calendar" = "Kalender";
+"Calendars are set up in plMail on the web." = "Kalender werden in plMail im Web eingerichtet.";
+"Can't reach %@" = "%@ ist nicht erreichbar";
+"Cancelled" = "Abgesagt";
+"Chosen on your server, so every device you read plMail on matches." = "Auf deinem Server gewählt, damit alle Geräte übereinstimmen.";
+"Couldn't reach your server, so this is saved on this device only." = "Dein Server war nicht erreichbar; die Einstellung gilt nur auf diesem Gerät.";
+"Day" = "Tag";
+"Delete Draft" = "Entwurf löschen";
+"Dusk" = "Dämmerung";
+"Event" = "Termin";
+"Floating time" = "Ortsunabhängige Zeit";
+"In %lld calendars" = "In %lld Kalendern";
+"in %lld calendars" = "in %lld Kalendern";
+"List" = "Liste";
+"Location" = "Ort";
+"Month" = "Monat";
+"Next" = "Weiter";
+"Nord" = "Nord";
+"Not an address: %@" = "Keine Adresse: %@";
+"Notes" = "Notizen";
+"Nothing in this period" = "Nichts in diesem Zeitraum";
+"Nothing on this day" = "Nichts an diesem Tag";
+"Preview lines" = "Vorschauzeilen";
+"Previous" = "Zurück";
+"Repeats" = "Wiederholt sich";
+"Save Draft" = "Entwurf sichern";
+"Saved to Drafts" = "In Entwürfen gesichert";
+"Saving…" = "Wird gesichert …";
+"Sender avatars" = "Absenderbilder";
+"Set on your server" = "Auf dem Server gesetzt";
+"Solar" = "Solar";
+"The server refused this request" = "Der Server hat diese Anfrage abgelehnt";
+"Theme" = "Farbschema";
+"There may be more beyond this range" = "Außerhalb dieses Zeitraums kann es weitere Termine geben";
+"This app can't draw that theme yet, so it uses the system appearance. Your choice is left alone — it won't be overwritten." = "Diese App kann dieses Farbschema noch nicht darstellen und nutzt deshalb das Systemaussehen. Deine Auswahl bleibt unverändert und wird nicht überschrieben.";
+"This meeting reached plMail more than once." = "Dieser Termin ist mehrfach in plMail angekommen.";
+"This message hasn't been sent" = "Diese Nachricht wurde nicht gesendet";
+"This range is outside what the server keeps" = "Dieser Zeitraum liegt außerhalb dessen, was der Server vorhält";
+"This server does not have a calendar" = "Dieser Server hat keinen Kalender";
+"Time zone" = "Zeitzone";
+"Today" = "Heute";
+"Unknown calendar" = "Unbekannter Kalender";
+"Untitled" = "Ohne Titel";
+"Use from:, to:, subject:, has:attachment, is:unread, is:starred, in:inbox and before:/after: with a date. Anything else is searched as text, and quoted words are searched as a phrase." = "Verwende from:, to:, subject:, has:attachment, is:unread, is:starred, in:inbox sowie before:/after: mit einem Datum. Alles andere wird als Text gesucht, Wörter in Anführungszeichen als Wortgruppe.";
+"View" = "Ansicht";
+"Week" = "Woche";
+"When" = "Wann";
+"Your appearance changed somewhere else. These are the new settings." = "Dein Erscheinungsbild wurde anderswo geändert. Dies sind die neuen Einstellungen.";
+"Your server doesn't offer themes, so this is a choice for this device." = "Dein Server bietet keine Farbschemata an; diese Auswahl gilt nur für dieses Gerät.";
+"Your server wouldn't accept that." = "Dein Server hat das abgelehnt.";
+
+/* Das Offline-Banner. Drei verschiedene Sätze, weil jeder woanders hinführt —
+   zum Gerät, zum Server oder zu einem einzelnen Konto. Die Zahl nennt die
+   Änderungen, die dieses Gerät noch hält: eine bereits verschwundene Zeile
+   sieht gleich aus, ob gesendet oder noch wartend. */
+"Retry" = "Erneut versuchen";
+"%lld changes waiting to send" = "%lld Änderungen warten auf Übertragung";
+"Ask my server" = "Server fragen";
+"Cancel send" = "Senden abbrechen";
+"Couldn't call that back" = "Konnte nicht zurückgeholt werden";
+"Couldn't change the sending address" = "Absenderadresse konnte nicht geändert werden";
+"Keep it on this device" = "Auf diesem Gerät behalten";
+
+/* Die ⌘-Menüleiste (Dok. 05, P2) und das zweite Fenster aus P6. */
+"Message" = "Nachricht";
+"New window" = "Neues Fenster";
+"Open in new window" = "In neuem Fenster öffnen";
+"That had already gone out. It couldn't be called back." = "Die Nachricht war schon unterwegs und ließ sich nicht mehr zurückholen.";
+"This phone sends this at %@" = "Dieses Telefon sendet um %@";
+"Your server can rank suggestions by who you actually write to. That means sending what you type here to your server as you type it — it already holds these addresses, harvested from your own mail, but not what you type or when." = "Dein Server kann Vorschläge danach sortieren, wem du wirklich schreibst. Dafür geht das Getippte an deinen Server, während du tippst — die Adressen kennt er schon aus deiner eigenen Post, was und wann du tippst aber nicht.";
+"Your server has no record of that send. It's back on this phone." = "Dein Server kennt diesen Sendevorgang nicht. Die Nachricht liegt wieder auf diesem Telefon.";
+"Your server holds this and sends it on time. If it won't — too far ahead, or you're offline — this phone sends it at the first check after." = "Dein Server hält die Nachricht zurück und sendet sie pünktlich. Wenn er das nicht kann — zu weit im Voraus, oder du bist offline — sendet dieses Telefon sie beim nächsten Abruf danach.";
+"Your server sends this at %@" = "Dein Server sendet um %@";
+
+/* Wave 4C: `mailto:`-Links von außerhalb der App. Der Dialog verhindert, dass
+   ein Link eine halb geschriebene Nachricht überschreibt — siehe ComposeView. */
+"Keep Writing" = "Weiterschreiben";
+"Open this link in a new message?" = "Diesen Link in einer neuen Nachricht öffnen?";
+"Save Draft and Continue" = "Entwurf sichern und fortfahren";
+"Some of that link was too long to use" = "Ein Teil des Links war zu lang";
+"That link writes to %@." = "Der Link schreibt an %@.";
+"The composer has as much of it as it could take." = "Übernommen wurde davon so viel wie möglich.";
+
+/* Der Termin-Editor (Dok. 03 §2.5, §2.6). Die beiden Ordnungs-Sätze sind
+   bewusst verschieden: „danach“ bedeutet auf jeder Seite des Ganztags-Schalters
+   etwas anderes. Der Löschtext nennt ausdrücklich, dass es keinen Papierkorb
+   gibt — im Kalender löscht ein Destroy wirklich, anders als in der Post. Jedes
+   deaktivierte Bedienelement nennt seinen Grund im Accessibility-Label, daher
+   die „%@“-Varianten. */
+"New event" = "Neuer Termin";
+"Edit event" = "Termin bearbeiten";
+"Title" = "Titel";
+"Left blank, this is saved as Untitled" = "Bleibt das Feld leer, wird der Termin als „Ohne Titel“ gesichert";
+"All-day" = "Ganztägig";
+"Starts" = "Beginnt";
+"Ends" = "Endet";
+"Repeat" = "Wiederholung";
+"Every day" = "Täglich";
+"Every week" = "Wöchentlich";
+"Every month" = "Monatlich";
+"Every year" = "Jährlich";
+"How often this repeats is left exactly as it is when you save." = "Wie oft sich dieser Termin wiederholt, bleibt beim Sichern genau so, wie es ist.";
+"Edit, %@" = "Bearbeiten, %@";
+"Delete event" = "Termin löschen";
+"Delete event, %@" = "Termin löschen, %@";
+"New event, %@" = "Neuer Termin, %@";
+"Save, %@" = "Sichern, %@";
+"Deleting an event removes it for everyone it is shared with." = "Beim Löschen verschwindet der Termin für alle, mit denen er geteilt ist.";
+"This deletes this event on the server. There is no bin to get it back from." = "Damit wird dieser Termin auf dem Server gelöscht. Es gibt keinen Papierkorb, aus dem er zurückzuholen wäre.";
+"This deletes every occurrence of this repeating event. There is no bin to get it back from." = "Damit werden alle Termine dieser Serie gelöscht. Es gibt keinen Papierkorb, aus dem sie zurückzuholen wären.";
+"An event must end after it starts." = "Ein Termin muss nach seinem Beginn enden.";
+"The end date can't be before the start date." = "Das Enddatum darf nicht vor dem Startdatum liegen.";
+"Choose a calendar you can add events to." = "Wähle einen Kalender, in dem du Termine anlegen kannst.";
+"You can't add events to any calendar here" = "Du kannst hier in keinem Kalender Termine anlegen";
+"You can't change events in this calendar" = "Du kannst Termine in diesem Kalender nicht ändern";
+"You can't delete events in this calendar" = "Du kannst Termine in diesem Kalender nicht löschen";
+"This calendar doesn't accept changes" = "Dieser Kalender nimmt keine Änderungen an";
+"This wasn't saved" = "Das wurde nicht gesichert";
+"This wasn't deleted" = "Das wurde nicht gelöscht";
+
+// Settings: signatures, notifications, accounts, diagnostics and the push log.
+"A mailbox added on your server later is announced without being switched on here." = "Ein Postfach, das du später auf deinem Server hinzufügst, meldet sich, ohne dass du es hier einschalten musst.";
+"Added below what you write, in this app and in the web interface. Leaving it empty means this address signs with nothing, even when the account itself has a signature." = "Wird in dieser App und in der Weboberfläche unter deinen Text gesetzt. Bleibt das Feld leer, signiert diese Adresse mit nichts – auch dann, wenn das Konto selbst eine Signatur hat.";
+"Announce mail from" = "Mail melden von";
+"Answered" = "Hat geantwortet";
+"Check" = "Prüfung";
+"Checked at" = "Geprüft um";
+"Clear" = "Leeren";
+"Default" = "Standard";
+"Furthest ahead a send can be scheduled" = "Maximaler Vorlauf beim geplanten Senden";
+"Issue a new app password in the web interface, then sign out and pair again. Signing out is the only thing that deletes the mail already downloaded." = "Erstelle in der Weboberfläche ein neues App-Passwort, melde dich dann ab und verbinde dich neu. Nur das Abmelden löscht die bereits geladene Mail.";
+"Labels appear here once your mail has synced." = "Labels erscheinen hier, sobald deine Mail synchronisiert ist.";
+"Listed by their full path, so two labels with the same name are told apart. A label made later starts off, except your inbox." = "Aufgeführt mit vollständigem Pfad, damit zwei gleichnamige Labels unterscheidbar sind. Ein später angelegtes Label ist zunächst aus – außer deinem Posteingang.";
+"Live updates" = "Live-Aktualisierung";
+"Needs attention" = "Braucht Aufmerksamkeit";
+"No answer" = "Keine Antwort";
+"No push subscription" = "Kein Push-Abonnement";
+"Nothing has arrived yet." = "Bisher ist nichts angekommen.";
+"Notifications are turned off for plMail" = "Mitteilungen sind für plMail ausgeschaltet";
+"Notifications off" = "Mitteilungen aus";
+"Off" = "Aus";
+"Off, by default" = "Aus, standardmäßig";
+"On" = "An";
+"On, by default" = "An, standardmäßig";
+"Only which mailboxes changed, never what was in them. The newest is at the top and the oldest are dropped." = "Nur welche Postfächer sich geändert haben, nie deren Inhalt. Das Neueste steht oben, das Älteste fällt heraus.";
+"Open iOS notification settings" = "iOS-Mitteilungseinstellungen öffnen";
+"Push log" = "Push-Protokoll";
+"Received" = "Empfangen";
+"Registration" = "Registrierung";
+"Remove signature" = "Signatur entfernen";
+"Replace" = "Ersetzen";
+"Replace this signature?" = "Diese Signatur ersetzen?";
+"Replace with plain text" = "Durch reinen Text ersetzen";
+"Result" = "Ergebnis";
+"Round trip" = "Laufzeit";
+"Sends the smallest request there is and times the reply. It reads no mail and changes nothing, and nothing on this screen contacts your server until you press it." = "Sendet die kleinstmögliche Anfrage und misst die Antwortzeit. Dabei wird keine Mail gelesen und nichts geändert; bis du darauf tippst, kontaktiert nichts auf diesem Bildschirm deinen Server.";
+"Signed out" = "Abgemeldet";
+"Sounds, banners and the lock screen are iOS's settings, not this app's. Everything below decides only which mail is worth telling you about." = "Töne, Banner und der Sperrbildschirm sind Einstellungen von iOS, nicht dieser App. Alles darunter entscheidet nur, welche Mail eine Meldung wert ist.";
+"Still synced, never announced" = "Wird weiter synchronisiert, aber nie gemeldet";
+"The formatting, links and images in it are removed. What you write here replaces it everywhere, including in the web interface." = "Formatierung, Links und Bilder darin gehen verloren. Was du hier schreibst, ersetzt sie überall, auch in der Weboberfläche.";
+"These are the mailboxes plMail collects for you. Connecting or disconnecting one is done on the server, not here. The first one is where a new message and a new label start." = "Das sind die Postfächer, die plMail für dich abruft. Verbinden und Trennen geschieht auf dem Server, nicht hier. Das erste ist der Ausgangspunkt für eine neue Nachricht und ein neues Label.";
+"This signature was written with formatting, so it can't be edited here without losing it. Change it in the web interface, or replace it with plain text." = "Diese Signatur wurde mit Formatierung geschrieben und lässt sich hier nicht ändern, ohne sie zu verlieren. Ändere sie in der Weboberfläche oder ersetze sie durch reinen Text.";
+"Use the default" = "Standard verwenden";
+"While app is open" = "Solange die App offen ist";
+"Your app password was rejected. Mail on this device is untouched." = "Dein App-Passwort wurde abgelehnt. Die Mail auf diesem Gerät bleibt unangetastet.";
+"Your server keeps its own record of what it sent. Comparing it with this list line by line is what tells you which half went missing." = "Dein Server führt selbst Buch darüber, was er gesendet hat. Der zeilenweise Vergleich mit dieser Liste zeigt, welche Hälfte fehlt.";
+"%lld messages on this device" = "%lld Nachrichten auf diesem Gerät";
+"%lld messages on this device, back to %@" = "%lld Nachrichten auf diesem Gerät, zurück bis %@";
+"%@ at %@" = "%@ um %@";
+
+/* Kategorien und die Neu-Markierung. Die Kategorienamen selbst stehen in
+   PLMailCore neben den Postfachrollen. */
+
+"Categories" = "Kategorien";
+"All mail" = "Alle Nachrichten";
+"New" = "Neu";
+
+// Calendar on iPad: the rail, the standing inspector, the year view and search.
+"Calendars" = "Kalender";
+"Choose an event to see it here." = "Wähle einen Termin, um ihn hier zu sehen.";
+"Copy title" = "Titel kopieren";
+"Hidden" = "Ausgeblendet";
+"Hiding a calendar here changes nothing on the server." = "Einen Kalender hier auszublenden ändert nichts auf dem Server.";
+"Next event" = "Nächster Termin";
+"No event selected" = "Kein Termin ausgewählt";
+"Nothing found in these dates" = "In diesen Tagen nichts gefunden";
+"Previous event" = "Vorheriger Termin";
+"Search only covers the dates you have loaded." = "Die Suche erfasst nur die Tage, die du geladen hast.";
+"Search these dates" = "Diese Tage durchsuchen";
+"Shown" = "Eingeblendet";
+"Year" = "Jahr";
+
+/* Der Weg in den Kalender von außerhalb der App: ein Spotlight-Treffer, ein
+   Kurzbefehl, ein wiederhergestelltes Fenster. Der Index wird zu einem
+   Zeitpunkt geschrieben und zu einem anderen angetippt — ein Treffer kann also
+   einen längst abgesagten Termin benennen. */
+
+"That event isn't here any more" = "Diesen Termin gibt es nicht mehr";
+"It may have been deleted since it was last synced." = "Er wurde vielleicht gelöscht, seit zuletzt abgeglichen wurde.";
+
+// Eine eingebaute Bezeichnung umfärben, und die Rückfrage bei Entwurfskonflikten.
+"Built-in labels can't be renamed or moved, but their colour is yours to choose." = "Eingebaute Bezeichnungen lassen sich nicht umbenennen oder verschieben, ihre Farbe aber wählst du.";
+"This draft changed somewhere else" = "Dieser Entwurf wurde anderswo geändert";
+"Another device saved a newer version. Nothing you have typed has been touched — keep it and it replaces theirs, or close the composer to leave theirs alone." = "Ein anderes Gerät hat eine neuere Fassung gespeichert. An deinem Text wurde nichts angerührt — behältst du ihn, ersetzt er die andere Fassung; schließt du den Editor, bleibt sie unangetastet.";
+"Keep what I've written" = "Meinen Text behalten";
+"Close without saving" = "Ohne Speichern schließen";
+
+"Loading…" = "Wird geladen…";
+
+"Downloading %lld messages for offline" = "%lld Nachrichten werden für offline geladen";
+
+/* The header row inside the list card: how many conversations the feed holds. */
+"%lld conversations" = "%lld Unterhaltungen";
+
+/* Spoken for the sidebar's unread capsule, which is drawn as a bare number. */
+"%lld unread" = "%lld ungelesen";
+
+/* Spoken for the sidebar's outlined tally — Drafts, Outbox — where the count is
+   of items rather than of new mail. */
+"%lld in total" = "%lld insgesamt";
+
+"Clear search" = "Suche löschen";
+
+"Dock the calendar" = "Kalender andocken";
+
+/* Der angedockte Kalender neben der Mail. */
+"Happening soon" = "Steht bevor";
+"Open the full calendar" = "Vollen Kalender öffnen";
+"Back to mail" = "Zurück zur Mail";
+"Close the calendar" = "Kalender schließen";
+
+/* Kopfzeile: Punkt = Zustand des Änderungs-Streams, Seitenleisten-Umschalter. */
+"Live — changes arrive as they happen" = "Live — Änderungen kommen sofort an";
+"Not live — mail arrives when the app checks" = "Nicht live — Mail kommt beim nächsten Abruf";
+"Collapse the sidebar to icons" = "Seitenleiste auf Symbole verkleinern";
+"Show mailbox names" = "Postfachnamen anzeigen";

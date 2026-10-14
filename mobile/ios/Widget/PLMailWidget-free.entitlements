@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Empty for the same reason as the app's: a free Apple ID cannot grant
+	     an App Group. Without one this extension cannot read the app's
+	     numbers at all, so the widget says so rather than showing a zero it
+	     has no basis for. -->
+</dict>
+</plist>

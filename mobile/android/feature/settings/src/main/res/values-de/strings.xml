@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Zurück</string>
+
+    <string name="diagnostics_title">Diagnose</string>
+    <string name="diagnostics_server">Server</string>
+    <string name="diagnostics_address">Adresse</string>
+    <string name="diagnostics_not_connected">Nicht verbunden</string>
+
+    <string name="diagnostics_accounts">Konten</string>
+    <string name="diagnostics_no_accounts">Es wurde noch kein Konto synchronisiert.</string>
+    <string name="diagnostics_last_sync">Letzte erfolgreiche Synchronisierung</string>
+    <string name="diagnostics_never">Nie</string>
+    <string name="diagnostics_last_error">Seitdem: %1$s</string>
+    <string name="diagnostics_no_cursor">Keine Synchronisierungsposition gespeichert; die nächste Aktualisierung lädt dieses Konto von vorn.</string>
+    <string name="diagnostics_repaged">Der Server konnte von der gespeicherten Synchronisierungsposition dieses Kontos aus nicht antworten; seine Listen werden daher von vorn geladen. Es sind keine Nachrichten verloren gegangen.</string>
+
+    <string name="diagnostics_push">Push</string>
+    <string name="diagnostics_distributor">Verteiler</string>
+    <string name="diagnostics_none">Keiner</string>
+    <string name="diagnostics_no_distributor">Es ist kein Push-Verteiler installiert. E-Mails kommen weiterhin an, aber nur wenn die App nachsieht – alle 15 Minuten oder beim Öffnen. Mit ntfy gibt es wieder sofortige Zustellung.</string>
+    <string name="diagnostics_several_distributors">Mehrere Verteiler sind installiert (%1$s), aber keiner ist ausgewählt. Wählen Sie einen in dessen eigener App aus und aktivieren Sie Push hier erneut.</string>
+    <string name="diagnostics_registered">Beim Server registriert</string>
+    <string name="diagnostics_not_registered">Nicht registriert</string>
+    <string name="diagnostics_last_push">Letzte Push-Nachricht</string>
+    <string name="diagnostics_verified">Der Server bestätigt: Diese Registrierung ist verifiziert und wird beliefert.</string>
+    <string name="diagnostics_unverified">Diese Registrierung wurde nie verifiziert, deshalb liefert der Server nichts aus. Aktivieren Sie Push erneut, um die Bestätigung zu wiederholen.</string>
+    <string name="diagnostics_push_error">Letztes Push-Problem: %1$s</string>
+    <string name="diagnostics_enable_push">Push aktivieren</string>
+    <string name="diagnostics_transport">Übertragungsweg</string>
+    <string name="diagnostics_last_push_via">%1$s (%2$s)</string>
+    <string name="diagnostics_subscription_present">Der Server hat die Registrierung dieses Geräts weiterhin gespeichert.</string>
+    <string name="diagnostics_subscription_gone">Der Server hat für dieses Gerät keine Registrierung mehr. Sie wurde höchstwahrscheinlich entfernt, nachdem eine Zustellung fehlgeschlagen ist. Wählen Sie unter „Push“ erneut einen Übertragungsweg, um sich neu zu registrieren.</string>
+
+    <string name="push">Push</string>
+    <string name="push_title">Push</string>
+    <string name="push_transport">Wie neue E-Mails auf dieses Gerät kommen</string>
+    <string name="push_transport_explains">Angeboten wird nur, was dieses Telefon und dieser Server tatsächlich zustellen können. Bei allem anderen steht, woran es liegt.</string>
+
+    <string name="push_transport_webpush">Web Push (UnifiedPush)</string>
+    <string name="push_transport_webpush_explains">Eine Verteiler-App, die Sie installieren, hält die Verbindung. plMail verschlüsselt jede Nachricht für dieses Gerät; der Verteiler erfährt also, wann eine E-Mail ankommt, aber nie, was darin steht. Ohne Google.</string>
+
+    <string name="push_transport_fcm">Firebase (Google)</string>
+    <string name="push_transport_fcm_explains">Nichts zu installieren. Ihr Server braucht ein Firebase-Projekt, und Google erfährt, dass und wann eine Nachricht angekommen ist – nie, was darin steht.</string>
+
+    <string name="push_transport_pull">Nur abrufen</string>
+    <string name="push_transport_pull_explains">Nirgends registriert. plMail sieht alle 15 Minuten nach und immer, wenn Sie die App öffnen, und bleibt aktuell, solange die App geöffnet ist. Außer Ihrem Server erfährt niemand, wann E-Mails ankommen.</string>
+
+    <string name="push_reason_server_too_old">Dieser Server kennt Firebase noch nicht. Nach einem Update von plMail auf dem Server steht die Option zur Verfügung.</string>
+    <string name="push_reason_server_disabled">Firebase ist auf diesem Server ausgeschaltet. In den Administrationseinstellungen des Servers lässt es sich unter „Push“ einschalten.</string>
+    <string name="push_reason_server_config">Die Firebase-Konfiguration dieses Servers ist unvollständig und kann deshalb nicht gestartet werden.</string>
+    <string name="push_reason_not_in_build">Dies ist die Google-freie Variante; sie enthält überhaupt keinen Firebase-Code. Das ist Absicht.</string>
+    <string name="push_reason_no_play_services">Auf diesem Gerät sind keine nutzbaren Google-Play-Dienste vorhanden.</string>
+    <string name="push_reason_init_failed">Firebase ließ sich mit der Konfiguration dieses Servers nicht starten.</string>
+    <string name="push_reason_no_vapid">Web Push ist auf diesem Server nicht eingerichtet; er kann also nichts verschlüsselt versenden.</string>
+    <string name="push_reason_no_distributor">Es ist kein Push-Verteiler installiert. Mit ntfy oder einem anderen UnifiedPush-Verteiler wird diese Option verfügbar.</string>
+
+    <string name="push_switching">Wird umgestellt …</string>
+
+    <string name="push_status">Aktueller Stand</string>
+    <string name="push_status_active">Registrierter Übertragungsweg</string>
+    <string name="push_status_none">Keiner</string>
+    <string name="push_status_awaiting">Registriert. Es fehlt noch die Bestätigungsnachricht des Servers: Bis sie ankommt und beantwortet ist, liefert diese Registrierung nichts aus. Das dauert normalerweise wenige Sekunden.</string>
+    <string name="push_status_awaiting_short">Wartet auf Bestätigung</string>
+    <string name="push_status_live">Bestätigt. Der Server liefert an dieses Gerät aus.</string>
+    <string name="push_status_not_registered">Nicht beim Server registriert.</string>
+    <string name="push_status_pull">Es besteht wie gewünscht keine Registrierung. E-Mails kommen beim 15-Minuten-Abruf an, beim Öffnen der App und laufend, solange die App geöffnet ist.</string>
+    <string name="push_status_last">Letzte Zustellung</string>
+    <string name="push_last_error">Letztes Problem: %1$s</string>
+    <string name="push_fell_back">Dieses Gerät ist auf Firebase eingestellt, der Server bietet es aber nicht mehr an: %1$s E-Mails kommen bis zur Wahl eines anderen Übertragungswegs über den 15-Minuten-Abruf.</string>
+
+    <string name="push_log_open">Empfangene Pushes</string>
+    <string name="push_log_explains">Jede Zustellung, die dieses Gerät empfangen hat, mit dem Weg, über den sie kam. Vergleichen Sie sie mit dem Zustellprotokoll Ihres Servers, um zu sehen, wo eine Nachricht steckengeblieben ist.</string>
+    <string name="push_log_title">Empfangene Pushes</string>
+    <string name="push_log_clear">Leeren</string>
+    <string name="push_log_empty">Noch nichts empfangen. Schicken Sie sich selbst eine Nachricht, um zu sehen, ob sie hier ankommt.</string>
+    <string name="push_log_verified">Bestätigt</string>
+    <string name="push_log_not_applicable">Nicht zutreffend</string>
+    <string name="push_log_changed">Konto %1$s: %2$s</string>
+
+    <string name="diagnostics_check">Jetzt prüfen</string>
+    <string name="diagnostics_check_explains">Synchronisiert alle Konten und fragt den Server, ob Push verifiziert ist. Nur das kontaktiert von dieser Seite aus Ihren Server.</string>
+    <string name="diagnostics_check_failed">Prüfung fehlgeschlagen: %1$s</string>
+    <string name="appearance">Darstellung</string>
+    <string name="appearance_title">Darstellung</string>
+
+    <string name="appearance_language">Sprache</string>
+    <string name="language_system">Wie das System</string>
+    <!-- Endonyme: siehe die englische Fassung. Beide Namen sind in beiden Sprachen dasselbe Wort. -->
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="appearance_language_body">Die Sprache, in der plMail auf diesem Telefon geschrieben ist. Die Einstellung gilt nur für dieses Gerät — sie wird nie an Ihr Konto gesendet und erreicht weder Ihren Browser noch Ihre anderen Geräte.</string>
+    <string name="appearance_language_system">Das ist dieselbe Einstellung wie die von Android unter Einstellungen → Apps → plMail → Sprache. Eine Änderung an einer der beiden Stellen ändert beide.</string>
+
+    <string name="appearance_sync">Wie im Web</string>
+    <string name="appearance_sync_body">Was Sie hier nicht selbst einstellen, folgt plMail in Ihrem Browser. Ausgeschaltet bleibt dieses Telefon bei dem, was es gerade zeigt. Was Sie auf diesem Bildschirm ändern, erreicht Ihren Browser so oder so nie. Beim Wiedereinschalten gelten wieder die Einstellungen des Browsers; die des Telefons werden verworfen.</string>
+
+    <string name="appearance_theme">Farbschema</string>
+    <string name="theme_system">Wie das System</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="theme_nord">Nord</string>
+    <string name="theme_dusk">Dämmerung</string>
+    <string name="theme_solar">Solar</string>
+
+    <string name="appearance_dynamic">Farben meines Hintergrundbilds</string>
+    <string name="appearance_dynamic_body">Nimmt die Farben vom Hintergrundbild statt vom Schema oben. Hell oder dunkel richtet sich weiterhin nach Ihrer Wahl.</string>
+
+    <string name="appearance_layout">Layout</string>
+    <string name="layout_flat">Flach</string>
+    <string name="layout_boxed">Flächen</string>
+    <string name="appearance_layout_body">Flach trennt mit Haarlinien auf der Seite. Flächen hebt Inhalte auf abgerundete Karten.</string>
+    <string name="appearance_blur_unsupported">Im Web eingestellte Milchglas-Flächen werden hier nicht gezeichnet — Android kann nicht unscharf zeichnen, was hinter einer Fläche liegt. Ihre Einstellung bleibt unverändert.</string>
+
+    <string name="appearance_density">Dichte</string>
+    <string name="density_comfortable">Bequem</string>
+    <string name="density_cosy">Mittel</string>
+    <string name="density_compact">Kompakt</string>
+
+    <string name="appearance_surface_density">Dichte je Bereich</string>
+    <string name="density_follow">Wie oben</string>
+    <string name="appearance_surface_sidebar">Ordnerliste</string>
+    <string name="appearance_surface_list">Mailliste</string>
+    <string name="appearance_surface_reading">Nachricht lesen</string>
+    <string name="appearance_surface_density_body">Überschreibt die Dichte oben für einen einzelnen Bereich.</string>
+
+    <string name="appearance_typography">Schrift</string>
+    <string name="font_system">System</string>
+    <string name="font_grotesk">Grotesk</string>
+    <string name="font_serif">Serif</string>
+    <string name="font_monospace">Mono</string>
+    <string name="appearance_font_family_body">Die Schrift, in der die App gezeichnet wird. Die Schrift geschriebener Mails ändert sie nicht.</string>
+    <string name="appearance_font_scale">Textgröße</string>
+    <string name="appearance_font_scale_body">Wirkt zusätzlich zur Textgröße Ihres Geräts, beide multiplizieren sich also. Für wirklich große Schrift ist die Geräteeinstellung die richtige.</string>
+
+    <string name="appearance_list">Mailliste</string>
+    <string name="appearance_list_avatars">Avatare zeigen</string>
+    <string name="appearance_list_avatars_body">Der farbige Kreis mit dem Anfangsbuchstaben des Absenders. Ausgeschaltet gewinnt der Betreff die Breite zurück.</string>
+    <string name="appearance_preview_lines">Vorschau</string>
+    <string name="preview_none">Keine</string>
+    <string name="preview_one">Eine Zeile</string>
+    <string name="preview_two">Zwei Zeilen</string>
+    <string name="appearance_unread_emphasis">Ungelesene Mail</string>
+    <string name="emphasis_subtle">Dezent</string>
+    <string name="emphasis_standard">Normal</string>
+    <string name="emphasis_strong">Deutlich</string>
+    <string name="appearance_account_corner">Konto kennzeichnen</string>
+    <string name="appearance_account_corner_body">Färbt eine Ecke jeder Zeile nach dem Konto, in dem die Mail angekommen ist. Erscheint nur in einer Liste, die mehrere Konten gleichzeitig zeigt.</string>
+
+    <string name="appearance_accessibility">Barrierefreiheit</string>
+    <string name="appearance_solid_panes">Flächen deckend halten</string>
+    <string name="appearance_solid_panes_body">Schaltet durchscheinende Flächen ab. Android hat dafür keine Systemeinstellung, deshalb steht sie hier; reduzierte Bewegung wird automatisch aus den Geräteeinstellungen übernommen.</string>
+    <string name="appearance_pane_alpha">Deckkraft der Flächen</string>
+    <string name="appearance_pane_sample">So sieht eine Fläche aus.</string>
+
+    <string name="appearance_home_screen">Startbildschirm</string>
+    <string name="appearance_calendar_icon">Kalender als eigene App anzeigen</string>
+    <string name="appearance_calendar_icon_body">Fügt ein zweites Symbol hinzu, das den Kalender für sich öffnet, mit einem eigenen Eintrag unter den zuletzt verwendeten Apps. Es kann einen Moment dauern, bis es erscheint – manche Startbildschirme bemerken es erst beim nächsten Neuladen. Der Kalender bleibt in beiden Fällen im Menü, und die Einstellung gilt nur für dieses Gerät.</string>
+
+    <string name="accounts">Konten</string>
+    <string name="accounts_title">Konten</string>
+    <string name="accounts_none">Es wurden noch keine Konten synchronisiert.</string>
+
+    <string name="accounts_order">Reihenfolge</string>
+    <string name="accounts_order_explains">Aus dem obersten Konto werden neue Nachrichten geschrieben, und dort werden neue Labels angelegt.</string>
+    <string name="accounts_move_up">%1$s nach oben</string>
+    <string name="accounts_move_down">%1$s nach unten</string>
+
+    <plurals name="accounts_window_messages">
+        <item quantity="one">%1$d Nachricht auf diesem Gerät</item>
+        <item quantity="other">%1$d Nachrichten auf diesem Gerät</item>
+    </plurals>
+    <string name="accounts_window">%1$s, zurück bis %2$s</string>
+    <string name="accounts_window_empty">Von diesem Konto liegt noch nichts auf diesem Gerät.</string>
+
+    <string name="accounts_server_backfill_pending">Es kommt noch ältere Post; Ihr Server ist in diesem Postfach noch nicht am Ende angelangt.</string>
+    <string name="accounts_attention_reconnect">Dieses Konto muss neu verbunden werden. Melden Sie sich in plMail im Web erneut an — bis dahin kommt keine neue Post an.</string>
+    <string name="accounts_attention_push">Push funktioniert für dieses Konto nicht. Post kommt weiterhin an, aber erst bei der regelmäßigen Prüfung statt sofort.</string>
+    <string name="accounts_attention_generic">Dieses Konto braucht Aufmerksamkeit. Öffnen Sie plMail im Web, um zu sehen, was nicht stimmt.</string>
+
+    <string name="accounts_server_backfill_all">Er hat alles davon geholt.</string>
+    <plurals name="accounts_server_backfill_reached">
+        <item quantity="one">Er hat die neueste Nachricht geholt.</item>
+        <item quantity="other">Er hat die neuesten %1$d Nachrichten geholt.</item>
+    </plurals>
+
+    <string name="accounts_notify">Bei neuer Post benachrichtigen</string>
+    <string name="accounts_notify_a11y">Bei neuer Post von %1$s benachrichtigen</string>
+    <string name="accounts_muted_explains">Dieses Konto wird weiterhin synchronisiert und zeigt weiterhin ungelesene Nachrichten an. Es meldet sich nur nicht mehr.</string>
+
+    <string name="notifications_title">Benachrichtigungen</string>
+    <string name="notifications_explains">Zunächst meldet sich nur Post aus „Allgemein“. Schalten Sie alles weitere ein, worüber Sie Bescheid wissen möchten. Eine Nachricht, die auf mehrere davon zutrifft, kommt trotzdem als eine einzige Benachrichtigung an.</string>
+
+    <string name="notifications_categories">Posteingangs-Kategorien</string>
+    <string name="notifications_categories_explains">Die Tabs, in die Ihr Server eingehende Post einsortiert.</string>
+
+    <!-- Identisch zur Tab-Leiste in :feature:mail — sonst lässt sich ein Schalter keiner Liste zuordnen. -->
+    <string name="notifications_category_primary">Allgemein</string>
+    <string name="notifications_category_social">Soziale Netzwerke</string>
+    <string name="notifications_category_promotions">Werbung</string>
+    <string name="notifications_category_updates">Benachrichtigungen</string>
+    <string name="notifications_category_forums">Foren</string>
+    <string name="notifications_category_primary_explains">Umfasst auch Post im Posteingang, die Ihr Server noch keiner Kategorie zugeordnet hat.</string>
+
+    <string name="notifications_labels">Labels</string>
+    <string name="notifications_labels_explains">Schalten Sie ein Label ein, um über Post dort informiert zu werden — auch dann, wenn eine Regel auf Ihrem Server sie am Posteingang vorbeigeleitet hat.</string>
+    <string name="notifications_no_labels">Auf dieses Gerät wurden noch keine Labels synchronisiert.</string>
+
+    <string name="notifications_scope_a11y">Über %1$s benachrichtigen</string>
+    <string name="swipe_title">Wischgesten</string>
+    <string name="swipe_to_end">Nach rechts wischen</string>
+    <string name="swipe_to_start">Nach links wischen</string>
+    <string name="swipe_body">Gilt für Zeilen in der E-Mail-Liste, nur auf diesem Gerät. Jede Aktion gibt es auch in der Leiste, die beim langen Drücken auf eine Zeile erscheint.</string>
+    <string name="swipe_none">Nichts</string>
+    <string name="swipe_archive">Archivieren</string>
+    <string name="swipe_trash">In den Papierkorb</string>
+    <string name="swipe_read">Als gelesen oder ungelesen markieren</string>
+    <string name="swipe_snooze">Zurückstellen</string>
+    <string name="swipe_move">Verschieben nach …</string>
+    <string name="swipe_action">Aktion</string>
+    <string name="swipe_confirm">Vor dem Ausführen fragen</string>
+    <string name="swipe_confirm_on_body">Ein Dialog fragt jedes Mal zuerst.</string>
+    <string name="swipe_confirm_off_body">Wirkt sofort. Lässt sich über die eingeblendete Leiste rückgängig machen.</string>
+    <string name="swipe_confirm_not_needed">Nichts zu fragen: Diese Richtung tut nichts.</string>
+</resources>

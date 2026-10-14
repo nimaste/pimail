@@ -1,0 +1,61 @@
+{
+  "methodResponses": [
+    [
+      "Email/query",
+      {
+        "accountId": "7",
+        "queryState": "312",
+        "canCalculateChanges": false,
+        "position": 0,
+        "ids": ["1041", "1042"],
+        "total": 2
+      },
+      "c0"
+    ],
+    [
+      "error",
+      { "type": "unsupportedFilter", "description": "Filter condition \"snoozed\" is not supported." },
+      "c1"
+    ],
+    [
+      "Mailbox/get",
+      {
+        "accountId": "7",
+        "state": "12",
+        "list": [
+          {
+            "id": "13",
+            "labelId": "4",
+            "name": "Inbox",
+            "parentId": null,
+            "role": "inbox",
+            "sortOrder": 0,
+            "totalEmails": 214,
+            "unreadEmails": 7,
+            "totalThreads": 190,
+            "unreadThreads": 6,
+            "myRights": { "mayReadItems": true, "mayRename": false, "mayDelete": false },
+            "isSubscribed": true
+          },
+          {
+            "id": "14",
+            "labelId": "9",
+            "name": "Invoices",
+            "parentId": "16",
+            "role": null,
+            "sortOrder": 0,
+            "totalEmails": 12,
+            "unreadEmails": 0,
+            "totalThreads": 12,
+            "unreadThreads": 0,
+            "myRights": { "mayReadItems": true, "mayRename": true, "mayDelete": true },
+            "isSubscribed": true
+          }
+        ],
+        "notFound": []
+      },
+      "c2"
+    ]
+  ],
+  "sessionState": "41"
+}

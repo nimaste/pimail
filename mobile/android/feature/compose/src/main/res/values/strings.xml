@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compose_title">New message</string>
+    <string name="compose_back">Back</string>
+    <string name="compose_send">Send</string>
+    <string name="compose_attach">Attach a file</string>
+    <string name="compose_more">More</string>
+    <string name="compose_discard">Discard draft</string>
+
+    <string name="compose_from">From</string>
+    <!-- Shown only before identities have been read; never a made-up address. -->
+    <string name="compose_from_unknown">Not known yet</string>
+    <!-- "Address" rather than "account": the picker offers one entry per alias now. -->
+    <string name="compose_choose_sender">Choose which address sends</string>
+    <string name="compose_to">To</string>
+    <string name="compose_cc">Cc</string>
+    <string name="compose_bcc">Bcc</string>
+    <string name="compose_show_copy_fields">Cc / Bcc</string>
+    <string name="compose_subject">Subject</string>
+    <!--
+      The label on the folded header's second line. Carries its own colon: where
+      the punctuation goes, and whether it takes a space before it, is a question
+      about the language rather than about the layout.
+    -->
+    <string name="compose_summary_subject">Subject:</string>
+    <string name="compose_body_hint">Write your message</string>
+
+    <!--
+      The header folded into one line, once the message itself is being written.
+
+      "(no subject)" in brackets rather than an empty gap: the summary is a claim
+      about what the message currently is, and a blank there reads as a rendering
+      fault rather than as a subject nobody has typed yet.
+    -->
+    <string name="compose_no_subject">(no subject)</string>
+    <!--
+      What a double tap does, read out after the line itself. A label rather than
+      a sentence, because TalkBack prefixes it with "double tap to".
+    -->
+    <string name="compose_summary_expand">show the sender, recipients and subject</string>
+    <!--
+      The spoken form of the line. The line on screen uses two marks to save
+      width; nothing announces "›" usefully, so the description spells out what
+      they stand for.
+    -->
+    <string name="compose_summary_description">From %1$s to %2$s, subject %3$s</string>
+    <!--
+      The recipients the line had no room to name, spoken. A count, so it is a
+      plural rather than a format string with a number in it.
+    -->
+    <plurals name="compose_summary_more">
+        <item quantity="one">and 1 more</item>
+        <item quantity="other">and %1$d more</item>
+    </plurals>
+
+    <string name="compose_bold">Bold</string>
+    <string name="compose_italic">Italic</string>
+    <string name="compose_underline">Underline</string>
+    <string name="compose_bullets">Bullet list</string>
+
+    <!-- Names the person so the action is unambiguous with several chips on one line. -->
+    <string name="compose_remove_recipient">Remove %1$s</string>
+    <string name="compose_remove_attachment">Remove %1$s</string>
+
+    <string name="compose_quoted_text">Quoted text</string>
+    <string name="compose_remove_quote">Remove quote</string>
+
+    <!--
+      Says what is true rather than what is hoped: the draft is on the server or
+      it is on its way there, and the difference matters to someone about to
+      close the app.
+    -->
+    <string name="compose_saved">Draft saved</string>
+    <string name="compose_saving">Saving…</string>
+
+    <!--
+      Scheduling. "Send later" rather than "Schedule": the menu entry is a verb
+      for what happens to this message, not a noun for a feature.
+    -->
+    <string name="compose_send_later">Send later…</string>
+    <string name="send_later_today">Later today</string>
+    <string name="send_later_tomorrow">Tomorrow morning</string>
+    <string name="send_later_monday">Monday morning</string>
+    <string name="send_later_pick">Pick a date and time…</string>
+    <string name="send_later_next">Next</string>
+    <string name="send_later_confirm">Schedule</string>
+    <string name="send_later_cancel">Cancel</string>
+
+    <!--
+      Says the release time rather than "scheduled", because the time is the only
+      part the user cannot work out for themselves.
+    -->
+    <string name="compose_scheduled_for">Leaves %1$s</string>
+    <string name="compose_cancel_schedule">Cancel</string>
+
+    <string name="compose_error_no_recipients">Add someone to send this to.</string>
+    <string name="compose_error_no_identity">No account can send mail yet. Check that your server is reachable.</string>
+    <string name="compose_error_no_original">That message could not be loaded, so there is nothing to quote.</string>
+    <!-- The server's own words, because they name the actual problem. -->
+    <string name="compose_error_save_failed">The draft could not be saved: %1$s</string>
+    <string name="compose_error_cancel_failed">The scheduled send could not be called back: %1$s</string>
+    <!--
+      Not an apology and not a failure: the mail went out as asked, a moment
+      before the cancel arrived. Says what is true of the message now.
+    -->
+    <string name="compose_error_already_sent">This message has already been sent.</string>
+
+    <!--
+      A share that lost a file, said out loud and by name.
+
+      Says what was NOT attached rather than what was, because the composer
+      already shows what was; the whole point of the sentence is the difference.
+      The limit is a number in the string rather than baked into the words: it is
+      one constant in SharedAttachmentStore, and a translation that spelled
+      "25 MB" out would go stale the day it moves.
+    -->
+    <string name="compose_error_attachments_too_large">Not attached, over %2$d MB: %1$s</string>
+    <string name="compose_error_attachments_unreadable">Not attached, could not be read: %1$s</string>
+
+    <!--
+      The attribution line above a quoted reply. Date first, sender second — the
+      order most clients use, and the one German reads best in.
+    -->
+    <string name="compose_attribution">On %1$s, %2$s wrote:</string>
+    <string name="compose_forwarded_heading">Forwarded message</string>
+    <string name="compose_from_label">From</string>
+    <string name="compose_date_label">Date</string>
+    <string name="compose_subject_label">Subject</string>
+    <string name="compose_to_label">To</string>
+    <string name="compose_cc_label">Cc</string>
+
+    <!-- The undo-send snackbar, hosted over the mail list rather than here. -->
+    <string name="send_pending">Sending…</string>
+    <string name="send_undo">Undo</string>
+    <string name="send_done">Message sent</string>
+    <string name="send_failed">Not sent: %1$s</string>
+    <string name="send_reopen">Edit</string>
+    <string name="send_scheduled">Will leave %1$s</string>
+    <!--
+      "Already sent" rather than "could not undo": what the user needs to know is
+      where the message is, not which request failed.
+    -->
+    <string name="send_too_late">Too late — this message has already been sent.</string>
+
+    <!-- The bar over the mail list, for messages the server is holding. -->
+    <string name="send_scheduled_no_subject">(no subject)</string>
+    <string name="send_scheduled_leaves">Leaves %1$s</string>
+    <string name="send_scheduled_cancel">Cancel</string>
+    <!--
+      A count, so it is a plural and not a format string with a number in it.
+      English needs two forms; the languages this app is translated into do not
+      all agree on how many, which is the whole reason the count goes through
+      the platform rather than through a `%1$d` somebody wrote once.
+    -->
+    <plurals name="send_scheduled_more">
+        <item quantity="one">and 1 more waiting</item>
+        <item quantity="other">and %1$d more waiting</item>
+    </plurals>
+</resources>

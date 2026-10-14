@@ -1,0 +1,20 @@
+// Copy to Signing.xcconfig (gitignored) and fill in your team.
+// Simulator builds need none of this; device builds do.
+
+DEVELOPMENT_TEAM =
+CODE_SIGN_IDENTITY = Apple Development
+
+// Which entitlements the app asks for.
+//
+// A free Apple ID signs an app onto your own device but grants no
+// capabilities: requesting APNs or an App Group fails signing outright with
+// "Personal development teams do not support the ... capability". So a free
+// build asks for nothing, and loses push and the widget's shared data.
+//
+//   free : App/plMail-free.entitlements   (no capabilities)
+//   paid : App/plMail.entitlements        (APNs + App Group)
+//
+// The app behaves correctly either way — push registration already handles
+// "not available" as an ordinary state.
+PLMAIL_ENTITLEMENTS = App/plMail-free.entitlements
+PLMAIL_WIDGET_ENTITLEMENTS = Widget/PLMailWidget-free.entitlements

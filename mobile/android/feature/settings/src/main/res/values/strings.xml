@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+
+    <string name="diagnostics_title">Diagnostics</string>
+    <string name="diagnostics_server">Server</string>
+    <string name="diagnostics_address">Address</string>
+    <string name="diagnostics_not_connected">Not connected</string>
+
+    <string name="diagnostics_accounts">Accounts</string>
+    <string name="diagnostics_no_accounts">No accounts have been synced yet.</string>
+    <string name="diagnostics_last_sync">Last successful sync</string>
+    <string name="diagnostics_never">Never</string>
+    <!-- The error verbatim after our words: it is what gets searched for. -->
+    <string name="diagnostics_last_error">Since then: %1$s</string>
+    <!--
+      Not phrased as a fault. No cursor means the next refresh re-pages instead
+      of syncing incrementally, which is the ordinary result of being away long
+      enough for the server's change log to move past this device.
+    -->
+    <string name="diagnostics_no_cursor">No sync position stored, so the next refresh reloads this account from the top.</string>
+    <!--
+      The outcome the check used to find and say nothing about. Worth its own
+      line because it is the one that explains a list that is quietly out of
+      date: the server has moved past the position this device held, so nothing
+      was wrong and nothing arrived either.
+    -->
+    <string name="diagnostics_repaged">The server could not answer from this account\'s stored sync position, so its lists will be reloaded from the top. No mail has been lost.</string>
+
+    <string name="diagnostics_push">Push</string>
+    <string name="diagnostics_distributor">Distributor</string>
+    <string name="diagnostics_none">None</string>
+    <string name="diagnostics_no_distributor">No push distributor is installed. Mail still arrives, but only when the app checks — every 15 minutes, or when you open it. Installing ntfy restores instant delivery.</string>
+    <string name="diagnostics_several_distributors">Several distributors are installed (%1$s) and none has been chosen. Pick one in its own app, then enable push here.</string>
+    <string name="diagnostics_registered">Registered with the server</string>
+    <string name="diagnostics_not_registered">Not registered</string>
+    <string name="diagnostics_last_push">Last push received</string>
+    <string name="diagnostics_verified">The server confirms this subscription is verified and delivering.</string>
+    <!--
+      The single most likely reason push "does not work": the subscription
+      exists, everything else looks correct, and it receives nothing forever
+      because the verification handshake never completed.
+    -->
+    <string name="diagnostics_unverified">This subscription was never verified, so the server will not deliver to it. Enable push again to redo the handshake.</string>
+    <string name="diagnostics_push_error">Last push problem: %1$s</string>
+    <string name="diagnostics_enable_push">Enable push</string>
+    <string name="diagnostics_transport">Transport</string>
+    <!-- The route matters as much as the time: "arrived at 10:14 down a stream while the app was open" is a different fact from "arrived at 10:14 as a push". -->
+    <string name="diagnostics_last_push_via">%1$s (%2$s)</string>
+    <string name="diagnostics_subscription_present">The server still holds this device\'s subscription.</string>
+    <!-- An unregistered FCM token, or an endpoint that 410s, destroys the subscription server-side. The device goes on believing it is registered because nothing told it otherwise. -->
+    <string name="diagnostics_subscription_gone">The server no longer holds a subscription for this device. It was most likely removed after a delivery failed. Choose a transport again under Push to re-register.</string>
+
+    <!-- The transport picker. -->
+    <string name="push">Push</string>
+    <string name="push_title">Push</string>
+    <string name="push_transport">How new mail reaches this device</string>
+    <string name="push_transport_explains">Only the options this phone and this server can actually deliver over are offered. The rest say why not.</string>
+
+    <string name="push_transport_webpush">Web Push (UnifiedPush)</string>
+    <string name="push_transport_webpush_explains">A distributor app you install holds the connection. plMail encrypts every payload to this device, so the distributor learns when mail arrives but never what it says. No Google.</string>
+
+    <string name="push_transport_fcm">Firebase (Google)</string>
+    <string name="push_transport_fcm_explains">Nothing to install. Your server needs a Firebase project, and Google learns that a message arrived and when — never what it contains.</string>
+
+    <string name="push_transport_pull">Pull only</string>
+    <string name="push_transport_pull_explains">No registration anywhere. plMail checks every 15 minutes and whenever you open the app, and stays live while the app is on screen. Nobody outside your server learns when mail arrives.</string>
+
+    <string name="push_reason_server_too_old">This server does not know about Firebase yet. Updating plMail on the server adds the option.</string>
+    <string name="push_reason_server_disabled">Firebase is switched off on this server. Turn it on under Push in the server\'s admin settings.</string>
+    <string name="push_reason_server_config">This server\'s Firebase configuration is incomplete, so it cannot be started.</string>
+    <string name="push_reason_not_in_build">This is the Google-free build, which contains no Firebase code at all. That is deliberate.</string>
+    <string name="push_reason_no_play_services">This device has no usable Google Play services.</string>
+    <string name="push_reason_init_failed">Firebase could not be started with this server\'s configuration.</string>
+    <string name="push_reason_no_vapid">Web Push is not configured on this server, so it can encrypt nothing to send.</string>
+    <string name="push_reason_no_distributor">No push distributor is installed. Installing ntfy, or another UnifiedPush distributor, makes this available.</string>
+
+    <string name="push_switching">Switching…</string>
+
+    <string name="push_status">Current state</string>
+    <string name="push_status_active">Registered transport</string>
+    <string name="push_status_none">None</string>
+    <!-- Registered and silent, legitimately, for a few seconds - and the same state a broken transport sits in forever. -->
+    <string name="push_status_awaiting">Registered. Waiting for the server\'s confirmation message: until it arrives and is answered, this subscription delivers nothing. It normally takes a few seconds.</string>
+    <string name="push_status_awaiting_short">Waiting for confirmation</string>
+    <string name="push_status_live">Confirmed. The server is delivering to this device.</string>
+    <string name="push_status_not_registered">Not registered with the server.</string>
+    <string name="push_status_pull">No subscription exists, as chosen. Mail arrives on the 15-minute check, when you open the app, and live while the app is on screen.</string>
+    <string name="push_status_last">Last delivery</string>
+    <string name="push_last_error">Last problem: %1$s</string>
+    <!-- The one failure that happens to a device doing nothing at all. Falling back silently would be a phone that quietly stops ringing. -->
+    <string name="push_fell_back">This device is set to Firebase, but the server no longer offers it: %1$s Mail is arriving on the 15-minute check until you pick another transport.</string>
+
+    <!-- The received-push log. -->
+    <string name="push_log_open">Received pushes</string>
+    <string name="push_log_explains">Every delivery this device received, with the route it came in by. Compare it against your server\'s own delivery log to find out where a message stopped.</string>
+    <string name="push_log_title">Received pushes</string>
+    <string name="push_log_clear">Clear</string>
+    <string name="push_log_empty">Nothing received yet. Send yourself a message to see whether it arrives here.</string>
+    <string name="push_log_verified">Confirmed</string>
+    <string name="push_log_not_applicable">Not applicable</string>
+    <!-- Account id and the object types whose state token moved. Never mail content: a push carries none, and this list keeps none. -->
+    <string name="push_log_changed">Account %1$s: %2$s</string>
+
+    <string name="diagnostics_check">Check now</string>
+    <string name="diagnostics_check_explains">Syncs every account and asks the server whether push is verified. This is the only thing on this screen that contacts your server.</string>
+    <string name="diagnostics_check_failed">Check failed: %1$s</string>
+    <string name="appearance">Appearance</string>
+    <string name="appearance_title">Appearance</string>
+
+    <!--
+      The language picker, above the sync switch because the switch has no say
+      over it.
+
+      The body carries the one thing the position can only imply: this is a
+      setting on the phone and it goes nowhere. It is worth saying outright on
+      this screen in particular, because every other control here is an account
+      preference shared with the browser and somebody who has read that far will
+      reasonably assume this one is too.
+
+      The two language names are endonyms and are deliberately the same word in
+      both translations. Somebody who has landed in a language they cannot read
+      is looking for the name their own language calls itself.
+    -->
+    <string name="appearance_language">Language</string>
+    <string name="language_system">Follow the system</string>
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="appearance_language_body">The language plMail is written in on this phone. It is a setting on this device only — it is never sent to your account and never reaches your browser or your other devices.</string>
+    <!--
+      Only shown from Android 13, where the same setting exists in the system's
+      own app list. Naming the path makes the two obviously one setting rather
+      than two that might disagree, and it is left out below Android 13 because
+      there is no such screen to send anybody to.
+    -->
+    <string name="appearance_language_system">This is the same setting as Android\'s own, under Settings → Apps → plMail → Language. Changing it in either place changes both.</string>
+
+    <!--
+      The sync switch, first on the screen because it decides what every control
+      below it means.
+
+      What it does NOT say any more: that turning it off is what keeps the
+      browser safe. Nothing this screen does reaches the browser in either
+      position of the switch — the app has no way to write an appearance at all
+      — so a sentence about what is "sent" would be describing a risk that no
+      longer exists and implying the switch manages it.
+
+      What is left is one direction and one surprise. The direction: anything
+      not chosen here follows the browser. The surprise: turning it back on
+      discards the phone's own choices, which nobody expects — a merge is the
+      intuitive guess and there is no correct merge, because both sides'
+      divergence was deliberate — so it is said in advance rather than
+      discovered afterwards.
+    -->
+    <string name="appearance_sync">Match the web</string>
+    <string name="appearance_sync_body">Anything you have not set here follows plMail in your browser. Turn it off to freeze this phone\'s look where it is. Nothing you change on this screen ever reaches your browser either way. Turning it back on takes the browser\'s settings again and discards the phone\'s.</string>
+
+    <string name="appearance_theme">Theme</string>
+    <string name="theme_system">Follow the system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_nord">Nord</string>
+    <string name="theme_dusk">Dusk</string>
+    <string name="theme_solar">Solar</string>
+
+    <string name="appearance_dynamic">Use my wallpaper\'s colours</string>
+    <!--
+      Says what it replaces rather than naming the Android feature: "Material
+      You" means nothing to somebody who did not read the release notes, and
+      the question they are actually answering is whether the theme above still
+      applies.
+    -->
+    <string name="appearance_dynamic_body">Takes the palette from your wallpaper instead of the theme above. Light or dark still follows your choice.</string>
+
+    <string name="appearance_layout">Layout</string>
+    <string name="layout_flat">Flat</string>
+    <string name="layout_boxed">Boxed</string>
+    <string name="appearance_layout_body">Flat separates with hairlines on the page. Boxed lifts content onto rounded panes.</string>
+    <!--
+      Only shown for the boxed layout, because that is the only one with a pane
+      to frost. Android has no backdrop blur, so the setting is honoured by
+      being left alone rather than by being drawn.
+    -->
+    <string name="appearance_blur_unsupported">Frosted panes set on the web are not drawn here — Android cannot blur what is behind a pane. Your setting is left as it is.</string>
+
+    <string name="appearance_density">Density</string>
+    <string name="density_comfortable">Comfortable</string>
+    <string name="density_cosy">Cosy</string>
+    <string name="density_compact">Compact</string>
+
+    <!--
+      The per-surface densities. "Follow" is an option rather than a clear
+      button because it is the state somebody who has never touched this is
+      already in, and a control showing nothing selected would be lying about
+      that.
+    -->
+    <string name="appearance_surface_density">Density per area</string>
+    <string name="density_follow">Follow</string>
+    <string name="appearance_surface_sidebar">Folder list</string>
+    <string name="appearance_surface_list">Mail list</string>
+    <string name="appearance_surface_reading">Reading a message</string>
+    <string name="appearance_surface_density_body">Overrides the density above for one area at a time.</string>
+
+    <string name="appearance_typography">Type</string>
+    <string name="font_system">System</string>
+    <string name="font_grotesk">Grotesk</string>
+    <string name="font_serif">Serif</string>
+    <string name="font_monospace">Mono</string>
+    <string name="appearance_font_family_body">The typeface the app is drawn in. It does not change the font of mail you write.</string>
+    <string name="appearance_font_scale">Text size</string>
+    <!--
+      The compounding is the whole point of saying anything. Somebody already at
+      130% system-wide who sets this to 125% has asked for 163%, and the first
+      thing they see is a list row that no longer holds a subject.
+    -->
+    <string name="appearance_font_scale_body">Applies on top of your device\'s own text size, so the two multiply. For large text, your device setting is the one to use.</string>
+
+    <string name="appearance_list">Mail list</string>
+    <string name="appearance_list_avatars">Show avatars</string>
+    <string name="appearance_list_avatars_body">The coloured circle with the sender\'s initial. Turning it off gives the width back to the subject.</string>
+    <string name="appearance_preview_lines">Preview</string>
+    <string name="preview_none">None</string>
+    <string name="preview_one">One line</string>
+    <string name="preview_two">Two lines</string>
+    <string name="appearance_unread_emphasis">Unread mail</string>
+    <!--
+      Named for how loud each one is rather than for what it draws, because what
+      it draws differs between the phone and the browser: the web varies a tint
+      behind the row and this app varies the ink. Bold stays bold at all three
+      on both.
+    -->
+    <string name="emphasis_subtle">Subtle</string>
+    <string name="emphasis_standard">Standard</string>
+    <string name="emphasis_strong">Strong</string>
+    <string name="appearance_account_corner">Mark which account</string>
+    <string name="appearance_account_corner_body">Colours a corner of each row by the account it arrived in. Only appears in a list showing more than one account at once.</string>
+
+    <string name="appearance_accessibility">Accessibility</string>
+    <string name="appearance_solid_panes">Keep panes solid</string>
+    <!--
+      Names the thing Android does not offer, because the absence looks like an
+      oversight otherwise: reduced motion is a system setting the app already
+      obeys without asking, and there is no equivalent for transparency.
+    -->
+    <string name="appearance_solid_panes_body">Turns off see-through panes. Android has no system setting for this, so it lives here; reduced motion is taken from your device settings automatically.</string>
+    <string name="appearance_pane_alpha">Pane solidity</string>
+    <string name="appearance_pane_sample">This is what a pane looks like.</string>
+
+    <!--
+      The calendar's own launcher icon. Titled for the home screen rather than
+      for the calendar, because that is where the change shows up and where
+      somebody looking for it will have been looking.
+    -->
+    <string name="appearance_home_screen">Home screen</string>
+    <string name="appearance_calendar_icon">Show calendar as its own app</string>
+    <!--
+      Long, and every clause of it is there to stop a support question. The
+      delay is real and is the launcher\'s rather than ours; the separate
+      recents entry is the point of the feature and surprises people who
+      expected one card; and the setting cannot follow them to a second device
+      because it is this phone\'s package manager that holds it, unlike
+      everything else on this screen.
+    -->
+    <string name="appearance_calendar_icon_body">Adds a second icon that opens the calendar on its own, with its own entry in your recent apps. It can take a moment to appear — some launchers only notice after they next reload. The calendar stays in the menu either way, and this applies to this device only.</string>
+
+    <string name="accounts">Accounts</string>
+    <string name="accounts_title">Accounts</string>
+    <string name="accounts_none">No accounts have been synced yet.</string>
+
+    <string name="accounts_order">Order</string>
+    <!--
+      Says what the order is *for*. "Move up" on its own is a control with no
+      consequence; the consequence is that the top account is the one a new
+      message and a new label go to.
+    -->
+    <string name="accounts_order_explains">The account at the top is the one new messages are written from and new labels are created in.</string>
+    <string name="accounts_move_up">Move %1$s up</string>
+    <string name="accounts_move_down">Move %1$s down</string>
+
+    <!--
+      About this device, and phrased so it cannot be read as being about the
+      server. The app pages backwards as you scroll, so what is on the phone is
+      what is searchable, which is the sentence search's empty state is
+      standing on.
+    -->
+    <plurals name="accounts_window_messages">
+        <item quantity="one">%1$d message on this device</item>
+        <item quantity="other">%1$d messages on this device</item>
+    </plurals>
+    <string name="accounts_window">%1$s, back to %2$s</string>
+    <string name="accounts_window_empty">Nothing from this account is on this device yet.</string>
+
+    <!--
+      Deliberately not "a backfill is running". The server publishes whether
+      there is ground left to cover, derived from two numbers — nothing records
+      whether a worker is on it this second, and phrasing it as progress would
+      promise something no one can see.
+    -->
+    <string name="accounts_server_backfill_pending">There is older mail still to come; your server has not reached the end of this mailbox yet.</string>
+    <!--
+      An account that has stopped working, in this app's own words rather than
+      the server's rendered card: the wire carries a token, and the repair for
+      the first of these is an OAuth flow that only a browser can finish.
+    -->
+    <string name="accounts_attention_reconnect">This account needs reconnecting. Sign in again in plMail on the web — new mail will not arrive until you do.</string>
+    <string name="accounts_attention_push">Push is not working for this account. Mail still arrives, but on the periodic check rather than immediately.</string>
+    <string name="accounts_attention_generic">This account needs attention. Open plMail on the web to see what is wrong.</string>
+
+    <string name="accounts_server_backfill_all">It has fetched all of it.</string>
+    <plurals name="accounts_server_backfill_reached">
+        <item quantity="one">It has fetched the newest message.</item>
+        <item quantity="other">It has fetched the newest %1$d messages.</item>
+    </plurals>
+
+    <string name="accounts_notify">Notify me about new mail</string>
+    <!-- Names the account, because every row's visible label is identical. -->
+    <string name="accounts_notify_a11y">Notify me about new mail from %1$s</string>
+    <string name="accounts_muted_explains">This account still syncs and still shows unread counts. It just will not interrupt you.</string>
+
+    <!--
+      The notification screen. Nearly every switch on it is off, which reads as
+      broken unless the screen says that is the arrangement rather than a
+      failure — hence the note at the top before any switch is drawn.
+    -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_explains">Only Primary mail interrupts you to begin with. Switch on anything else you want to hear about. A message that matches more than one of these still arrives as a single notification.</string>
+
+    <string name="notifications_categories">Inbox categories</string>
+    <string name="notifications_categories_explains">The tabs your server sorts incoming mail into.</string>
+
+    <!--
+      The names have to match the tab bar exactly. A switch called something
+      else is a switch nobody can map onto the list it controls.
+    -->
+    <string name="notifications_category_primary">Primary</string>
+    <string name="notifications_category_social">Social</string>
+    <string name="notifications_category_promotions">Promotions</string>
+    <string name="notifications_category_updates">Updates</string>
+    <string name="notifications_category_forums">Forums</string>
+    <!--
+      The one thing people get wrong about this switch, and the reason a server
+      that has never classified anything is not silent: mail nobody has sorted
+      yet counts as Primary rather than as nothing.
+    -->
+    <string name="notifications_category_primary_explains">Includes inbox mail your server has not sorted into any category.</string>
+
+    <string name="notifications_labels">Labels</string>
+    <string name="notifications_labels_explains">Switch a label on to be told about mail that lands there, even when a rule on your server kept it out of the inbox.</string>
+    <string name="notifications_no_labels">No labels have been synced to this device yet.</string>
+
+    <!-- Names the scope, because every row's switch is otherwise identical. -->
+    <string name="notifications_scope_a11y">Notify me about %1$s</string>
+    <string name="swipe_title">Swipe actions</string>
+    <string name="swipe_to_end">Swipe right</string>
+    <string name="swipe_to_start">Swipe left</string>
+    <string name="swipe_body">Applies to rows in the mail list, on this device only. Every action is also in the bar that appears when you long-press a row.</string>
+    <string name="swipe_none">Nothing</string>
+    <string name="swipe_archive">Archive</string>
+    <string name="swipe_trash">Move to trash</string>
+    <string name="swipe_read">Mark read or unread</string>
+    <string name="swipe_snooze">Snooze</string>
+    <string name="swipe_move">Move to…</string>
+    <string name="swipe_action">Action</string>
+    <string name="swipe_confirm">Ask before acting</string>
+    <string name="swipe_confirm_on_body">A dialog asks first, every time.</string>
+    <string name="swipe_confirm_off_body">Acts at once. It can be undone from the bar that appears.</string>
+    <string name="swipe_confirm_not_needed">Nothing to ask: this direction does nothing.</string>
+</resources>

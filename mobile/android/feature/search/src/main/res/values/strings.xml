@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_placeholder">Search mail</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_back">Back</string>
+    <string name="search_recent">Recent searches</string>
+    <!-- Names the query so the action is unambiguous with several chips on screen. -->
+    <string name="search_forget">Forget “%1$s”</string>
+
+    <string name="search_empty_no_matches">No messages match.</string>
+
+    <!--
+      Both flags is contradictory and matches nothing on every plMail client.
+      Reproduced rather than resolved, so it has to be said out loud.
+    -->
+    <string name="search_contradiction">is:read and is:unread together match nothing.</string>
+
+    <!-- The account was skipped entirely, which is not the same as matching nothing in it. -->
+    <string name="search_account_lacks_mailbox">Account %1$s has no such mailbox and was not searched.</string>
+
+    <string name="chip_from">From: %1$s</string>
+    <string name="chip_to">To: %1$s</string>
+    <string name="chip_subject">Subject: %1$s</string>
+    <string name="chip_attachment">Has attachment</string>
+    <string name="chip_unread">Unread</string>
+    <string name="chip_read">Read</string>
+    <string name="chip_starred">Starred</string>
+    <string name="chip_in">In: %1$s</string>
+    <string name="chip_after">After %1$s</string>
+    <string name="chip_before">Before %1$s</string>
+</resources>

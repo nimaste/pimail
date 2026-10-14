@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      The launcher background, and the one place a raw hex value is legitimate:
+      an app icon is a fixed asset, not themed surface. Nothing in the app's own
+      chrome may reference this.
+
+      Off-white rather than a coloured tile. The mark drawn on top is the
+      server's own logo, and it needs a neutral behind it: on the accent blue
+      this icon started life on, the deepest violet of the default colourway
+      very nearly disappeared. This is the light theme's surface value, so the
+      icon and the app it opens are the same paper.
+
+      One background for all thirty-two colourways, and it is a fixed off-white
+      in every theme the phone can be in. That is what decides which half of
+      LogoStyle the generated icons are painted from: the server publishes a
+      light set of strokes and a dark set, and the dark set exists for a dark
+      *page*. There is no dark page here — a launcher does not redraw an
+      installed app's icon for dark mode — so the icons use the light strokes
+      throughout, and the dark ones are not in the APK at all.
+
+      The web's own PNG icons are the same mark on transparency, so there is no
+      tile to copy from — `LogoStyle::tile()` exists for the theme-color meta
+      rather than for the icons. Off-white is this app's answer to a question
+      the web does not have to ask, an adaptive icon always having a background
+      layer.
+    -->
+    <color name="ic_launcher_background">#FAF9F7</color>
+</resources>

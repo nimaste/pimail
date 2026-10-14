@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inbox_title">Posteingang</string>
+    <string name="search">Suchen</string>
+
+    <string name="inbox_empty">Hier ist noch nichts.</string>
+    <string name="inbox_loading">E-Mails werden geladen…</string>
+
+    <string name="account_unreachable">%1$s ist nicht erreichbar. Die anderen Konten sind aktuell.</string>
+    <string name="retry">Erneut versuchen</string>
+
+    <string name="reader_placeholder">Wähle eine Unterhaltung.</string>
+    <string name="show_remote_images">Bilder anzeigen</string>
+    <string name="show_original">Original anzeigen</string>
+    <string name="show_adapted">Angepasst anzeigen</string>
+    <string name="body_not_downloaded">Diese Nachricht wurde noch nicht heruntergeladen.</string>
+    <string name="body_is_empty">Diese Nachricht enthält keinen Text.</string>
+    <string name="action_archive">Archivieren</string>
+    <string name="action_trash">In den Papierkorb</string>
+    <string name="action_star">Markieren</string>
+    <string name="action_read">Als gelesen markieren</string>
+    <string name="action_unread">Als ungelesen markieren</string>
+    <string name="action_spam">Als Spam markieren</string>
+    <string name="undo">Rückgängig</string>
+    <string name="reader_back">Zurück zur Liste</string>
+    <plurals name="archived">
+        <item quantity="one">1 Unterhaltung archiviert</item>
+        <item quantity="other">%1$d Unterhaltungen archiviert</item>
+    </plurals>
+    <plurals name="trashed">
+        <item quantity="one">1 Unterhaltung in den Papierkorb verschoben</item>
+        <item quantity="other">%1$d Unterhaltungen in den Papierkorb verschoben</item>
+    </plurals>
+    <plurals name="moved_to_inbox">
+        <item quantity="one">1 Unterhaltung in den Posteingang verschoben</item>
+        <item quantity="other">%1$d Unterhaltungen in den Posteingang verschoben</item>
+    </plurals>
+    <plurals name="marked_spam">
+        <item quantity="one">1 Unterhaltung als Spam markiert</item>
+        <item quantity="other">%1$d Unterhaltungen als Spam markiert</item>
+    </plurals>
+    <string name="changed">Geändert</string>
+    <string name="action_rejected">%1$s Deine Änderung hat den Server möglicherweise nicht erreicht.</string>
+    <plurals name="selected_count">
+        <item quantity="one">1 ausgewählt</item>
+        <item quantity="other">%1$d ausgewählt</item>
+    </plurals>
+    <string name="clear_selection">Auswahl aufheben</string>
+    <string name="compose_new">Nachricht schreiben</string>
+    <string name="reader_reply">Antworten</string>
+    <string name="reader_reply_all">Allen antworten</string>
+    <string name="reader_forward">Weiterleiten</string>
+    <string name="reader_reply_more">Weitere Antwortoptionen</string>
+    <string name="inbox_empty_body">Neue Nachrichten erscheinen hier, sobald sie eintreffen.</string>
+    <string name="inbox_end">Mehr liegt auf diesem Gerät nicht</string>
+    <string name="drawer_title">plMail</string>
+    <string name="open_labels">Labels</string>
+    <string name="labels_loading">Labels werden geladen…</string>
+    <string name="label_new">Neues Label</string>
+    <string name="sidebar_important">Wichtig</string>
+    <string name="sidebar_labels">Labels</string>
+    <string name="sidebar_customize">Bearbeiten</string>
+    <string name="sidebar_customize_done">Fertig</string>
+    <string name="sidebar_customize_a11y">Wichtige Labels auswählen</string>
+    <string name="sidebar_pin_a11y">Zu „Wichtig“ verschieben</string>
+    <string name="sidebar_unpin_a11y">Zu „Labels“ verschieben</string>
+    <string name="sidebar_important_empty">Tippe auf einen Stern, um ein Label hier oben zu behalten.</string>
+    <string name="calendar">Kalender</string>
+    <string name="push">Push</string>
+    <string name="notifications">Benachrichtigungen</string>
+    <string name="diagnostics">Diagnose</string>
+    <string name="accounts">Konten</string>
+    <string name="label_new_title">Neues Label</string>
+    <string name="label_edit">Label bearbeiten</string>
+    <string name="label_edit_title">Label bearbeiten</string>
+    <string name="label_name">Name</string>
+    <string name="label_name_hint">Für Verschachtelung das übergeordnete Label wählen, keinen Schrägstrich.</string>
+    <string name="label_save">Speichern</string>
+    <string name="label_cancel">Abbrechen</string>
+    <string name="label_delete">Label löschen</string>
+    <string name="label_delete_title">„%1$s“ löschen?</string>
+    <string name="label_delete_body">Das Label verschwindet; die Nachrichten darin bleiben.</string>
+    <string name="label_delete_confirm">Löschen</string>
+    <string name="more">Mehr</string>
+    <string name="labels_apply">Label vergeben</string>
+    <string name="labels_none">Du hast noch keine eigenen Labels.</string>
+    <string name="snooze">Erinnern</string>
+    <string name="snooze_later_today">Später heute</string>
+    <string name="snooze_tomorrow">Morgen früh</string>
+    <string name="snooze_this_weekend">Am Wochenende</string>
+    <string name="snooze_next_week">Nächste Woche</string>
+    <string name="snooze_pick">Datum und Uhrzeit wählen</string>
+    <string name="unsnooze">Jetzt zurückholen</string>
+    <plurals name="snoozed">
+        <item quantity="one">1 Unterhaltung zurückgestellt</item>
+        <item quantity="other">%1$d Unterhaltungen zurückgestellt</item>
+    </plurals>
+    <plurals name="unsnoozed">
+        <item quantity="one">1 Unterhaltung zurückgeholt</item>
+        <item quantity="other">%1$d Unterhaltungen zurückgeholt</item>
+    </plurals>
+    <plurals name="put_back">
+        <item quantity="one">1 Unterhaltung wiederhergestellt</item>
+        <item quantity="other">%1$d Unterhaltungen wiederhergestellt</item>
+    </plurals>
+    <string name="action_unstar">Markierung entfernen</string>
+    <string name="reader_label_open">E-Mails mit diesem Label anzeigen</string>
+    <string name="reader_label_remove">Label entfernen</string>
+    <string name="reader_snooze_change">Zeit ändern</string>
+    <string name="reader_snoozed_until">Zurückgestellt bis %1$s</string>
+    <plurals name="reader_message_count">
+        <item quantity="one">1 Nachricht</item>
+        <item quantity="other">%1$d Nachrichten</item>
+    </plurals>
+    <string name="move_filter">Labels filtern</string>
+    <string name="move_no_match">Kein Label passt.</string>
+    <string name="swipe_confirm_archive">Diese Unterhaltung archivieren?</string>
+    <string name="swipe_confirm_trash">Diese Unterhaltung in den Papierkorb verschieben?</string>
+    <string name="swipe_confirm_read">Diese Unterhaltung als gelesen markieren?</string>
+    <string name="swipe_confirm_unread">Diese Unterhaltung als ungelesen markieren?</string>
+    <string name="swipe_confirm_snooze">Diese Unterhaltung zurückstellen?</string>
+    <string name="swipe_confirm_move">Diese Unterhaltung verschieben?</string>
+    <string name="swipe_confirm_cancel">Abbrechen</string>
+    <string name="gestures">Wischgesten</string>
+    <plurals name="label_new_applies">
+        <item quantity="one">Das neue Label wird dieser Unterhaltung hinzugefügt.</item>
+        <item quantity="other">Das neue Label wird den %1$d ausgewählten Unterhaltungen hinzugefügt.</item>
+    </plurals>
+    <string name="move_to_tab">Posteingangs-Tab</string>
+    <string name="move_to">Verschieben nach</string>
+    <plurals name="moved_to">
+        <item quantity="one">1 Unterhaltung nach %2$s verschoben</item>
+        <item quantity="other">%1$d Unterhaltungen nach %2$s verschoben</item>
+    </plurals>
+    <plurals name="labelled">
+        <item quantity="one">Label zu 1 Unterhaltung hinzugefügt</item>
+        <item quantity="other">Label zu %1$d Unterhaltungen hinzugefügt</item>
+    </plurals>
+    <plurals name="unlabelled">
+        <item quantity="one">Label von 1 Unterhaltung entfernt</item>
+        <item quantity="other">Label von %1$d Unterhaltungen entfernt</item>
+    </plurals>
+
+    <string name="message_more">Mehr zu dieser Nachricht</string>
+    <string name="attachment_unnamed">Anhang</string>
+    <string name="attachment_save_named">%1$s speichern</string>
+    <string name="attachment_open_with">Öffnen mit</string>
+    <string name="attachment_download_failed">Der Anhang konnte nicht geladen werden.</string>
+    <string name="attachment_save_failed">Der Anhang konnte nicht gespeichert werden.</string>
+
+    <string name="source_show">Quelltext anzeigen</string>
+    <string name="source_close">Schließen</string>
+    <string name="source_share">Teilen</string>
+    <string name="source_failed">Der Quelltext konnte nicht geladen werden.</string>
+    <string name="source_empty">Für diese Nachricht ist auf dem Server kein Quelltext hinterlegt.</string>
+    <string name="appearance">Darstellung</string>
+
+    <string name="role_inbox">Posteingang</string>
+    <string name="role_drafts">Entwürfe</string>
+    <string name="role_sent">Gesendet</string>
+    <string name="role_trash">Papierkorb</string>
+    <string name="role_junk">Spam</string>
+    <string name="role_archive">Archiv</string>
+    <string name="role_snoozed">Zurückgestellt</string>
+    <string name="role_flagged">Markiert</string>
+
+    <!--
+      Gmail's own German words for the same five tabs. Somebody arriving from
+      Gmail should not have to work out that two names mean one tab.
+    -->
+    <string name="category_primary">Allgemein</string>
+    <string name="category_social">Soziale Netzwerke</string>
+    <string name="category_promotions">Werbung</string>
+    <string name="category_updates">Benachrichtigungen</string>
+    <string name="category_forums">Foren</string>
+
+    <plurals name="category_new_count">
+        <item quantity="one">%1$d neu</item>
+        <item quantity="other">%1$d neu</item>
+    </plurals>
+
+    <plurals name="category_senders_and_more">
+        <item quantity="one">%1$s und %2$d weitere</item>
+        <item quantity="other">%1$s und %2$d weitere</item>
+    </plurals>
+
+    <string name="category_has_new_a11y">Neue Nachrichten</string>
+
+    <string name="category_digest_bar_a11y">%1$s, %2$s. Absender anzeigen.</string>
+
+    <string name="label_color">Farbe</string>
+    <string name="label_color_none">Keine Farbe</string>
+
+    <string name="offline">Sie sind offline. Das ist die Post, die bereits auf dem Gerät liegt.</string>
+    <plurals name="offline_with_pending">
+        <item quantity="one">Sie sind offline. %1$d Änderung wartet auf Ihren Server.</item>
+        <item quantity="other">Sie sind offline. %1$d Änderungen warten auf Ihren Server.</item>
+    </plurals>
+    <plurals name="pending_changes">
+        <item quantity="one">%1$d Änderung wartet auf Ihren Server.</item>
+        <item quantity="other">%1$d Änderungen warten auf Ihren Server.</item>
+    </plurals>
+    <string name="server_unreachable">plMail konnte %1$s nicht erreichen. Das ist die Post, die bereits auf dem Gerät liegt.</string>
+    <string name="account_unreachable_host">%1$s ist unter %2$s nicht erreichbar. Die anderen Konten sind aktuell.</string>
+
+    <string name="action_queued">%1$s — hier. Ihr Server erfährt es, sobald er antwortet.</string>
+    <string name="action_queued_host">%1$s — hier. %2$s erfährt es, sobald der Server antwortet.</string>
+    <string name="link_no_handler">Auf diesem Gerät kann diesen Link nichts öffnen.</string>
+</resources>

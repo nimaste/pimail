@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- development here so a debug build talks to APNs sandbox. A release
+	     build needs this flipped to "production", which is what
+	     PushSubscriptionSet.environment reports to the server so it sends to
+	     the matching APNs host. A mismatch fails in a way APNs does not
+	     explain. -->
+	<key>aps-environment</key>
+	<string>development</string>
+
+	<!-- Shared with the widget, which runs in its own process and cannot read
+	     the app's container. Must match Widget/PLMailWidget.entitlements. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.de.plmail</string>
+	</array>
+</dict>
+</plist>

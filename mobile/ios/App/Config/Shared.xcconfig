@@ -1,0 +1,41 @@
+// Settings that matter live here rather than in project.pbxproj, so changing
+// one is a readable diff even though the project file is checked in.
+
+#include? "Signing.xcconfig"
+
+PRODUCT_NAME = plMail
+PRODUCT_BUNDLE_IDENTIFIER = de.plmail
+CURRENT_PROJECT_VERSION = 1
+MARKETING_VERSION = 0.1.0
+
+IPHONEOS_DEPLOYMENT_TARGET = 26.0
+TARGETED_DEVICE_FAMILY = 1,2
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator
+
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES
+
+ENABLE_USER_SCRIPT_SANDBOXING = YES
+ENABLE_MODULE_VERIFIER = YES
+ALWAYS_SEARCH_USER_PATHS = NO
+
+// A real Info.plist for the keys that have no INFOPLIST_KEY_ equivalent
+// (App Transport Security is a nested dictionary). Xcode still merges the
+// INFOPLIST_KEY_ settings below into it.
+INFOPLIST_FILE = App/Info.plist
+
+INFOPLIST_KEY_UILaunchScreen_Generation = YES
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+
+CODE_SIGN_STYLE = Automatic
+
+// Push. The simulator accepts silent pushes via `xcrun simctl push` without
+// any of this, but a device build needs the entitlement and a matching APNs
+// key on the server side — see docs/PUSH.md.
+// Overridden by Signing.xcconfig — see the note there. Defaults to the free
+// tier so a fresh clone builds onto a device without a paid account.
+PLMAIL_ENTITLEMENTS = App/plMail-free.entitlements
+CODE_SIGN_ENTITLEMENTS = $(PLMAIL_ENTITLEMENTS)
+PLMAIL_WIDGET_ENTITLEMENTS = Widget/PLMailWidget-free.entitlements

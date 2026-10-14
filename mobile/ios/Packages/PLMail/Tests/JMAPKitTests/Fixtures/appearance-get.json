@@ -1,0 +1,37 @@
+{
+  "state": "9f2c1ab4d0e77c31",
+  "list": [
+    {
+      "id": "singleton",
+      "theme": "ocean",
+      "layout": "flat",
+      "logoStyle": "ocean",
+      "accent": "#0e7490",
+      "paneAlpha": 1.0,
+      "paneBlur": 0,
+      "radius": 0.75,
+      "density": "comfortable",
+      "motion": "full",
+      "backgroundKind": "theme",
+      "backgroundPreset": null,
+      "backgroundFile": null,
+      "backgroundSolid": null,
+      "scrimAlpha": 0.0,
+      "inkColor": null,
+      "inkMuted": null,
+      "inkFaint": null,
+      "mainTint": null,
+      "mainAlpha": null,
+      "accountCorner": true,
+      "listAvatars": true,
+      "previewLines": 1,
+      "unreadEmphasis": "standard",
+      "fontFamily": "system",
+      "fontScale": 1.0,
+      "sidebarDensity": null,
+      "listDensity": "compact",
+      "readingDensity": null
+    }
+  ],
+  "notFound": []
+}

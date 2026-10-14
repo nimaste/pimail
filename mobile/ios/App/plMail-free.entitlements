@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Deliberately empty.
+
+	     A free Apple ID can sign an app onto your own device, but it cannot
+	     grant capabilities: no APNs, no App Groups. Asking for either makes
+	     signing fail with "Personal development teams do not support the
+	     ... capability", which stops the build entirely.
+
+	     So the free-tier build asks for nothing. Push registration finds no
+	     entitlement and gives up quietly — the same path it already takes
+	     against a server with no APNs sender — and the app goes on refreshing
+	     on foreground and in the background exactly as before.
+
+	     Switch back to plMail.entitlements when there is a paid team. -->
+</dict>
+</plist>

@@ -1,0 +1,1053 @@
+package de.plmail.feature.mail
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Inbox
+import androidx.compose.material.icons.outlined.MarkEmailRead
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import de.plmail.core.data.ActionTarget
+import de.plmail.core.data.CategoryArrivals
+import de.plmail.core.data.Label
+import de.plmail.core.data.MailAction
+import de.plmail.core.data.MailView
+import de.plmail.core.data.SwipeActions
+import de.plmail.core.data.rowLabels
+import de.plmail.core.database.ThreadEntity
+import de.plmail.core.designsystem.PaneTone
+import de.plmail.core.designsystem.PlMailBanner
+import de.plmail.core.designsystem.PlMailDivider
+import de.plmail.core.designsystem.PlMailEmptyState
+import de.plmail.core.designsystem.PlMailTheme
+import de.plmail.core.ui.rowLabelSlots
+import java.time.Instant
+import kotlinx.coroutines.launch
+
+/**
+ * The unified inbox.
+ *
+ * Rows come from the feed table, so a cold launch draws whatever was last synced before any request
+ * leaves the device. That is the point of the table, and it is why the empty state below is only
+ * shown once loading has actually settled — flashing "nothing here" at someone whose mail is on
+ * disk would be a lie about their own inbox.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MailScreen(
+    onThreadSelected: (ThreadEntity) -> Unit,
+    // Hoisted rather than handled here: search is its own feature module, and a
+    // dependency from one feature onto another is the thing module boundaries
+    // exist to prevent. :app owns the swap.
+    onSearch: () -> Unit,
+    onCompose: () -> Unit,
+    view: MailView = MailView.START,
+    /**
+     * Opens the calendar, or null where this install has no calendar.
+     *
+     * The same callback the drawer's entry is given and therefore the same destination — see
+     * [LabelSidebar] for why absence is a null rather than a flag. Hoisted for the same reason
+     * [onSearch] is: `:feature:calendar` is a peer module, and this one must not learn about it.
+     */
+    onCalendar: (() -> Unit)? = null,
+    /** Null where the sidebar is already on screen and there is nothing to open. */
+    onOpenSidebar: (() -> Unit)? = null,
+    onEditLabel: (Label) -> Unit = {},
+    onCreateLabel: () -> Unit = {},
+    /**
+     * Go to another list, as a navigation rather than as a change of contents.
+     *
+     * Required, and deliberately not defaulted to `{}`. Tapping a new-mail bundle used to call
+     * `viewModel.show(...)`, which swapped the rows under the user while every other part of the
+     * app still believed they were on Primary: the drawer highlighted the wrong row, back left the
+     * app instead of returning, and the only way to get Primary's own mail back was to navigate
+     * away and return. Which list is showing is the *shell's* state — see `MailShell` — so it is
+     * the shell that has to be told.
+     */
+    onNavigate: (MailView) -> Unit,
+    viewModel: MailViewModel = hiltViewModel(),
+) {
+    // The label this list is browsing, if it is browsing one. A category list is
+    // not: the conversations in Promotions carry whatever labels the user put on
+    // them, and none of those is the name of the list.
+    val label = view.browsedLabel
+
+    // Keyed on the destination rather than done once: switching has to switch
+    // the list, and the ViewModel is the thing that owns which pager is running.
+    // On the feed id rather than the whole view, because a Label re-arrives with
+    // new counts on every sync and restarting the pager for that would re-query
+    // somebody's NAS whenever a message was read.
+    LaunchedEffect(view.feedId) { viewModel.show(view) }
+
+    val threads = viewModel.threads.collectAsLazyPagingItems()
+    val rowsInFeed by viewModel.rowsInFeed.collectAsStateWithLifecycle()
+    // The same list the "Label as" sheet is drawn from, and the same list the
+    // sidebar orders. A row stores label *keys*, so this is what turns them into
+    // names -- which means a rename shows on every row immediately instead of
+    // waiting for each conversation to be re-synced.
+    val labels by viewModel.labels.collectAsStateWithLifecycle()
+    val unreachable by viewModel.unreachable.collectAsStateWithLifecycle()
+    val offline by viewModel.offline.collectAsStateWithLifecycle()
+    val selection by viewModel.selection.collectAsStateWithLifecycle()
+    val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
+    // Empty on every list but Primary -- the ViewModel decides that, so this
+    // screen has no rule about where a digest belongs.
+    val arrivals by viewModel.arrivals.collectAsStateWithLifecycle()
+    // Only to title the list: Primary is called Inbox on a server that
+    // classifies nothing. Nothing about which list is *shown* waits on this --
+    // see MailView.START for why that distinction matters.
+    val hasCategories by viewModel.hasCategories.collectAsStateWithLifecycle()
+    // Whether a row should carry its account's mark: only where the list is
+    // actually a merge, or every row would wear the same one.
+    val isMerged by viewModel.isMerged.collectAsStateWithLifecycle()
+    val swipes by viewModel.swipes.collectAsStateWithLifecycle()
+    // Which rows keep their New badge. Held by the ViewModel rather than read
+    // off each row, because drawing the row is what retires the marker -- see
+    // `MailViewModel.badgedNew`.
+    val badgedNew by viewModel.badgedNew.collectAsStateWithLifecycle()
+
+    // The in-process half of making `NeedsRepage` mean anything. A sync that
+    // finds the server can no longer answer from this account's stored position
+    // clears the cursor, which is what a list built *afterwards* reads -- this
+    // list was built before it, and without being told would go on drawing rows
+    // that nothing can bring up to date.
+    LaunchedEffect(Unit) { viewModel.repagedAccounts.collect { threads.refresh() } }
+
+    // Back clears a selection before it leaves the screen: a selection is a
+    // mode, and leaving a mode is what back is for.
+    BackHandler(enabled = selection.isNotEmpty()) { viewModel.clearSelection() }
+
+    // Hoisted, and keyed on the destination. Two things follow from the key that
+    // did not hold when `LazyColumn` made its own: switching list starts at that
+    // list's top rather than at whatever offset the previous one had scrolled
+    // to, and each destination keeps its own place while the screen is alive.
+    // Still `rememberSaveable`, so rotating the phone does not throw the
+    // position away.
+    val listState = rememberSaveable(view.feedId, saver = LazyListState.Saver) { LazyListState() }
+
+    // ...and the top is where the app opens. See `claimStartAtTop`: the saved
+    // instance state restores an offset after Android has killed and restarted
+    // the process, which put people part-way down their own inbox with the
+    // new-mail bundles scrolled off the top of it. Asked once per destination
+    // per process, so this cannot fire while somebody is reading.
+    LaunchedEffect(view.feedId) {
+        if (viewModel.claimStartAtTop(view.feedId)) listState.scrollToItem(0)
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            // Hidden while rows are selected: the bar above is a mode, and a
+            // compose button inside it invites tapping it by accident with
+            // forty conversations chosen.
+            if (selection.isEmpty()) {
+                FloatingActionButton(
+                    onClick = onCompose,
+                    // Shape and elevation both spelled out. Material's FAB takes
+                    // its shape from `shapes.large`, which in this design system
+                    // is the *pane* radius -- zero in the flat layout -- so the
+                    // default produced a square button with a drop shadow under
+                    // it. A FAB is a control: fixed radius, and separated by its
+                    // fill rather than by a shadow.
+                    shape = RoundedCornerShape(PlMailTheme.radii.floating),
+                    // Tonal rather than filled. The accent is the scarcest
+                    // thing in this palette and a 56dp block of it is the
+                    // largest single area of colour the app would have -- which
+                    // is the opposite of what makes it mean anything. The tint
+                    // plus an accent glyph is just as findable and does not
+                    // shout across an otherwise quiet list.
+                    containerColor = PlMailTheme.colors.accentSoft,
+                    contentColor = PlMailTheme.colors.accent,
+                    elevation =
+                        FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 0.dp,
+                            pressedElevation = 0.dp,
+                            focusedElevation = 0.dp,
+                            hoveredElevation = 0.dp,
+                        ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = stringResource(R.string.compose_new),
+                    )
+                }
+            }
+        },
+        topBar = {
+            if (selection.isEmpty()) {
+                TopAppBar(
+                    // The label's own name, and its leaf rather than its path:
+                    // the path belongs in the sidebar, where it disambiguates
+                    // between two labels shown at once. Here there is only one,
+                    // and "Work/Invoices" as a screen title is noise. A system
+                    // role takes the app's word for it rather than the server's,
+                    // which is English whatever the device is set to.
+                    title = { Text(view.displayTitle(hasCategories)) },
+                    colors =
+                        TopAppBarDefaults.topAppBarColors(
+                            // The bar is part of the page rather than a
+                            // separate plane. Material's default tints it as it
+                            // scrolls, which reintroduces the elevation model
+                            // this design deliberately does not use.
+                            containerColor = PlMailTheme.colors.surface,
+                            scrolledContainerColor = PlMailTheme.colors.surface,
+                            titleContentColor = PlMailTheme.colors.ink,
+                            navigationIconContentColor = PlMailTheme.colors.inkSoft,
+                            actionIconContentColor = PlMailTheme.colors.inkSoft,
+                        ),
+                    navigationIcon = {
+                        onOpenSidebar?.let { open ->
+                            IconButton(onClick = open) {
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = stringResource(R.string.open_labels),
+                                )
+                            }
+                        }
+                    },
+                    actions = {
+                        MailListActions(
+                            onCalendar = onCalendar,
+                            onSearch = onSearch,
+                            label = label,
+                            onEditLabel = onEditLabel,
+                        )
+                    },
+                )
+            } else {
+                SelectionBar(
+                    count = selection.size,
+                    onClear = viewModel::clearSelection,
+                    onAction = { action ->
+                        viewModel.apply(action, threads.targetsFor(selection))
+                    },
+                    onLabel = { viewModel.openLabelSheet(threads.targetsFor(selection)) },
+                    onMove = { viewModel.openMoveSheet(view, threads.targetsFor(selection)) },
+                    onSnooze = { at ->
+                        viewModel.apply(
+                            MailAction.Snooze(at?.toEpochMilli()),
+                            threads.targetsFor(selection),
+                        )
+                    },
+                    // Already snoozed mail gets the opposite verb. Offering
+                    // "snooze" on the Snoozed list is a control whose effect is
+                    // to replace a time the user cannot see with another one.
+                    isSnoozed = label?.role == SNOOZED_ROLE,
+                )
+            }
+        },
+    ) { insets ->
+        Column(modifier = Modifier.fillMaxSize().padding(insets)) {
+            // First, above the per-account banners, because it explains them:
+            // with no network every account is unreachable, and three rows
+            // saying so is three copies of one fact. The mail below stays on
+            // screen throughout -- offline is a state this app is expected to
+            // be usable in, not an error screen.
+            if (!offline.isQuiet) {
+                PlMailBanner(
+                    text =
+                        when {
+                            // Two different sentences, and the difference is what
+                            // the reader can do about it. No network is fixable
+                            // from the quick settings; a server that is not
+                            // answering is not, and telling somebody to check
+                            // their wifi while their NAS is off wastes the ten
+                            // minutes they had.
+                            offline.isOffline && offline.pendingChanges > 0 ->
+                                pluralStringResource(
+                                    R.plurals.offline_with_pending,
+                                    offline.pendingChanges,
+                                    offline.pendingChanges,
+                                )
+                            offline.isOffline -> stringResource(R.string.offline)
+                            else ->
+                                pluralStringResource(
+                                    R.plurals.pending_changes,
+                                    offline.pendingChanges,
+                                    offline.pendingChanges,
+                                )
+                        },
+                    tone = if (offline.isOffline) PaneTone.WARNING else PaneTone.INFO,
+                    modifier =
+                        Modifier.padding(
+                            horizontal = PlMailTheme.spacing.medium,
+                            vertical = PlMailTheme.spacing.small,
+                        ),
+                )
+            }
+
+            // Above the list, not instead of it. One unreachable account must
+            // never take the other accounts' mail off the screen.
+            //
+            // Suppressed entirely while the device has no network, because the
+            // banner above has already said it and every account is failing for
+            // the same reason. Three rows of "could not reach X" under "you are
+            // offline" is three copies of one fact, and the per-account wording
+            // ("the other accounts are still up to date") is a lie in exactly
+            // that state.
+            unreachable
+                .filterNot { offline.isOffline }
+                .forEach { account ->
+                    PlMailBanner(
+                        text =
+                            when {
+                                // Nothing was reached, so there are no "other
+                                // accounts" to be reassuring about and no account
+                                // name to use — the call that would have listed them
+                                // is the one that failed.
+                                account.isWholeServer ->
+                                    stringResource(
+                                        R.string.server_unreachable,
+                                        offline.host ?: account.displayName,
+                                    )
+                                // The hostname beside the account name, because the
+                                // two answer different halves of "why". The account
+                                // name is what the user calls this mailbox; the host
+                                // is the machine they have to go and look at.
+                                offline.host != null ->
+                                    stringResource(
+                                        R.string.account_unreachable_host,
+                                        account.displayName,
+                                        offline.host!!,
+                                    )
+                                else ->
+                                    stringResource(
+                                        R.string.account_unreachable,
+                                        account.displayName,
+                                    )
+                            },
+                        modifier =
+                            Modifier.padding(
+                                horizontal = PlMailTheme.spacing.medium,
+                                vertical = PlMailTheme.spacing.small,
+                            ),
+                        action = {
+                            TextButton(onClick = { threads.retry() }) {
+                                Text(stringResource(R.string.retry))
+                            }
+                        },
+                    )
+                }
+
+            PullToRefreshBox(
+                // Both phases, because the gesture is one gesture. The mediator's
+                // own refresh is over as soon as the first page has been
+                // committed, and the sync behind it is what corrects every other
+                // list -- an indicator that stopped at the first would report the
+                // pull as finished while most of what it does is still in flight.
+                isRefreshing =
+                    threads.loadState.mediator?.refresh is LoadState.Loading || isSyncing,
+                onRefresh = {
+                    // The sync first, and it is not the redundant half. Re-paging
+                    // rebuilds *this* list from the server's query; the sync is
+                    // one `Email/changes` per account, which is what moves
+                    // conversations into and out of every other feed and corrects
+                    // read and starred state everywhere the user has touched mail
+                    // on another device.
+                    viewModel.refresh()
+                    threads.refresh()
+                },
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                ThreadList(
+                    threads = threads,
+                    listState = listState,
+                    rowsInFeed = rowsInFeed,
+                    labels = labels,
+                    viewing = label,
+                    isSyncing = isSyncing,
+                    selection = selection,
+                    arrivals = arrivals,
+                    isMerged = isMerged,
+                    badgedNew = badgedNew,
+                    swipes = swipes,
+                    onMove = { thread -> viewModel.openMoveSheet(view, listOf(thread.target())) },
+                    onOpenCategory = onNavigate,
+                    onShown = viewModel::threadsShown,
+                    onThreadSelected = { thread ->
+                        // The badge is spent by *opening* the conversation, not
+                        // by the row having been drawn -- see
+                        // `MailViewModel.threadOpened`. Wrapped here rather than
+                        // pushed into the pane, because the pane's job is to
+                        // show a conversation and this is the list's own memory
+                        // of what has been looked at.
+                        viewModel.threadOpened(thread)
+                        onThreadSelected(thread)
+                    },
+                    onToggleSelected = viewModel::toggleSelected,
+                    onAction = { thread, action ->
+                        viewModel.apply(action, listOf(thread.target()))
+                    },
+                )
+            }
+        }
+    }
+}
+
+/**
+ * What the mail list's top bar offers, in the order it offers it.
+ *
+ * Its own composable rather than a lambda inside [MailScreen], because the order is the requirement
+ * and the order is the thing that can regress. [MailScreen] itself needs a Hilt `MailViewModel` and
+ * a Paging flow to compose at all, so a test that wanted to check where an icon sits would have to
+ * stand up half the data layer to find out — this is the seam that makes the answer cheap. The
+ * ordering is pinned in `MailListActionsTest`.
+ *
+ * Read left to right: Calendar, Search, then the label's own overflow. Calendar is the leftmost
+ * because it is the only one that leaves the mail behind, and Search is the one the thumb already
+ * knows where to find — moving Search would be paying for the calendar with a control people use
+ * far more often.
+ *
+ * `RowScope` is the receiver Material hands `actions`, and it is kept so this cannot accidentally
+ * be called anywhere the buttons would not be laid out side by side.
+ */
+@Composable
+internal fun RowScope.MailListActions(
+    /** Null where this install has no calendar, and then no button is drawn. */
+    onCalendar: (() -> Unit)?,
+    onSearch: () -> Unit,
+    /** The label being browsed, if this list is browsing one. Null for the inbox and categories. */
+    label: Label?,
+    onEditLabel: (Label) -> Unit,
+) {
+    // Immediately left of Search, and drawn only where the server publishes a
+    // calendar -- the same condition the drawer's entry is under, because a
+    // second door onto a destination that is not there is worse than one.
+    //
+    // The drawer keeps its row. This is not a move: the drawer is where the
+    // app's *places* are listed and the calendar is one of them, but it was a
+    // swipe, a scroll and a tap away from the screen people open the app for.
+    //
+    // The drawer's own glyph rather than a second calendar icon, so the two
+    // entries are recognisably one destination, and the same word for its
+    // description -- TalkBack says "Calendar" in both places.
+    onCalendar?.let { open ->
+        IconButton(onClick = open) {
+            Icon(
+                Icons.Outlined.CalendarMonth,
+                contentDescription = stringResource(R.string.calendar),
+            )
+        }
+    }
+
+    IconButton(onClick = onSearch) {
+        Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search))
+    }
+
+    // Only where there is something to edit. A category has no server object
+    // behind it at all -- there is nothing to rename, recolour or delete -- and
+    // a system label would be a rename the server refuses. Colour is the
+    // exception the editor is reached for on a system label, and that is reached
+    // from the sidebar rather than from here: this bar is over one list, and
+    // Inbox's colour is a property of the sidebar row.
+    if (label?.mayRename == true || label?.mayDelete == true) {
+        IconButton(onClick = { onEditLabel(label) }) {
+            Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.label_edit))
+        }
+    }
+}
+
+@Composable
+// Internal rather than private so the screenshot suite can render the list as it
+// actually is: bundles, rule, mail, in one scroller. The bundles were captured on
+// their own once and the picture was fairly accused of looking free-floating --
+// which is the exact question a screenshot of a component alone cannot answer.
+internal fun ThreadList(
+    threads: LazyPagingItems<ThreadEntity>,
+    /**
+     * Hoisted so the screen can decide where this list starts.
+     *
+     * `LazyColumn`'s own `rememberLazyListState()` is saveable, which is right for a rotation and
+     * wrong for a cold start: it restores a scroll offset into a list whose rows have not been
+     * paged back in yet. See [MailScreen].
+     */
+    listState: LazyListState,
+    /**
+     * How many rows the feed table holds, or null before it has been read. See [hasNothingToShow].
+     */
+    rowsInFeed: Int?,
+    /** Every label the user has, for resolving each row's stored keys into names. */
+    labels: List<Label>,
+    /** The label this list is showing, so its own name is not chipped onto every row in it. */
+    viewing: Label?,
+    /** Whether a delta sync is still running behind the pull. See [hasNothingToShow]. */
+    isSyncing: Boolean,
+    selection: Set<String>,
+    /**
+     * The new-mail bundles for the other categories, or empty on any list but Primary.
+     *
+     * Above the rows rather than in a bar of their own, because they *are* rows: places to go,
+     * ordered with the mail, scrolling away when the user starts reading. See [CategoryBundleRow].
+     */
+    arrivals: List<CategoryArrivals>,
+    /** Whether this list merges more than one account, so a row's account mark means something. */
+    isMerged: Boolean,
+    /**
+     * The rows that carry a **New** badge, by uid.
+     *
+     * A set rather than a flag on the row, because the answer outlives the column it came from:
+     * reporting a display retires `isNew` within a second of the row appearing. See
+     * [MailViewModel.badgedNew].
+     */
+    badgedNew: Set<String>,
+    /** Opens the tab a bundle is about — a built-in category or one of the reader's own. */
+    onOpenCategory: (MailView) -> Unit,
+    /**
+     * Told which conversations have actually been drawn, so the New marker can be retired.
+     *
+     * Reported from the list rather than from the pager, because "shown" has to mean shown: paging
+     * fetches conversations nobody has looked at, and so do a notification and the body prefetcher.
+     * See [de.plmail.core.data.ShownThreads].
+     */
+    onShown: (List<ThreadEntity>) -> Unit,
+    onThreadSelected: (ThreadEntity) -> Unit,
+    onToggleSelected: (String) -> Unit,
+    onAction: (ThreadEntity, MailAction) -> Unit,
+    /** What a swipe does in each direction. Defaulted to what a row always did. */
+    swipes: SwipeActions = SwipeActions(),
+    onMove: (ThreadEntity) -> Unit = {},
+) {
+    // The bundles survive an empty list, and that case is the whole reason this
+    // is a condition rather than an early return on `itemCount`. An empty
+    // Primary with three categories full of unread mail is exactly when
+    // somebody most needs to be told where their mail went -- and it is the
+    // state a well-triaged inbox is in most of the time. Drawing "Nothing here
+    // yet" over it would be the app losing the user's mail on their behalf.
+    if (threads.itemCount == 0 && arrivals.isEmpty()) {
+        // "Nothing here" and "still looking" are different answers, and showing
+        // the first while the first page is in flight tells someone their inbox
+        // is empty when it is not.
+        if (hasNothingToShow(threads.loadState, rowsInFeed, isSyncing)) {
+            PlMailEmptyState(
+                icon = Icons.Outlined.Inbox,
+                title = stringResource(R.string.inbox_empty),
+                body = stringResource(R.string.inbox_empty_body),
+            )
+        } else {
+            Message(stringResource(R.string.inbox_loading))
+        }
+
+        return
+    }
+
+    // Measured once for the whole list rather than once per row. What it
+    // decides -- how many chips a row may draw -- is a composition question and
+    // cannot be answered during measurement, and the pane's width is not the
+    // window's: a tablet's list pane is a fraction of an 840dp window and can
+    // easily be narrower than a phone. One subcomposition per list is nothing;
+    // one per row, fifty times a scroll, is not.
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val labelSlots = rowLabelSlots(maxWidth)
+        val scope = rememberCoroutineScope()
+
+        // Whether the bundles are off the top of the viewport, which is the one
+        // question [CategoryDigestBar] exists to answer.
+        //
+        // The bundles are the first `arrivals.size` items in the list, so "the
+        // first visible item is past them" is the whole test -- no measurement,
+        // no keys to look up, and correct while a row is half-scrolled because
+        // `firstVisibleItemIndex` only advances once a row's top edge has gone.
+        //
+        // [derivedStateOf] rather than reading the state directly: the index
+        // changes on every row that crosses the edge, and this composable cares
+        // about the handful of frames where the *boolean* flips. Without it the
+        // bar's subtree recomposes on every scrolled row, for a value that
+        // spends an entire fling unchanged.
+        val digestOffScreen by
+            remember(arrivals.size) {
+                derivedStateOf { digestHasScrolledAway(listState.firstVisibleItemIndex, arrivals) }
+            }
+
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            // Room under the last row for the compose button to sit in.
+            //
+            // `Scaffold` positions the FAB *over* its content and reports nothing
+            // about it in the padding it hands back, so without this the button
+            // covers whatever the list happens to end on -- a row's chips and date on
+            // a long list, and on a short one the "That's everything on this device"
+            // line, which is precisely the thing that tells someone the list is
+            // finished rather than broken.
+            //
+            // `contentPadding` rather than a padded modifier or a spacer item,
+            // because it has to scroll: padding the list would leave a permanent
+            // dead band at the bottom of the viewport, and a trailing item would sit
+            // below the end-of-list footer and be counted by anything that walks the
+            // list's children.
+            contentPadding = PaddingValues(bottom = FAB_CLEARANCE),
+        ) {
+            // Above the mail, and inside the same scroller. A pinned header
+            // would hold four rows of other people's promotions permanently
+            // over the list somebody opened the app to read; scrolling away is
+            // what makes this a courtesy rather than a tax.
+            items(items = arrivals, key = { "bundle:${it.tab.key}" }) { bundle ->
+                CategoryBundleRow(
+                    arrivals = bundle,
+                    onClick = { onOpenCategory(bundle.tab.view) },
+                )
+            }
+
+            // Between the digest and the mail, so the two read as two things.
+            // Full bleed rather than indented like the row dividers below: this
+            // one separates *sections*, and the inset rules separate peers.
+            if (arrivals.isNotEmpty() && threads.itemCount > 0) {
+                item(key = "bundle:rule") { PlMailDivider() }
+            }
+
+            items(
+                count = threads.itemCount,
+                // Keyed on the row's own identity, so an inserted message does not
+                // recycle every row below it and lose their scroll position.
+                key = { index -> threads.peek(index)?.uid ?: index },
+            ) { index ->
+                val thread = threads[index]
+
+                if (thread != null) {
+                    // Reported once per row per appearance, not on every
+                    // recomposition: a scroll recomposes a row for a swipe
+                    // offset or a selection change, and keying the effect on
+                    // the row's identity is what keeps that from queueing the
+                    // same id a hundred times. The reporter narrows against the
+                    // cache as well, so a genuine re-appearance costs a query
+                    // rather than a request.
+                    LaunchedEffect(thread.uid) {
+                        if (thread.isNew) onShown(listOf(thread))
+                    }
+
+                    SwipeableThreadRow(
+                        thread = thread,
+                        isSelected = thread.uid in selection,
+                        showsAccount = isMerged,
+                        isNew = thread.uid in badgedNew || thread.isNew,
+                        // Resolved per row rather than precomputed for the page:
+                        // it is a set intersection over a list the sidebar already
+                        // holds in memory, and doing it here means a label renamed
+                        // or deleted while the list is on screen corrects itself on
+                        // the next frame.
+                        labels = thread.rowLabels(labels, viewing, limit = labelSlots),
+                        // While a selection is open, tapping extends it rather than
+                        // opening a conversation -- otherwise the only way to add a
+                        // second row is another long press.
+                        onClick = {
+                            if (selection.isEmpty()) onThreadSelected(thread)
+                            else onToggleSelected(thread.uid)
+                        },
+                        onLongClick = { onToggleSelected(thread.uid) },
+                        onAction = { action -> onAction(thread, action) },
+                        onMove = { onMove(thread) },
+                        swipes = swipes,
+                    )
+
+                    // Between rows, never after the last one. Indented past the
+                    // avatar, so the line separates the text columns rather than
+                    // cutting the row in half -- a full-bleed rule under every row
+                    // turns a list into a table.
+                    //
+                    // The trailing case is the one worth spelling out: a hairline
+                    // under the final row, with nothing beneath it, is what made an
+                    // inbox of four messages look truncated rather than short. The
+                    // line implies another row is coming and then none does.
+                    if (index < threads.itemCount - 1) {
+                        PlMailDivider(startIndent = ROW_TEXT_INSET)
+                    }
+                }
+            }
+
+            // What the end of the list actually is, said once, rather than a list
+            // that simply stops halfway up an empty page. A new account with three
+            // messages is the common case for this product, not an edge one, and
+            // the untreated gap under those three rows reads as a screen that
+            // failed to finish loading.
+            //
+            // Deliberately not "you're up to date": that is a claim about the
+            // server, and the app cannot make it between syncs. This is a claim
+            // about the list, which it can.
+            if (threads.loadState.append.endOfPaginationReached) {
+                item(key = END_OF_LIST) { EndOfList() }
+            }
+
+            if (threads.loadState.append is LoadState.Loading) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(PlMailTheme.spacing.large),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(
+                            color = PlMailTheme.colors.accent,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
+            }
+        }
+
+        // Over the list rather than above it, so the mail keeps the full height
+        // of the pane and the bar costs nothing while the bundles are on screen
+        // -- which, on a list nobody has scrolled, is always.
+        //
+        // Sliding out through the top edge rather than fading in place, because
+        // that is where it goes when the user follows it: the gesture that
+        // dismisses the bar and the animation that removes it are the same
+        // direction, and the tap that summons the bundles back reverses both.
+        AnimatedVisibility(
+            visible = digestOffScreen,
+            enter = fadeIn() + slideInVertically { -it },
+            exit = fadeOut() + slideOutVertically { -it },
+            modifier = Modifier.align(Alignment.TopCenter),
+        ) {
+            CategoryDigestBar(
+                arrivals = arrivals,
+                // Animated rather than an instant jump: the bundles are two
+                // taps of context above wherever the user was reading, and a
+                // list that teleports there leaves them working out whether
+                // they are at the top of the same list or in a different one.
+                onClick = { scope.launch { listState.animateScrollToItem(0) } },
+            )
+        }
+    }
+}
+
+/**
+ * Whether the category bundles have left the top of the viewport.
+ *
+ * Extracted from the composable for the reason [hasNothingToShow] was: it is the whole behaviour of
+ * [CategoryDigestBar], and a rule left inline in a `derivedStateOf` can only be checked by
+ * scrolling a real list and looking at it.
+ *
+ * The bundles are the first [arrivals]`.size` items in the list, so the first visible index passing
+ * them is the entire test — no measurement and no keys to resolve. It is deliberately an index
+ * comparison rather than anything about offsets: `firstVisibleItemIndex` only advances once a row's
+ * top edge has actually left, so a bundle scrolled half out of view still counts as on screen and
+ * the bar does not flicker in over the top of it.
+ *
+ * Empty arrivals answer false rather than true, which matters more than it looks: `0 >= 0` is true,
+ * so a rule written without the emptiness check would pin an empty bar over every list in the app
+ * that has no bundles at all — which is every list but Primary.
+ */
+internal fun digestHasScrolledAway(firstVisibleItemIndex: Int, arrivals: List<CategoryArrivals>) =
+    arrivals.isNotEmpty() && firstVisibleItemIndex >= arrivals.size
+
+/**
+ * Whether the list may say "Nothing here yet".
+ *
+ * It looks like it should be `itemCount == 0 && refresh !is Loading`, and that is what it was. That
+ * version tells someone a label is empty at the one moment it has just been filled, and the reason
+ * is worth stating because nothing about the API hints at it:
+ *
+ * 1. `CombinedLoadStates.refresh` is **the mediator's** refresh state once a `RemoteMediator`
+ *    exists, not a combination of both. It reports "not loading" the instant the mediator returns.
+ * 2. The mediator returns having *committed rows to the feed table*, not having handed them to
+ *    Paging. Paging finds out through Room's invalidation tracker, which runs on the database's
+ *    query executor — the same executor that is, on a list's first visit, busy writing the hundreds
+ *    of message rows those feed rows point at.
+ *
+ * Between (1) and (2) the load states say nothing is loading and the item count says zero, which is
+ * bit-for-bit the state of a genuinely empty label. Every later visit skips the initial refresh
+ * because the table already has rows, which is why this only ever showed up once and never
+ * reproduced.
+ *
+ * So the table answers instead, through [de.plmail.core.data.FeedRepository.rowsHeld]. Null means
+ * nobody has asked yet, which is not the same as zero and must not be drawn as one — a screen that
+ * treated it as zero would flash the empty state on every cold launch.
+ *
+ * Both load states are consulted rather than the convenience one, for the reason in (1): the source
+ * can still be reading the rows the mediator wrote after the mediator has finished writing them.
+ *
+ * [isSyncing] is the third window, and pull-to-refresh is what opened it. The delta sync outlives
+ * the mediator's refresh — it asks every account, not just the one list — and the rows it produces
+ * reach the table through `FeedProjection` rather than through Paging, so both load states are idle
+ * while conversations are still arriving. Saying "nothing here yet" underneath a spinner that is
+ * still turning is precisely the claim this function exists to prevent.
+ */
+internal fun hasNothingToShow(
+    state: CombinedLoadStates,
+    rowsInFeed: Int?,
+    isSyncing: Boolean = false,
+): Boolean =
+    when {
+        rowsInFeed == null -> false
+        rowsInFeed > 0 -> false
+        isSyncing -> false
+        state.source.refresh is LoadState.Loading -> false
+        state.mediator?.refresh is LoadState.Loading -> false
+        else -> true
+    }
+
+/**
+ * How far the row's text column starts from the edge.
+ *
+ * The gutter plus the avatar plus the gap between them. Kept as one constant rather than three
+ * additions at the call site so the divider cannot drift out of alignment with the text it is
+ * separating.
+ */
+private val ROW_TEXT_INSET = 72.dp
+
+/**
+ * How far the list scrolls past the compose button.
+ *
+ * The button is 56dp and `Scaffold` insets it 16dp from the bottom, so 72dp is where it stops
+ * covering things and 88dp is where the last row stops looking crowded by it. Spelled out as an
+ * addition rather than as the number 88 so it is obvious what has to change if the button ever does
+ * — a bare constant here is one that quietly stops matching a resized FAB.
+ */
+private val FAB_CLEARANCE = 56.dp + 16.dp + 16.dp
+
+/** The role plMail gives the mailbox a snoozed conversation waits in. */
+private const val SNOOZED_ROLE = "snoozed"
+
+/** Keyed, so Paging does not confuse the footer with a row when the list grows under it. */
+private const val END_OF_LIST = "end-of-list"
+
+/**
+ * The line that closes the list.
+ *
+ * Quiet on purpose — `inkFaint` is the furniture step of the ink scale, and this is furniture. It
+ * is there so the eye has somewhere to stop, not to be read twice.
+ */
+@Composable
+private fun EndOfList() {
+    Text(
+        text = stringResource(R.string.inbox_end),
+        style = MaterialTheme.typography.labelMedium,
+        color = PlMailTheme.colors.inkFaint,
+        textAlign = TextAlign.Center,
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(
+                    horizontal = PlMailTheme.spacing.gutter,
+                    vertical = PlMailTheme.spacing.xLarge,
+                ),
+    )
+}
+
+@Composable
+private fun Message(text: String) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/**
+ * The bar that replaces the title while conversations are selected.
+ *
+ * Every gesture has an equivalent here. A swipe is the fast path and never the only one: it is
+ * undiscoverable, and unusable with TalkBack or a switch device.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SelectionBar(
+    count: Int,
+    onClear: () -> Unit,
+    onAction: (MailAction) -> Unit,
+    onLabel: () -> Unit,
+    onMove: () -> Unit,
+    onSnooze: (Instant?) -> Unit,
+    isSnoozed: Boolean,
+) {
+    var isMenuOpen by remember { mutableStateOf(false) }
+    var isSnoozeOpen by remember { mutableStateOf(false) }
+    var isPickingTime by remember { mutableStateOf(false) }
+
+    if (isPickingTime) {
+        SnoozePicker(
+            onDismiss = { isPickingTime = false },
+            onChosen = {
+                isPickingTime = false
+                onSnooze(it)
+            },
+        )
+    }
+
+    TopAppBar(
+        title = {
+            Text(
+                text = pluralStringResource(R.plurals.selected_count, count, count),
+                // One line, always. "40 selected" beside five icon buttons and
+                // an overflow does not fit a phone, and Material's default is to
+                // wrap the title rather than to give up any of the actions -- so
+                // "1 selected" came out over three lines and the bar was 150dp
+                // tall. Three of the actions moved into the overflow below for
+                // the same reason; what stays are the ones a bulk selection is
+                // usually made for.
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onClear) {
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = stringResource(R.string.clear_selection),
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { onAction(MailAction.Archive) }) {
+                Icon(
+                    imageVector = Icons.Outlined.Archive,
+                    contentDescription = stringResource(R.string.action_archive),
+                )
+            }
+            IconButton(onClick = { onAction(MailAction.Trash) }) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = stringResource(R.string.action_trash),
+                )
+            }
+            IconButton(onClick = { onAction(MailAction.MarkRead(seen = true)) }) {
+                Icon(
+                    imageVector = Icons.Outlined.MarkEmailRead,
+                    contentDescription = stringResource(R.string.action_read),
+                )
+            }
+
+            // The two that are not one tap: labelling needs a list and snoozing
+            // needs a time, so neither belongs in a row of icon buttons where
+            // every other control acts immediately.
+            IconButton(onClick = { isMenuOpen = true }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = stringResource(R.string.more),
+                )
+            }
+
+            DropdownMenu(expanded = isMenuOpen, onDismissRequest = { isMenuOpen = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.action_star)) },
+                    onClick = {
+                        isMenuOpen = false
+                        onAction(MailAction.Star(flagged = true))
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.action_spam)) },
+                    onClick = {
+                        isMenuOpen = false
+                        onAction(MailAction.MarkSpam)
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.move_to)) },
+                    onClick = {
+                        isMenuOpen = false
+                        onMove()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.labels_apply)) },
+                    onClick = {
+                        isMenuOpen = false
+                        onLabel()
+                    },
+                )
+                if (isSnoozed) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.unsnooze)) },
+                        onClick = {
+                            isMenuOpen = false
+                            onSnooze(null)
+                        },
+                    )
+                } else {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.snooze)) },
+                        onClick = {
+                            isMenuOpen = false
+                            isSnoozeOpen = true
+                        },
+                    )
+                }
+            }
+
+            SnoozeMenu(
+                isOpen = isSnoozeOpen,
+                onDismiss = { isSnoozeOpen = false },
+                onChosen = onSnooze,
+                onPickExact = { isPickingTime = true },
+            )
+        },
+    )
+}
+
+/** One conversation as an action target. */
+private fun ThreadEntity.target(): ActionTarget =
+    ActionTarget(accountKey = accountKey, threadId = threadId)
+
+/**
+ * The selected conversations, resolved from what Paging currently holds.
+ *
+ * `peek` rather than `get`, so building a bulk action out of the selection cannot trigger a page
+ * load -- and a selected row that has since been paged out is simply dropped rather than blocking.
+ */
+private fun LazyPagingItems<ThreadEntity>.targetsFor(selection: Set<String>): List<ActionTarget> =
+    (0 until itemCount).mapNotNull { peek(it) }.filter { it.uid in selection }.map { it.target() }

@@ -1,0 +1,35 @@
+{
+  "methodResponses": [
+    [
+      "Email/get",
+      {
+        "accountId": "7",
+        "state": "312",
+        "list": [
+          {
+            "id": "1042",
+            "mailboxIds": {},
+            "keywords": {},
+            "subject": null,
+            "from": null,
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "receivedAt": "2026-07-15T10:00:00.512Z",
+            "preview": "",
+            "hasAttachment": false
+          },
+          {
+            "id": "1043",
+            "mailboxIds": { "13": true },
+            "keywords": { "$seen": true, "$muted": true },
+            "receivedAt": "2026-07-14T08:30:00Z"
+          }
+        ],
+        "notFound": ["9999"]
+      },
+      "c1"
+    ]
+  ],
+  "sessionState": "41"
+}

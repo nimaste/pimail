@@ -1,0 +1,18 @@
+{
+  "oldState": "9f2c1ab4d0e77c31",
+  "newState": "3b7710cc90aa1def",
+  "created": {},
+  "notCreated": {},
+  "updated": {
+    "singleton": {
+      "paneAlpha": 1.0,
+      "previewLines": 2,
+      "radius": 1.0,
+      "paneBlur": 24,
+      "density": "comfortable"
+    }
+  },
+  "notUpdated": {},
+  "destroyed": [],
+  "notDestroyed": {}
+}
