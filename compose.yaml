@@ -8,6 +8,10 @@
 #   - worker: does the actual mail syncing (IMAP, queues, scheduler). Without
 #     it the server comes up but no mail ever arrives.
 # php (the server) and database are the two you'll actually interact with.
+#
+# Everything is bind-mounted under /mnt/cache/appdata/pimail/ instead of
+# named Docker volumes, so every piece of state is a real, visible path on
+# the NAS rather than something buried in Docker's own volume store.
 x-app-image: &app-image ghcr.io/karatektus/pl_mail:latest
 
 services:
@@ -16,7 +20,7 @@ services:
     restart: "no"
     entrypoint: ["generate-secrets"]
     volumes:
-      - app_secrets:/app/var/secrets
+      - /mnt/cache/appdata/pimail/secrets:/app/var/secrets
 
   php:
     image: *app-image
@@ -29,12 +33,12 @@ services:
       MERCURE_URL: http://mercure/.well-known/mercure
       MERCURE_PUBLIC_URL: https://localhost/.well-known/mercure
     volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-      - app_secrets:/app/var/secrets
-      - app_attachments:/app/var/attachments
-      - app_raw:/app/var/raw
-      - app_uploads:/app/var/uploads
+      - /mnt/cache/appdata/pimail/caddy/data:/data
+      - /mnt/cache/appdata/pimail/caddy/config:/config
+      - /mnt/cache/appdata/pimail/secrets:/app/var/secrets
+      - /mnt/cache/appdata/pimail/attachments:/app/var/attachments
+      - /mnt/cache/appdata/pimail/raw:/app/var/raw
+      - /mnt/cache/appdata/pimail/uploads:/app/var/uploads
     ports:
       - "80:80"
       - "443:443"
@@ -59,12 +63,12 @@ services:
       default:
         aliases: [mercure]
     volumes:
-      - mercure_data:/data
-      - mercure_config:/config
-      - app_secrets:/app/var/secrets
-      - app_attachments:/app/var/attachments
-      - app_raw:/app/var/raw
-      - app_uploads:/app/var/uploads
+      - /mnt/cache/appdata/pimail/mercure/data:/data
+      - /mnt/cache/appdata/pimail/mercure/config:/config
+      - /mnt/cache/appdata/pimail/secrets:/app/var/secrets
+      - /mnt/cache/appdata/pimail/attachments:/app/var/attachments
+      - /mnt/cache/appdata/pimail/raw:/app/var/raw
+      - /mnt/cache/appdata/pimail/uploads:/app/var/uploads
     healthcheck:
       disable: true
     depends_on:
@@ -88,16 +92,5 @@ services:
       retries: 30
       start_period: 60s
     volumes:
-      - database_data:/var/lib/postgresql
-      - app_secrets:/run/plmail:ro
-
-volumes:
-  app_secrets:
-  app_attachments:
-  app_raw:
-  app_uploads:
-  caddy_data:
-  caddy_config:
-  database_data:
-  mercure_data:
-  mercure_config:
+      - /mnt/cache/appdata/pimail/database:/var/lib/postgresql
+      - /mnt/cache/appdata/pimail/secrets:/run/plmail:ro
